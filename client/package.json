@@ -1,0 +1,27 @@
+{
+  "name": "grpc-examples",
+  "version": "0.1.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run build && node dist/index.js",
+    "build": "tsc",
+    "start:dev": "tsc && node dist/index.js"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.11.2",
+    "@grpc/grpc-js-xds": "^1.8.0",
+    "@grpc/proto-loader": "^0.6.13",
+    "async": "^1.5.2",
+    "cors": "^2.8.5",
+    "express": "^4.20.0",
+    "google-protobuf": "^3.0.0",
+    "lodash": "^4.6.1",
+    "minimist": "^1.2.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.5.4",
+    "typescript": "^5.6.2"
+  }
+}
