@@ -42,6 +42,33 @@ build/Release
 node_modules/
 jspm_packages/
 
+# Entorno Virtual
+venv/
+
+# Archivos de compilación y cachés de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Archivos de logs
+*.log
+
+# Archivos de configuración de IDE
+*.suo
+*.user
+.idea/
+
+# Archivos generados por build
+dist/
+build/
+
+# Archivos no deseados
+*.env
+*.DS_Store
+
+
+
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
 
