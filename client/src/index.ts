@@ -4,15 +4,32 @@ import client from "./client";
 
 const app = express();
 app.use(express.json());
-app.use(cors({
-  origin: '*',
-}));
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
 app.post("/login", async (req, res) => {
   const { user, password } = req.body;
   console.log(user, password);
   try {
     const message = await client.login(user, password);
+    res.json({ message });
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: "Unknown error occurred" });
+    }
+  }
+});
+
+app.post("/create-user", async (req, res) => {
+  const { username, password } = req.body;
+  console.log(username, password);
+  try {
+    const message = await client.createUser(username, password);
     res.json({ message });
   } catch (error) {
     if (error instanceof Error) {

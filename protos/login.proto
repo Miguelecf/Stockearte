@@ -3,6 +3,7 @@ syntax = "proto3";
 package login;
 
 service Greeter {
+  rpc CreateUser (CreateUserRequest) returns (CreateUserResponse);
   rpc Login (LoginRequest) returns (LoginResponse);
 }
 
@@ -12,5 +13,14 @@ message LoginRequest {
 }
 
 message LoginResponse {
+  string message = 1;
+}
+
+message CreateUserRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message CreateUserResponse {
   string message = 1;
 }

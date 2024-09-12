@@ -24,3 +24,28 @@ class MySQLUserRepository(UserRepositoryInterface):
         except mysql.connector.Error as err:
             print(f"Error de base de datos: {err}")
             return None
+
+    def create_user(self, username: str, password: str) -> bool:
+        try:
+            connection = mysql.connector.connect(**DB_CONFIG)
+            cursor = connection.cursor()
+
+            # Consulta para insertar un nuevo usuario en la base de datos
+            query = """
+                INSERT INTO users (username, password, enabled)
+                VALUES (%s, %s, %s)
+            """
+            values = (username, password, True)
+            cursor.execute(query, values)
+
+            # Confirma la transacción
+            connection.commit()
+
+            cursor.close()
+            connection.close()
+
+            return cursor.rowcount > 0  # Retorna True si la inserción fue exitosa
+
+        except mysql.connector.Error as err:
+            print(f"Error de base de datos: {err}")
+            return False

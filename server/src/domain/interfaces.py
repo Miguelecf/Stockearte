@@ -6,3 +6,7 @@ class UserRepositoryInterface:
     def get_user_by_username(self, username: str) -> Optional[User]:
         """Devuelve un usuario basado en el nombre de usuario."""
         raise NotImplementedError
+
+    def create_user(self, username: str, password: str) -> Optional[User]:
+        """Devuelve un usuario."""
+        raise NotImplementedError

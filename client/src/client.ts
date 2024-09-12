@@ -33,6 +33,26 @@ const login = async (user: string, password: string): Promise<string> => {
   });
 };
 
+const createUser = async (
+  username: string,
+  password: string
+): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    client.CreateUser(
+      { username, password },
+      (error: grpc.ServiceError | null, response: any) => {
+        if (error) {
+          console.error("Error en la llamada gRPC:", error);
+          reject(new Error("User creation failed!"));
+        } else {
+          resolve(response.message);
+        }
+      }
+    );
+  });
+};
+
 export default {
   login,
+  createUser,
 };
