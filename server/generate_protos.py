@@ -27,4 +27,23 @@ subprocess.run([
     f"--python_out={output_dir}",
     f"--grpc_python_out={output_dir}",
     proto_file_path
-])
+], check=True)
+
+# Renombra los módulos generados para que usen el formato deseado
+generated_files = [
+    os.path.join(output_dir, "login_pb2.py"),
+    os.path.join(output_dir, "login_pb2_grpc.py")
+]
+
+for file_path in generated_files:
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as file:
+            content = file.read()
+
+        # Reemplaza 'login_pb2' con 'src.generated.login_pb2' en el contenido del archivo
+        content = content.replace('import login_pb2 as login__pb2', 'from src.generated import login_pb2 as login__pb2')
+
+        with open(file_path, 'w') as file:
+            file.write(content)
+
+print("Archivos Protobuf generados y ajustados exitosamente.")
