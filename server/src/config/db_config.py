@@ -2,6 +2,6 @@
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
-    'password': '2dragon98',
+    'password': 'root',
     'database': 'store_system'
 }

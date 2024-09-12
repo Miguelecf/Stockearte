@@ -32,10 +32,10 @@ class MySQLUserRepository(UserRepositoryInterface):
 
             # Consulta para insertar un nuevo usuario en la base de datos
             query = """
-                INSERT INTO users (username, password, enabled)
-                VALUES (%s, %s, %s)
+                INSERT INTO users (username, password, enabled,role,first_name,last_name)
+                VALUES (%s, %s, %s,%s,%s,%s)
             """
-            values = (username, password, True)
+            values = (username, password, True,2, "aaaa","aaa")
             cursor.execute(query, values)
 
             # Confirma la transacción
