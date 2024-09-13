@@ -6,8 +6,7 @@ class CreateUser:
         self.user_repository = user_repository
 
     def execute(self, username: str, password: str) -> bool:
-        user = self.user_repository.create_user(username,password)
-        print(user)
-        if not user or user.password != password or not user.enabled:
+        success = self.user_repository.create_user(username, password)
+        if not success:
             return False
         return True

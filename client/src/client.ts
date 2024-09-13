@@ -2,21 +2,21 @@ import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 import * as path from "path";
 
-const protoRoute = "../../protos/login.proto";
+const protoRoute = "../../protos/user.proto";
 
 const PROTO_PATH = path.resolve(__dirname, protoRoute);
 const packageDefinition = protoLoader.loadSync(PROTO_PATH);
 const proto = grpc.loadPackageDefinition(packageDefinition) as any;
 
-const client = new proto.login.Greeter(
+const client = new proto.user.UserService(
   "localhost:50051",
   grpc.credentials.createInsecure()
 );
 
-const login = async (user: string, password: string): Promise<string> => {
+const login = async (username: string, password: string): Promise<string> => {
   return new Promise((resolve, reject) => {
     client.Login(
-      { user, password },
+      { username, password },
       (error: grpc.ServiceError | null, response: any) => {
         if (error) {
           console.error("Error en la llamada gRPC:", error);

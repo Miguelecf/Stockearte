@@ -15,8 +15,8 @@ if not os.path.exists(proto_path):
 # Verifica que la ruta de salida exista
 os.makedirs(output_dir, exist_ok=True)
 
-# Verifica si el archivo login.proto existe
-proto_file_path = os.path.join(proto_path, "login.proto")
+# Verifica si el archivo user.proto existe
+proto_file_path = os.path.join(proto_path, "user.proto")
 if not os.path.isfile(proto_file_path):
     raise FileNotFoundError(f"El archivo proto no existe: {proto_file_path}")
 
@@ -31,8 +31,8 @@ subprocess.run([
 
 # Renombra los módulos generados para que usen el formato deseado
 generated_files = [
-    os.path.join(output_dir, "login_pb2.py"),
-    os.path.join(output_dir, "login_pb2_grpc.py")
+    os.path.join(output_dir, "user_pb2.py"),
+    os.path.join(output_dir, "user_pb2_grpc.py")
 ]
 
 for file_path in generated_files:
@@ -41,9 +41,11 @@ for file_path in generated_files:
             content = file.read()
 
         # Reemplaza 'login_pb2' con 'src.generated.login_pb2' en el contenido del archivo
-        content = content.replace('import login_pb2 as login__pb2', 'from src.generated import login_pb2 as login__pb2')
+        content = content.replace('import user_pb2 as user__pb2', 'from src.generated import user_pb2 as user__pb2')
 
         with open(file_path, 'w') as file:
             file.write(content)
 
 print("Archivos Protobuf generados y ajustados exitosamente.")
+
+
