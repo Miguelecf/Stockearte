@@ -1,0 +1,8 @@
+grpcio==1.66.1
+grpcio-tools==1.66.1
+protobuf==5.28.1
+protoc==0.0.2
+PyMySQL==1.1.1
+setuptools==75.1.0
+SQLAlchemy==2.0.35
+typing_extensions==4.12.2
