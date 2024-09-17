@@ -21,7 +21,8 @@ __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
-envstockearte/   # Excluir el entorno virtual personalizado
+.venv
+./venv  # Excluir el entorno virtual personalizado
 *.env
 .env.*
 
