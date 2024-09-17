@@ -1,0 +1,54 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# TypeScript
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+
+# Build files
+dist/
+build/
+out/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+envstockearte/   # Excluir el entorno virtual personalizado
+*.env
+.env.*
+
+# Database
+*.sqlite3
+*.db
+
+# Protobuf compiled files
+*.pb.go
+*.pb.py
+
+# gRPC compiled files
+*.pyc
+
+# Compiled source code
+*.out
+*.class
+
+# IDEs/Editors
+.vscode/
+.idea/
+*.swp
+
+# OS-specific files
+.DS_Store       # macOS
+Thumbs.db       # Windows
+
+# Test outputs
+coverage/
+*.lcov
