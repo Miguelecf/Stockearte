@@ -14,5 +14,5 @@ class Store(Base):
     enabled = Column(Boolean, default=True)
     
     # Use string-based references for relationships to avoid circular imports
-   # stocks = relationship("StockByStore", back_populates="store")
+    # stocks = relationship("StockByStore", back_populates="store")
     users = relationship("User", back_populates="store")

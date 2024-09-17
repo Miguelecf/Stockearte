@@ -1,5 +1,6 @@
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
+import { rejects } from "assert";
 import * as path from "path";
 
 // Update the path to reflect the correct location
@@ -38,6 +39,23 @@ class Client {
             );
         });
     }
+
+    async loginUser(username: string, password: string): Promise<string> {
+        return new Promise((resolve, reject) => { // Use curly braces, not parentheses
+            this.client.Login(
+                { username, password },
+                (error: grpc.ServiceError | null, response: any) => {
+                    if (error) {
+                        console.error("Error in gRPC call:", error);
+                        reject(new Error("Login failed!"));
+                    } else {
+                        resolve(`User ${response.username} logged in successfully!`);
+                    }
+                }
+            );
+        });
+    }
+    
     
 
     async getUserByUsername(username: string): Promise<string | null> {

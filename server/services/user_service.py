@@ -12,6 +12,7 @@ from server.entities.user import User
 from server.entities.base import SessionLocal
 from server.repositories.user_repository import UserRepository
 from server.use_cases.create_user import CreateUserUseCase
+from server.use_cases.login_user import LoginUserCase
 
 class UserService(user_pb2_grpc.UserService):
     def __init__(self):
@@ -53,23 +54,30 @@ class UserService(user_pb2_grpc.UserService):
 
 
     def Login(self, request, context):
-        username = request.username
-        password = request.password
-        if username in self.users:
-            user = self.users[username]
-            if user['password'] == password:
-                return user_pb2.User(
-                    id=user['id'],
-                    username=user['username'],
-                    password=user['password'],
-                    first_name=user['first_name'],
-                    last_name=user['last_name'],
-                    enabled=user['enabled'],
-                    store_id=user['store_id']
-                )
-            else:
-                context.set_code(grpc.StatusCode.UNAUTHENTICATED)
-                return user_pb2.User()
-        else:
-            context.set_code(grpc.StatusCode.NOT_FOUND)
+        # Initialize the login use case
+        login_user_case = LoginUserCase(self.user_repository)
+        
+        try:
+            # Execute the login process
+            user = login_user_case.execute(request)
+            
+            # Return the user information if login is successful
+            return user_pb2.User(
+                id=user.id,
+                username=user.username,
+                password=user.password,  # Remember this is plain text for now
+                first_name=user.first_name,
+                last_name=user.last_name,
+                enabled=user.enabled,
+                store_id=user.store_id
+            )
+        except ValueError as e:
+            # Handle invalid login attempts (e.g., wrong username/password)
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details(str(e))
+            return user_pb2.User()
+        except Exception as e:
+            # Handle any unexpected errors
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f"An unexpected error occurred: {str(e)}")
             return user_pb2.User()

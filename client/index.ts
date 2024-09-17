@@ -18,6 +18,18 @@ app.post('/create-user', async (req: Request, res: Response) => {
     }
 });
 
+app.post('/login', async (req: Request, res: Response) => { // Fixed async syntax
+    try {
+        const { username, password } = req.body; // Extract username and password
+        const message = await client.loginUser(username, password);
+        res.status(200).json({ message }); // Send login success message
+    } catch (error) {
+        console.error(error);
+        res.status(401).json({ message: 'Login failed' }); // Return 401 for login failure
+    }
+});
+
+
 app.get('/get-user-by-name/:username', async (req: Request, res: Response) => {
     try {
         const username = req.params.username;
