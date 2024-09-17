@@ -25,6 +25,8 @@ __pycache__/
 ./venv  # Excluir el entorno virtual personalizado
 *.env
 .env.*
+generated/
+.generated
 
 # Database
 *.sqlite3
