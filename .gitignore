@@ -22,7 +22,8 @@ __pycache__/
 *.pyo
 *.pyd
 .venv
-./venv  # Excluir el entorno virtual personalizado
+venv/
+.venv/ # Excluir el entorno virtual personalizado
 *.env
 .env.*
 generated/
