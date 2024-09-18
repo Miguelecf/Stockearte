@@ -1,6 +1,7 @@
 import grpc
 import store_pb2
 import store_pb2_grpc
+import re
 from sqlalchemy.orm import Session
 from server.entities.store import Store
 from server.entities.base import SessionLocal
@@ -17,6 +18,11 @@ class StoreService(store_pb2_grpc.StoreService):
         
     def CreateStore(self, request: store_pb2.CreateStoreRequest, context: grpc.ServicerContext) -> store_pb2.StoreResponse:
         try:
+            
+            if not re.match(r"^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{3,50}$", request.code):
+                raise ValueError("Store code must contain both letters and numbers, and be between 3 and 50 characters long.")
+
+            
             store = self.create_store_use_case.execute(
                 code=request.code,
                 address=request.address,

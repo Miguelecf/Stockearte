@@ -13,6 +13,6 @@ class Product(Base):
     size = Column(String(10), nullable=False)
     image_url = Column(Text, nullable=True)  # Ruta o URL de la imagen del producto
     color = Column(String(50), nullable=False)
-    
+    enabled = Column(Boolean, default=True)
     # Relación con StockByStore
     stocks = relationship("StockByStore", back_populates="product")
