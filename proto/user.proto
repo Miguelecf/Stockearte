@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package user;
+
+message User{
+    int32 id = 1;
+    string username = 2;
+    string password = 3;  // Note: you may want to use a more secure approach for storing passwords
+    string first_name = 4;
+    string last_name = 5;
+    bool enabled = 6;
+    // Relación con Store
+    int32 store_id = 7;
+}
+
+message CreateUserRequest{
+    string username = 1;
+    string password = 2;
+    string first_name = 3;
+    string last_name = 4;
+    bool enabled = 5;
+
+    // relacion con store
+    int32 store_id = 6;
+}
+
+message LoginRequest{
+    string username = 1;
+    string password = 2;
+}
+
+
+service UserService{
+    rpc CreateUser(CreateUserRequest) returns (User){}
+    rpc Login(LoginRequest) returns (User){}
+}
