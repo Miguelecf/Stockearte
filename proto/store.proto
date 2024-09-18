@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package store;
+
+//Definición de mensaje del store
+message Store{
+    int32 id = 1;
+    string code = 2;
+    string address = 3;
+    string city = 4;
+    string state = 5;
+    bool enabled = 6;// optional
+}
+
+// Solicitud para crear una tienda
+message CreateStoreRequest {
+    string code = 1;
+    string address = 2;
+    string city = 3;
+    string state = 4;
+    bool enabled = 5; // Si está habilitada o inhabilitada
+}
+
+// Response message for store creation
+message CreateStoreResponse {
+    Store store = 1;
+}
+
+message DisableStoreRequest {
+    string code = 1; // Unique code for identifying the store
+    bool enabled = 2;
+}
+
+// Response message for store operations
+message StoreResponse {
+    string code = 1;
+    string address = 2;
+    string city = 3;
+    string state = 4;
+    bool enabled = 5;
+}
+
+// Service definition for store management
+service StoreService {
+    // RPC to create a new store
+    rpc CreateStore(CreateStoreRequest) returns (StoreResponse);
+
+    // RPC to disable a store
+    rpc DisableStore(DisableStoreRequest) returns (StoreResponse);
+}

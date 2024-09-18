@@ -41,3 +41,4 @@ generate_proto('user')
 # Puedes agregar más archivos .proto en el futuro llamando a generate_proto
 # Ejemplo:
 # generate_proto('otro_proto')
+generate_proto('store')
