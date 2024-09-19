@@ -1,6 +1,6 @@
-from server.repositories.user_repository import UserRepository
+from repositories.user_repository import UserRepository
 from server.entities.user import User
-from generated.user_pb2 import CreateUserRequest
+from server.generated.user_pb2 import CreateUserRequest
 
 class CreateUserUseCase:
     def __init__(self, user_repository: UserRepository):

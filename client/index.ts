@@ -72,6 +72,41 @@ app.post('/disable-store', async (req: Request, res: Response) => {
     }
 });
 
+//-----------------------------product--------------------------------------------------
+app.post('/create-product', async (req: Request, res: Response) => {
+
+    try {
+        const { name, unique_code, size, image_url, color, enabled } = req.body;
+        const product = await client.createProduct( name, unique_code, size, image_url, color, enabled);
+        res.status(201).json(product);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error creating product' });
+    }
+});
+
+app.post('/disable-product', async (req: Request, res: Response) => {
+    try {
+        const { unique_code, enabled } = req.body;
+        const product = await client.disableProduct(unique_code, enabled);
+        res.status(200).json(product);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error disabling product' });
+    }
+});
+
+app.post('/update-product', async (req: Request, res: Response) => {
+    try {
+        const { name, unique_code, size, image_url, color, enabled } = req.body;
+        const product = await client.updateProduct( name, unique_code, size, image_url, color, enabled);
+        res.status(201).json(product);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error creating product' });
+    }
+});
+
 const port = 3000;
 app.listen(port, () => {
     console.log(`Server started on port ${port}`); // Added back the missing console.log line
