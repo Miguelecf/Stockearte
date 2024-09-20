@@ -119,21 +119,7 @@ app.post('/update-product', async (req: Request, res: Response) => {
     }
 });
 
-/*app.get('/search-product:', async (req: Request, res: Response) => {
-    console.log(req.body)
-    try {
-        const { name, 
-                uniqueCode,  
-                size, 
-                color } = req.body;
-        const products = await client.searchProduct(name, uniqueCode,  size, color);
-        res.status(200).json(products); // Devolver la lista de productos encontrados
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error searching for products' });
-    }
-});*/
-
+/*
 app.get('/search-product', async (req: Request, res: Response) => {
     console.log(req.query);
     try {
@@ -144,7 +130,30 @@ app.get('/search-product', async (req: Request, res: Response) => {
         console.error(error);
         res.status(500).json({ message: 'Error searching for products' });
     }
+}); */
+
+app.get('/search-product', async (req: Request, res: Response) => {
+    console.log(req.query);
+    try {
+        // Extraemos los posibles parámetros de búsqueda
+        const { name, uniqueCode, size, color } = req.query;
+
+        // Llamamos a la función searchProduct pasando los valores extraídos de la query
+        const products = await client.searchProduct(
+            name as string, 
+            uniqueCode as string, 
+            size as string, 
+            color as string
+        );
+
+        // Devolvemos la lista de productos encontrados
+        res.status(200).json(products);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error searching for products' });
+    }
 });
+
 
 
 

@@ -191,24 +191,6 @@ class Client {
         });
     }
 
-/*    async searchProduct( name?: string,uniqueCode?: string, size?: string, color?: string): Promise<any> {
-        console.log(size)
-        return new Promise((resolve, reject) => {
-            this.productClient.SearchProduct(
-                { uniqueCode, name, size, color },
-                (error: grpc.ServiceError | null, response: any) => {
-                    if (error) {
-                        console.error("Error in gRPC call:", error);
-                        reject(new Error("Product search failed!"));
-                    } else {
-                        console.log("Received gRPC response:", response);
-                        resolve(response.products); // Devolver la lista de productos
-                    }
-                }
-            );
-        });
-    }
-    */
     async searchProduct(name?: string, uniqueCode?: string, size?: string, color?: string): Promise<any> {
         console.log(size);
         return new Promise((resolve, reject) => {
