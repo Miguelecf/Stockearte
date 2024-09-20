@@ -74,10 +74,14 @@ app.post('/disable-store', async (req: Request, res: Response) => {
 
 //-----------------------------product--------------------------------------------------
 app.post('/create-product', async (req: Request, res: Response) => {
-
     try {
-        const { name, unique_code, size, image_url, color, enabled } = req.body;
-        const product = await client.createProduct( name, unique_code, size, image_url, color, enabled);
+        const { name, 
+                uniqueCode, 
+                size, 
+                imageUrl, 
+                color, 
+                enabled } = req.body;
+        const product = await client.createProduct( name, uniqueCode, size, imageUrl, color, enabled);
         res.status(201).json(product);
     } catch (error) {
         console.error(error);
@@ -87,8 +91,10 @@ app.post('/create-product', async (req: Request, res: Response) => {
 
 app.post('/disable-product', async (req: Request, res: Response) => {
     try {
-        const { unique_code, enabled } = req.body;
-        const product = await client.disableProduct(unique_code, enabled);
+        const { 
+            uniqueCode, 
+            enabled } = req.body;
+        const product = await client.disableProduct(uniqueCode, enabled);
         res.status(200).json(product);
     } catch (error) {
         console.error(error);
@@ -98,8 +104,14 @@ app.post('/disable-product', async (req: Request, res: Response) => {
 
 app.post('/update-product', async (req: Request, res: Response) => {
     try {
-        const { name, unique_code, size, image_url, color, enabled } = req.body;
-        const product = await client.updateProduct( name, unique_code, size, image_url, color, enabled);
+        const { 
+                name, 
+                uniqueCode, 
+                size, 
+                imageUrl, 
+                color, 
+                enabled } = req.body;
+        const product = await client.updateProduct( name, uniqueCode, size, imageUrl, color, enabled);
         res.status(201).json(product);
     } catch (error) {
         console.error(error);
@@ -107,17 +119,33 @@ app.post('/update-product', async (req: Request, res: Response) => {
     }
 });
 
-app.post('/search-product', async (req: Request, res: Response) => {
+/*app.get('/search-product:', async (req: Request, res: Response) => {
     console.log(req.body)
     try {
-        const { name,unique_code,  size, color } = req.body;
-        const products = await client.searchProduct(name,unique_code,  size, color);
+        const { name, 
+                uniqueCode,  
+                size, 
+                color } = req.body;
+        const products = await client.searchProduct(name, uniqueCode,  size, color);
+        res.status(200).json(products); // Devolver la lista de productos encontrados
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error searching for products' });
+    }
+});*/
+
+app.get('/search-product', async (req: Request, res: Response) => {
+    console.log(req.query);
+    try {
+        const { size } = req.query; // Extraemos solo size
+        const products = await client.searchProduct(undefined, undefined, size as string, undefined); // Pasamos size y los demás como undefined
         res.status(200).json(products); // Devolver la lista de productos encontrados
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error searching for products' });
     }
 });
+
 
 
 const port = 3000;

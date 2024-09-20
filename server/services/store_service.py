@@ -1,6 +1,6 @@
 import grpc
-import store_pb2
-import store_pb2_grpc
+from generated import store_pb2
+from generated import store_pb2_grpc
 import re
 from sqlalchemy.orm import Session
 from server.entities.store import Store

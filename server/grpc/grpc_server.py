@@ -11,12 +11,12 @@ from server.services import store_service
 from server.services import product_service
 
 import grpc
-import user_pb2 as user_pb2
-import user_pb2_grpc as user_pb2_grpc
-import store_pb2 as store_pb2
-import store_pb2_grpc as store_pb2_grpc
-import product_pb2 as product_pb2
-import product_pb2_grpc as product_pb2_grpc
+from generated import user_pb2 as user_pb2
+from generated import user_pb2_grpc as user_pb2_grpc
+from generated import store_pb2 as store_pb2
+from generated import store_pb2_grpc as store_pb2_grpc
+from generated import product_pb2 as product_pb2
+from generated import product_pb2_grpc as product_pb2_grpc
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

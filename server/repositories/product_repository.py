@@ -12,7 +12,6 @@ class ProductRepository:
     #      raise ValueError("Name, unique_code, size, image_url and color fields cannot be empty.")
         print("repository",name,unique_code,size,image_url,color,enabled)
 
-    # Crear una nueva instancia de Product
         product = Product(
             name    	= name,
             unique_code = unique_code,
@@ -39,7 +38,7 @@ class ProductRepository:
         return product
     
     def get_product_by_code(self, unique_code: str) -> Product:
-        return self.session.query(Product).filter(Product.code == unique_code).first()
+        return self.session.query(Product).filter(Product.unique_code == unique_code).first()
     
     def disable_product(self, unique_code: str, enabled: bool) -> Product:
         product = self.get_product_by_code(unique_code)

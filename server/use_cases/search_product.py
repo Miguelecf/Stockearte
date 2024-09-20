@@ -11,12 +11,23 @@ class SearchProductUseCase:
        # return self.product_repository.search_product(unique_code,name,size)
     
 
+  #  def execute(self, unique_code: str = None, name: str = None, size: str = None, color: str = None) -> list[Product]:
+        # Llamar al repositorio para buscar productos
+  #      return self.product_repository.search_product(
+   #         unique_code=unique_code,
+  #          name=name,
+    #        size=size,
+  #          color=color
+  #      ) 
+  
     def execute(self, unique_code: str = None, name: str = None, size: str = None, color: str = None) -> list[Product]:
         # Llamar al repositorio para buscar productos
-        return self.product_repository.search_product(
+        products = self.product_repository.search_product(
             unique_code=unique_code,
             name=name,
             size=size,
             color=color
         )
+        
+        return products  # Devolver la lista de productos encontrados
 
