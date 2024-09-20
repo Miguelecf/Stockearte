@@ -48,6 +48,7 @@ app.get('/get-user-by-name/:username', async (req: Request, res: Response) => {
 
 app.post('/create-store', async (req: Request, res: Response) => {
     try {
+
         // Extract store details from the request body
         const { code, address, city, state, enabled } = req.body;
         // Call the createStore method from the gRPC client

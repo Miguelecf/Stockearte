@@ -87,8 +87,8 @@ class Client {
 
     async createStore(code: string, address: string, city: string, state: string, enabled: boolean): Promise<any> {
         // Validar código de la tienda
-        if (!/^[a-zA-Z0-9]{3,50}$/.test(code)) {
-            throw new Error("Store code must be alphanumeric and between 3 and 50 characters long.");
+        if (!/^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{3,50}$/.test(code)) {
+            throw new Error("Store code must contain both letters and numbers, and be between 3 and 50 characters long.");
         }
     
         return new Promise((resolve, reject) => {
