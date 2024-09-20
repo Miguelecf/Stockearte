@@ -1,6 +1,6 @@
-from server.repositories.store_repository import StoreRepository
+from repositories.store_repository import StoreRepository
 from server.entities.store import Store
-from generated.store_pb2 import CreateStoreRequest
+from server.generated.store_pb2 import CreateStoreRequest
 
 class CreateStoreUseCase:
     def __init__(self, store_repository: StoreRepository):

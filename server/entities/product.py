@@ -11,8 +11,8 @@ class Product(Base):
     name = Column(String(255), nullable=False)
     unique_code = Column(String(10), unique=True, nullable=False)  # Código generado aleatoriamente
     size = Column(String(10), nullable=False)
-    image_url = Column(Text, nullable=True)  # Ruta o URL de la imagen del producto
+    image_url = Column(String(255), nullable=True)  # Ruta o URL de la imagen del producto
     color = Column(String(50), nullable=False)
     enabled = Column(Boolean, default=True)
     # Relación con StockByStore
-    stocks = relationship("StockByStore", back_populates="product")
+    #stocks = relationship("StockByStore", back_populates="products")

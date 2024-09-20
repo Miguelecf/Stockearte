@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package product;
+
+message Product{
+    int32 id            = 1;
+    string name         = 2;
+    string unique_code  = 3;
+    string size         = 4;
+    string image_url    = 5;
+    string color        = 6;
+    bool enabled        = 7;
+}
+
+// Solicitud para crear una tienda
+message CreateProductRequest {
+    string name         = 1;
+    string unique_code  = 2;
+    string size         = 3;
+    string image_url    = 4;
+    string color        = 5;
+    bool enabled        = 6; // Si está habilitada o inhabilitada
+}
+
+message CreateProductResponse {
+    Product product = 1;
+}
+
+message DisableProductRequest {
+    string unique_code  = 1; 
+    bool enabled        = 2;
+}
+
+message ProductResponse {
+    string name         = 1;
+    string unique_code  = 2;
+    string size         = 3;
+    string image_url    = 4;
+    string color        = 5;
+    bool enabled        = 6;
+}
+
+message UpdateProductRequest{
+    string name         = 1;
+    string unique_code  = 2;
+    string size         = 3;
+    string image_url    = 4;
+    string color        = 5;
+    bool enabled        = 6; 
+}
+
+message ProductListResponse {
+    repeated Product products = 1;
+}
+
+message SearchProductRequest {
+    string name = 1;
+    string unique_code = 2;
+    string size = 3;
+    string color = 4;
+}
+
+// Service definition for Product management
+service  ProductService {
+    // RPC to create a new Product
+    rpc CreateProduct(CreateProductRequest) returns (ProductResponse);
+
+    // RPC to disable a Product
+    rpc DisableProduct(DisableProductRequest) returns (ProductResponse);
+
+    // RPC to Update a Product
+    rpc UpdateProduct(UpdateProductRequest) returns (ProductResponse);
+
+
+    rpc SearchProduct(SearchProductRequest) returns (ProductListResponse);
+
+}

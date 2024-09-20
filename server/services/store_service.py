@@ -1,11 +1,11 @@
 import grpc
-import store_pb2
-import store_pb2_grpc
+from generated import store_pb2
+from generated import store_pb2_grpc
 import re
 from sqlalchemy.orm import Session
 from server.entities.store import Store
 from server.entities.base import SessionLocal
-from server.repositories.store_repository import StoreRepository
+from repositories.store_repository import StoreRepository
 from server.use_cases.create_store import CreateStoreUseCase
 from server.use_cases.disable_store import DisableStoreUseCase
 

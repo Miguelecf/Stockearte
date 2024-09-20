@@ -73,6 +73,91 @@ app.post('/disable-store', async (req: Request, res: Response) => {
     }
 });
 
+//-----------------------------product--------------------------------------------------
+app.post('/create-product', async (req: Request, res: Response) => {
+    try {
+        const { name, 
+                uniqueCode, 
+                size, 
+                imageUrl, 
+                color, 
+                enabled } = req.body;
+        const product = await client.createProduct( name, uniqueCode, size, imageUrl, color, enabled);
+        res.status(201).json(product);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error creating product' });
+    }
+});
+
+app.post('/disable-product', async (req: Request, res: Response) => {
+    try {
+        const { 
+            uniqueCode, 
+            enabled } = req.body;
+        const product = await client.disableProduct(uniqueCode, enabled);
+        res.status(200).json(product);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error disabling product' });
+    }
+});
+
+app.post('/update-product', async (req: Request, res: Response) => {
+    try {
+        const { 
+                name, 
+                uniqueCode, 
+                size, 
+                imageUrl, 
+                color, 
+                enabled } = req.body;
+        const product = await client.updateProduct( name, uniqueCode, size, imageUrl, color, enabled);
+        res.status(201).json(product);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error creating product' });
+    }
+});
+
+/*
+app.get('/search-product', async (req: Request, res: Response) => {
+    console.log(req.query);
+    try {
+        const { size } = req.query; // Extraemos solo size
+        const products = await client.searchProduct(undefined, undefined, size as string, undefined); // Pasamos size y los demás como undefined
+        res.status(200).json(products); // Devolver la lista de productos encontrados
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error searching for products' });
+    }
+}); */
+
+app.get('/search-product', async (req: Request, res: Response) => {
+    console.log(req.query);
+    try {
+        // Extraemos los posibles parámetros de búsqueda
+        const { name, uniqueCode, size, color } = req.query;
+
+        // Llamamos a la función searchProduct pasando los valores extraídos de la query
+        const products = await client.searchProduct(
+            name as string, 
+            uniqueCode as string, 
+            size as string, 
+            color as string
+        );
+
+        // Devolvemos la lista de productos encontrados
+        res.status(200).json(products);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error searching for products' });
+    }
+});
+
+
+
+
 const port = 3000;
 app.listen(port, () => {
     console.log(`Server started on port ${port}`); // Added back the missing console.log line
