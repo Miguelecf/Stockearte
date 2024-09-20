@@ -107,6 +107,18 @@ app.post('/update-product', async (req: Request, res: Response) => {
     }
 });
 
+app.post('/search-product', async (req: Request, res: Response) => {
+    try {
+        const { unique_code, name, size, color } = req.body;
+        const products = await client.searchProduct(unique_code, name, size, color);
+        res.status(200).json(products); // Devolver la lista de productos encontrados
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error searching for products' });
+    }
+});
+
+
 const port = 3000;
 app.listen(port, () => {
     console.log(`Server started on port ${port}`); // Added back the missing console.log line

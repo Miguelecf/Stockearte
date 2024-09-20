@@ -82,3 +82,27 @@ class ProductRepository:
 
         # Devolver el producto actualizado
         return product    
+        
+    def search_product(self, unique_code: str = None, name: str = None, size: str = None, color: str = None):
+        # Crear una consulta base
+        query = self.session.query(Product)
+        
+        # Aplicar filtros según los parámetros de búsqueda proporcionados
+        if unique_code:
+            query = query.filter(Product.unique_code == unique_code)
+        if name:
+            query = query.filter(Product.name.ilike(f"%{name}%"))
+        if size:
+            query = query.filter(Product.size.ilike(f"%{size}%"))
+        if color:
+            query = query.filter(Product.color.ilike(f"%{color}%"))
+
+        # Ejecutar la consulta
+        products = query.all()
+
+        # Si no se encuentran productos, puedes manejarlo de la siguiente manera
+        if not products:
+            raise ValueError("No products found matching the search criteria.")
+
+        # Devolver los productos encontrados
+        return products

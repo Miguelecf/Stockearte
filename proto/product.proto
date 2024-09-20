@@ -49,6 +49,17 @@ message UpdateProductRequest{
     bool enabled        = 6; 
 }
 
+message ProductListResponse {
+    repeated Product products = 1;
+}
+
+message SearchProductRequest {
+    string name = 1;
+    string unique_code = 2;
+    string size = 3;
+    string color = 4;
+}
+
 // Service definition for Product management
 service  ProductService {
     // RPC to create a new Product
@@ -59,4 +70,8 @@ service  ProductService {
 
     // RPC to Update a Product
     rpc UpdateProduct(UpdateProductRequest) returns (ProductResponse);
+
+
+    rpc SearchProduct(SearchProductRequest) returns (ProductListResponse);
+
 }
