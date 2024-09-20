@@ -108,9 +108,10 @@ app.post('/update-product', async (req: Request, res: Response) => {
 });
 
 app.post('/search-product', async (req: Request, res: Response) => {
+    console.log(req.body)
     try {
-        const { unique_code, name, size, color } = req.body;
-        const products = await client.searchProduct(unique_code, name, size, color);
+        const { name,unique_code,  size, color } = req.body;
+        const products = await client.searchProduct(name,unique_code,  size, color);
         res.status(200).json(products); // Devolver la lista de productos encontrados
     } catch (error) {
         console.error(error);

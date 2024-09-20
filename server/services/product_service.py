@@ -120,8 +120,8 @@ class ProductService(product_pb2_grpc.ProductService):
         return search_product
 
 
-    def SearchProduct(self, unique_code: str, name: str = None, size: str = None,  color: str = None) -> product_pb2.ProductListResponse:
-
+    def SearchProduct(self,  name: str = None,unique_code: str = None, size: str = None,  color: str = None) -> product_pb2.ProductListResponse:
+        print (size)
         # Validar que al menos un parámetro de búsqueda haya sido proporcionado
         #if all(param is None for param in [name, size, color, unique_code]):
         #    context.abort(grpc.StatusCode.INVALID_ARGUMENT, "At least one search parameter must be provided.")
@@ -129,9 +129,10 @@ class ProductService(product_pb2_grpc.ProductService):
         # Llamar al repositorio para buscar productos
         found_products = self.product_repository.search_product(
             name=name,
+            unique_code=unique_code,
             size=size,
-            color=color,
-            unique_code=unique_code
+            color=color
+            
         )
 
         # Mapear los productos encontrados a la respuesta gRPC

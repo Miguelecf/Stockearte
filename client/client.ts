@@ -182,7 +182,8 @@ class Client {
         });
     }
 
-    async searchProduct(unique_code?: string, name?: string, size?: string, color?: string): Promise<any> {
+    async searchProduct( name?: string,unique_code?: string, size?: string, color?: string): Promise<any> {
+        console.log(size)
         return new Promise((resolve, reject) => {
             this.productClient.SearchProduct(
                 { unique_code, name, size, color },

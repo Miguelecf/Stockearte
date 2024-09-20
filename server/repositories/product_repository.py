@@ -83,8 +83,9 @@ class ProductRepository:
         # Devolver el producto actualizado
         return product    
         
-    def search_product(self, unique_code: str = None, name: str = None, size: str = None, color: str = None):
+    def search_product(self, name: str = None, unique_code: str = None, size: str = None, color: str = None):
         # Crear una consulta base
+        print(size, "repo")
         query = self.session.query(Product)
         
         # Aplicar filtros según los parámetros de búsqueda proporcionados
