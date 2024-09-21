@@ -138,3 +138,24 @@ class ProductRepository:
 
         # Devolver los productos encontrados
         return products
+
+    def disable_product(self, unique_code: str, enabled: bool) -> Product:
+        # Obtener el producto por su código único
+        product = self.get_product_by_code(unique_code)
+        
+        if product:
+            # Cambiar el estado de habilitación del producto
+            product.enabled = enabled
+            
+            try:
+                # Confirmar los cambios en la base de datos
+                self.session.commit()
+                return product
+            except Exception as e:
+                # Si ocurre un error, hacer rollback y relanzar la excepción
+                self.session.rollback()
+                raise RuntimeError(
+                    f"An error occurred while disabling the product: {str(e)}"
+                )
+        else:
+            raise ValueError("Product not found")
