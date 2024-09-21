@@ -11,6 +11,10 @@ yarn-error.log*
 logs/
 *.log
 
+# 
+.entities/base.py
+.base.py
+
 # Build files
 dist/
 build/

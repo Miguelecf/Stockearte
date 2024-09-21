@@ -2,7 +2,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-
 # Conexión a la base de datos MySQL
 DATABASE_URL = "mysql+pymysql://root:1612@localhost:3306/store_system"
 engine = create_engine(DATABASE_URL)

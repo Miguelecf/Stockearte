@@ -2,6 +2,16 @@ syntax = "proto3";
 
 package store;
 
+
+
+service StoreService {
+
+    rpc CreateStore(CreateStoreRequest) returns (StoreResponse);
+    rpc DisableStore(DisableStoreRequest) returns (StoreResponse);
+}
+
+
+
 //Definición de mensaje del store
 message Store{
     int32 id = 1;
@@ -40,11 +50,3 @@ message StoreResponse {
     bool enabled = 5;
 }
 
-// Service definition for store management
-service StoreService {
-    // RPC to create a new store
-    rpc CreateStore(CreateStoreRequest) returns (StoreResponse);
-
-    // RPC to disable a store
-    rpc DisableStore(DisableStoreRequest) returns (StoreResponse);
-}
