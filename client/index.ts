@@ -102,7 +102,7 @@ app.post('/disable-product', async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error disabling product' });
     }
 });
-
+/*
 app.post('/update-product', async (req: Request, res: Response) => {
     try {
         const { 
@@ -118,20 +118,38 @@ app.post('/update-product', async (req: Request, res: Response) => {
         console.error(error);
         res.status(500).json({ message: 'Error creating product' });
     }
+});*/
+app.post('/update-product', async (req: Request, res: Response) => {
+    console.log("Index.ts -> Request body",req.body)
+    try {
+        const { 
+            name, 
+            uniqueCode, 
+            size, 
+            imageUrl, 
+            color,
+            enabled } = req.body;
+
+        // Validar que el código único esté presente (ya que es lo que usualmente se usa para buscar el producto)
+        if (!uniqueCode) {
+            return res.status(400).json({ message: 'UniqueCode is required for updating a product' });
+        }
+
+        // Llamar al método updateProduct del cliente
+        const updatedProduct = await client.updateProduct(name, uniqueCode, size, imageUrl, color, enabled);
+
+        if (!updatedProduct) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        // Si la actualización es exitosa, devolver el producto actualizado o un mensaje de éxito
+        res.status(200).json({ message: 'Product updated successfully', product: updatedProduct });
+    } catch (error) {
+        console.error('Error updating product:', error);
+        res.status(500).json({ message: 'Error updating product' });
+    }
 });
 
-/*
-app.get('/search-product', async (req: Request, res: Response) => {
-    console.log(req.query);
-    try {
-        const { size } = req.query; // Extraemos solo size
-        const products = await client.searchProduct(undefined, undefined, size as string, undefined); // Pasamos size y los demás como undefined
-        res.status(200).json(products); // Devolver la lista de productos encontrados
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error searching for products' });
-    }
-}); */
 
 app.get('/search-product', async (req: Request, res: Response) => {
     console.log(req.query);

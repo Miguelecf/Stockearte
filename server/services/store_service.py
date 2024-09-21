@@ -24,7 +24,7 @@ class StoreService(store_pb2_grpc.StoreService):
 
             
             store = self.create_store_use_case.execute(
-                code=request.code,
+                code=request.code, #TODO: que no tenga espacios cuando ingrese.
                 address=request.address,
                 city=request.city,
                 state=request.state,

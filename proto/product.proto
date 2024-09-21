@@ -2,6 +2,19 @@ syntax = "proto3";
 
 package product;
 
+
+
+// Service definition for Product management
+service  ProductService {
+
+    rpc CreateProduct(CreateProductRequest) returns (ProductResponse);
+    rpc DisableProduct(DisableProductRequest) returns (ProductResponse);
+    rpc UpdateProduct(UpdateProductRequest) returns (ProductResponse);
+    rpc SearchProduct(SearchProductRequest) returns (ProductListResponse);
+
+}
+
+
 message Product{
     int32 id            = 1;
     string name         = 2;
@@ -58,20 +71,4 @@ message SearchProductRequest {
     string unique_code = 2;
     string size = 3;
     string color = 4;
-}
-
-// Service definition for Product management
-service  ProductService {
-    // RPC to create a new Product
-    rpc CreateProduct(CreateProductRequest) returns (ProductResponse);
-
-    // RPC to disable a Product
-    rpc DisableProduct(DisableProductRequest) returns (ProductResponse);
-
-    // RPC to Update a Product
-    rpc UpdateProduct(UpdateProductRequest) returns (ProductResponse);
-
-
-    rpc SearchProduct(SearchProductRequest) returns (ProductListResponse);
-
 }
