@@ -28,6 +28,5 @@ class UserRepository:
         # Return the newly created user
         return user
     
-    def get_user_by_username(self, username: str) -> User:
-        
+    def search_user(self, username: str) -> User:
         return self.session.query(User).filter(User.username == username).first()

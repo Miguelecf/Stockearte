@@ -13,6 +13,7 @@ from server.entities.base import SessionLocal
 from server.repositories.user_repository import UserRepository
 from server.use_cases.create_user import CreateUserUseCase
 from server.use_cases.login_user import LoginUserCase
+from server.use_cases.search_user import SearchUserUseCase
 
 class UserService(user_pb2_grpc.UserService):
     def __init__(self):
@@ -78,6 +79,35 @@ class UserService(user_pb2_grpc.UserService):
             return user_pb2.User()
         except Exception as e:
             # Handle any unexpected errors
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f"An unexpected error occurred: {str(e)}")
+            return user_pb2.User()
+        
+    def SearchUser(self, request, context):
+        # Aquí implementamos la búsqueda del usuario
+        search_user_case = SearchUserUseCase(self.user_repository)
+
+        try:
+            # Ejecutar el caso de uso de búsqueda
+            user = search_user_case.execute(request.username)
+
+            # Retornar la información del usuario si se encuentra
+            return user_pb2.User(
+                id=user.id,
+                username=user.username,
+                password=user.password,  # Recuerda, esto es solo temporal
+                first_name=user.first_name,
+                last_name=user.last_name,
+                enabled=user.enabled,
+                store_id=user.store_id
+            )
+        except ValueError as e:
+            # Manejar el caso de que no se encuentre el usuario
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(str(e))
+            return user_pb2.User()
+        except Exception as e:
+            # Manejar errores inesperados
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"An unexpected error occurred: {str(e)}")
             return user_pb2.User()
