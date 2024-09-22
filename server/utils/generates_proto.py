@@ -23,6 +23,7 @@ def generate_proto(proto_name):
     result = protoc.main((
         '',
         f'-I{proto_dir}',
+       # f'-I{os.path.join(os.path.dirname(protoc.__file__), "google")}', 
         f'--python_out={output_dir}',
         f'--grpc_python_out={output_dir}',
         proto_file,
@@ -44,3 +45,5 @@ generate_proto('user')
 generate_proto('store')
 
 generate_proto('product')
+
+generate_proto('stock_by_store')
