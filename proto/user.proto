@@ -7,6 +7,8 @@ service UserService{
     
     rpc CreateUser(CreateUserRequest) returns (User){}
     rpc Login(LoginRequest) returns (User){}
+    rpc UpdateUser(UpdateUserRequest) returns (User){}
+    rpc SearchUser(SearchUserRequest) returns (User){}
 }
 
 message User{
@@ -18,6 +20,19 @@ message User{
     bool enabled = 6;
     // Relación con Store
     int32 store_id = 7;
+}
+
+message UpdateUserRequest{
+    string username = 2;
+    string password = 3;
+    string first_name = 4;
+    string last_name = 5;
+    bool enabled = 6;
+    int32 store_id = 7; 
+}
+
+message SearchUserRequest{
+    string username = 1; 
 }
 
 message CreateUserRequest{
