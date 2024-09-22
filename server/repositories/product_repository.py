@@ -4,14 +4,16 @@ from server.entities.product    import Product
 class ProductRepository:
     def __init__(self, session: Session):
         self.session = session
-    
-    def create_product(self, name: str,unique_code: str,size: str,image_url: str, color: str, enabled: bool)-> Product:
-            
-    # Valida que otros campos no estén vacíos
-    #   if not name or not unique_code or not size or not image_url or not color:
-    #      raise ValueError("Name, unique_code, size, image_url and color fields cannot be empty.")
-        print("repository",name,unique_code,size,image_url,color,enabled)
 
+    def create_product(
+        self,
+        name: str,
+        unique_code: str,
+        size: str,
+        image_url: str,
+        color: str,
+        enabled: bool,
+    ) -> Product:
     # Crear una nueva instancia de Product
         product = Product(
             name    	= name,
@@ -81,4 +83,34 @@ class ProductRepository:
             raise RuntimeError(f"An error occurred while updating the product: {str(e)}")
 
         # Devolver el producto actualizado
-        return product    
+        return product   
+    
+    def search_product(
+        self,
+        name: str = None,
+        unique_code: str = None,
+        size: str = None,
+        color: str = None,
+        ):
+        # Crear una consulta base
+        query = self.session.query(Product)
+
+        # Aplicar filtros según los parámetros de búsqueda proporcionados
+        if unique_code:
+            query = query.filter(Product.unique_code == unique_code)
+        if name:
+            query = query.filter(Product.name.ilike(f"%{name}%"))
+        if size:
+            query = query.filter(Product.size.ilike(f"%{size}%"))
+        if color:
+            query = query.filter(Product.color.ilike(f"%{color}%"))
+
+        # Ejecutar la consulta
+        products = query.all()
+
+        # Si no se encuentran productos, puedes manejarlo de la siguiente manera
+        if not products:
+            raise ValueError("No products found matching the search criteria.")
+
+        # Devolver los productos encontrados
+        return products 

@@ -2,6 +2,22 @@ syntax = "proto3";
 
 package user;
 
+
+service UserService{
+    
+    rpc CreateUser(CreateUserRequest) returns (User){}
+    rpc Login(LoginRequest) returns (User){}
+    rpc UpdateUser(UpdateUserRequest) returns (User){}
+}
+
+message UpdateUserRequest {
+    string username = 1; 
+    string password = 2; 
+    string first_name = 3;
+    string last_name = 4; 
+    bool enabled = 5; 
+}
+
 message User{
     int32 id = 1;
     string username = 2;
@@ -29,8 +45,3 @@ message LoginRequest{
     string password = 2;
 }
 
-
-service UserService{
-    rpc CreateUser(CreateUserRequest) returns (User){}
-    rpc Login(LoginRequest) returns (User){}
-}

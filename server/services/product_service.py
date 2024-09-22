@@ -9,6 +9,7 @@ from server.repositories.product_repository import ProductRepository
 from server.use_cases.create_product import CreateProductUseCase
 from server.use_cases.disable_product import DisableProductUseCase
 from server.use_cases.update_product import UpdateProductUseCase
+from server.use_cases.search_product import SearchProductUseCase
 
 class ProductService(product_pb2_grpc.ProductService):
     def __init__(self):
@@ -19,7 +20,6 @@ class ProductService(product_pb2_grpc.ProductService):
         self.update_product_use_case  = UpdateProductUseCase(self.product_repository)
         
     def CreateProduct(self, request: product_pb2.CreateProductRequest, context: grpc.ServicerContext) -> product_pb2.ProductResponse:
-        print("service",request)
         try:         
             product = self.create_product_use_case.execute(
                 name    	= request.name,
@@ -94,3 +94,35 @@ class ProductService(product_pb2_grpc.ProductService):
         )
 
         return updated_product
+
+    def SearchProduct(self, request, context) -> product_pb2.ProductListResponse:
+        # Extraer parámetros de búsqueda del request
+        name = request.name if request.name else None
+        unique_code = request.unique_code if request.unique_code else None
+        size = request.size if request.size else None
+        color = request.color if request.color else None
+
+        # Validar que al menos un parámetro de búsqueda haya sido proporcionado
+        if all(param is None for param in [name, unique_code, size, color]):
+            context.abort(grpc.StatusCode.INVALID_ARGUMENT,"At least one search parameter must be provided.")
+
+        # Llamar al repositorio para buscar productos
+        found_products = self.product_repository.search_product(
+            name=name,
+            unique_code=unique_code,
+            size=size,
+            color=color
+        )
+
+        # Mapear los productos encontrados a la respuesta gRPC
+        response = product_pb2.ProductListResponse()
+        for product in found_products:
+            product_response = response.products.add()
+            product_response.name = product.name
+            product_response.size = product.size
+            product_response.color = product.color
+            product_response.unique_code = product.unique_code
+            product_response.image_url = product.image_url
+            product_response.enabled = product.enabled
+
+        return response

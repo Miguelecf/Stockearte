@@ -7,7 +7,7 @@ const client = new Client('localhost:50051'); // Use the port your gRPC server l
 
 const app = express();
 app.use(express.json());
-
+//-----------------------------User--------------------------------------------------
 app.post('/create-user', async (req: Request, res: Response) => {
     try {
         const { username, password, firstName, lastName, enabled, storeId } = req.body;
@@ -45,6 +45,35 @@ app.get('/get-user-by-name/:username', async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error getting user' });
     }
 });
+
+app.post('/update-user', async (req: Request, res: Response) => {
+    console.log("Index.ts -> Request body",req.body)
+    try {
+        const { 
+            username, 
+            password, 
+            firstName, 
+            lastName, 
+            enabled } = req.body;
+
+        if (!username) {
+            return res.status(400).json({ message: 'username is required for updating a user' });
+        }
+
+        // Llamar al método updateUser del cliente
+        const updatedUser = await client.updateUser(username, password, firstName, lastName,  enabled);
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json({ message: 'User updated successfully', user: updatedUser });
+    } catch (error) {
+        console.error('Error updating user:', error);
+        res.status(500).json({ message: 'Error updating user' });
+    }
+});
+//-----------------------------Store--------------------------------------------------
 
 app.post('/create-store', async (req: Request, res: Response) => {
     try {
@@ -97,15 +126,61 @@ app.post('/disable-product', async (req: Request, res: Response) => {
 });
 
 app.post('/update-product', async (req: Request, res: Response) => {
+    console.log("Index.ts -> Request body",req.body)
     try {
-        const { name, unique_code, size, image_url, color, enabled } = req.body;
-        const product = await client.updateProduct( name, unique_code, size, image_url, color, enabled);
-        res.status(201).json(product);
+        const { 
+            name, 
+            uniqueCode, 
+            size, 
+            imageUrl, 
+            color,
+            enabled } = req.body;
+
+        // Validar que el código único esté presente (ya que es lo que usualmente se usa para buscar el producto)
+        if (!uniqueCode) {
+            return res.status(400).json({ message: 'UniqueCode is required for updating a product' });
+        }
+
+        // Llamar al método updateProduct del cliente
+        const updatedProduct = await client.updateProduct(name, uniqueCode, size, imageUrl, color, enabled);
+
+        if (!updatedProduct) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        // Si la actualización es exitosa, devolver el producto actualizado o un mensaje de éxito
+        res.status(200).json({ message: 'Product updated successfully', product: updatedProduct });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error creating product' });
+        console.error('Error updating product:', error);
+        res.status(500).json({ message: 'Error updating product' });
     }
 });
+
+
+app.get('/search-product', async (req: Request, res: Response) => {
+    console.log(req.query);
+    try {
+        // Extraemos los posibles parámetros de búsqueda
+        const { name, uniqueCode, size, color } = req.query;
+
+        // Llamamos a la función searchProduct pasando los valores extraídos de la query
+        const products = await client.searchProduct(
+            name as string, 
+            uniqueCode as string, 
+            size as string, 
+            color as string
+        );
+
+        // Devolvemos la lista de productos encontrados
+        res.status(200).json(products);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error searching for products' });
+    }
+});
+
+
+
 
 const port = 3000;
 app.listen(port, () => {

@@ -1,6 +1,6 @@
 from repositories.product_repository import ProductRepository
-from server.entities.product                import Product
-from server.generated.product_pb2           import UpdateProductRequest
+from server.entities.product import Product
+from server.generated.product_pb2 import UpdateProductRequest
 
 class UpdateProductUseCase:
     def __init__(self, product_repository: ProductRepository):
