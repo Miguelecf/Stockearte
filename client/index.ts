@@ -7,7 +7,7 @@ const client = new Client('localhost:50051'); // Use the port your gRPC server l
 
 const app = express();
 app.use(express.json());
-
+//-----------------------------User--------------------------------------------------
 app.post('/create-user', async (req: Request, res: Response) => {
     try {
         const { username, password, firstName, lastName, enabled, storeId } = req.body;
@@ -30,22 +30,56 @@ app.post('/login', async (req: Request, res: Response) => { // Fixed async synta
     }
 });
 
-
-app.get('/get-user-by-name/:username', async (req: Request, res: Response) => {
+app.get('/search-user', async (req: Request, res: Response) => {
+    console.log(req.query);
     try {
-        const username = req.params.username;
-        const user = await client.getUserByUsername(username);
+        // Extraemos el parámetro de búsqueda
+        const { username } = req.query;
+
+        // Llamamos al método de búsqueda de usuario
+        const user = await client.searchUser(username as string);
+
         if (!user) {
-            res.status(404).json({ message: 'User not found' });
-        } else {
-            res.json(user);
+            return res.status(404).json({ message: 'User not found' });
         }
+
+        // Devolvemos la información del usuario encontrado
+        res.status(200).json({ user });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error getting user' });
+        console.error('Error en el endpoint:', error);
+        res.status(500).json({ message: 'Error searching for user' });
     }
 });
 
+app.post('/update-user', async (req: Request, res: Response) => {
+    console.log("Index.ts -> Request body", req.body)
+    try {
+        const {
+            username,
+            password,
+            firstName,
+            lastName,
+            enabled } = req.body;
+
+        if (!username) {
+            return res.status(400).json({ message: 'username is required for updating a user' });
+        }
+
+        // Llamar al método updateUser del cliente
+        const updatedUser = await client.updateUser(username, password, firstName, lastName, enabled);
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json({ message: 'User updated successfully', user: updatedUser });
+    } catch (error) {
+        console.error('Error updating user:', error);
+        res.status(500).json({ message: 'Error updating user' });
+    }
+});
+
+//-----------------------------Store--------------------------------------------------
 app.post('/create-store', async (req: Request, res: Response) => {
     try {
 
@@ -76,13 +110,13 @@ app.post('/disable-store', async (req: Request, res: Response) => {
 //-----------------------------product--------------------------------------------------
 app.post('/create-product', async (req: Request, res: Response) => {
     try {
-        const { name, 
-                uniqueCode, 
-                size, 
-                imageUrl, 
-                color, 
-                enabled } = req.body;
-        const product = await client.createProduct( name, uniqueCode, size, imageUrl, color, enabled);
+        const { name,
+            uniqueCode,
+            size,
+            imageUrl,
+            color,
+            enabled } = req.body;
+        const product = await client.createProduct(name, uniqueCode, size, imageUrl, color, enabled);
         res.status(201).json(product);
     } catch (error) {
         console.error(error);
@@ -92,8 +126,8 @@ app.post('/create-product', async (req: Request, res: Response) => {
 
 app.post('/disable-product', async (req: Request, res: Response) => {
     try {
-        const { 
-            uniqueCode, 
+        const {
+            uniqueCode,
             enabled } = req.body;
         const product = await client.disableProduct(uniqueCode, enabled);
         res.status(200).json(product);
@@ -102,31 +136,15 @@ app.post('/disable-product', async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error disabling product' });
     }
 });
-/*
+
 app.post('/update-product', async (req: Request, res: Response) => {
+    console.log("Index.ts -> Request body", req.body)
     try {
-        const { 
-                name, 
-                uniqueCode, 
-                size, 
-                imageUrl, 
-                color, 
-                enabled } = req.body;
-        const product = await client.updateProduct( name, uniqueCode, size, imageUrl, color, enabled);
-        res.status(201).json(product);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error creating product' });
-    }
-});*/
-app.post('/update-product', async (req: Request, res: Response) => {
-    console.log("Index.ts -> Request body",req.body)
-    try {
-        const { 
-            name, 
-            uniqueCode, 
-            size, 
-            imageUrl, 
+        const {
+            name,
+            uniqueCode,
+            size,
+            imageUrl,
             color,
             enabled } = req.body;
 
@@ -159,9 +177,9 @@ app.get('/search-product', async (req: Request, res: Response) => {
 
         // Llamamos a la función searchProduct pasando los valores extraídos de la query
         const products = await client.searchProduct(
-            name as string, 
-            uniqueCode as string, 
-            size as string, 
+            name as string,
+            uniqueCode as string,
+            size as string,
             color as string
         );
 

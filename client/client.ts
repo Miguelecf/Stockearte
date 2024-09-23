@@ -68,22 +68,44 @@ class Client {
         });
     }
 
-
-
-    async getUserByUsername(username: string): Promise<string | null> {
+    async updateUser(username: string, password: string, firstName: string, lastName: string, enabled: boolean): Promise<any> {
+        console.log("client.ts", username, firstName, lastName)
         return new Promise((resolve, reject) => {
-            this.userClient.GetUserByUsername(
+            this.userClient.UpdateUser(
+                {
+                    username,
+                    password,
+                    firstName,
+                    lastName,
+                    enabled
+                },
+                (error: grpc.ServiceError | null, response: any) => {
+                    if (error) {
+                        console.error("Error in gRPC call:", error);
+                        reject(new Error("User update failed!"));
+                    } else {
+                        console.log("Received gRPC response:", response);
+                        resolve(response);
+                    }
+                }
+            );
+        });
+    }
+
+
+
+    async searchUser(username: string): Promise<any> {
+        console.log("Searching for user:", username);
+        return new Promise((resolve, reject) => {
+            this.userClient.SearchUser(
                 { username },
                 (error: grpc.ServiceError | null, response: any) => {
                     if (error) {
                         console.error("Error in gRPC call:", error);
-                        if (error.code === grpc.status.NOT_FOUND) {
-                            resolve(null);
-                        } else {
-                            reject(new Error("An error occurred"));
-                        }
+                        reject(new Error("User search failed!"));
                     } else {
-                        resolve(response.message);
+                        console.log("Received gRPC response:", response);
+                        resolve(response); // Asegúrate de que este sea el campo correcto
                     }
                 }
             );
@@ -177,55 +199,32 @@ class Client {
             });
         });
     }
-    /*
-        async updateProduct(name: string, unique_code: string, size: string, image_url: string, color: string, enabled: boolean): Promise<any> {
-            return new Promise((resolve, reject) => {
-                this.productClient.UpdateProduct(
-                    { 
-                        name, 
-                        unique_code, 
-                        size, 
-                        image_url, 
-                        color, 
-                        enabled },
-                    (error: grpc.ServiceError | null, response: any) => {
-                        if (error) {
-                            console.error("Error in gRPC call:", error);
-                            reject(new Error("Product creation failed!"));
-                        } else {
-                            console.log("Received gRPC response:", response);
-                            resolve(response); // Extraer el `product` de la respuesta
-                        }
-                    }
-                );
-            });
-        }
-    */
-async updateProduct(name: string, uniqueCode: string, size: string, imageUrl: string, color: string, enabled: boolean): Promise<any> {
-    console.log("Client.ts -> Only uniqueCode:",uniqueCode)
 
-    return new Promise((resolve, reject) => {
-        this.productClient.UpdateProduct(
-            {
-                name,
-                uniqueCode,  
-                size,
-                imageUrl,
-                color,
-                enabled
-            },
-            (error: grpc.ServiceError | null, response: any) => {
-                if (error) {
-                    console.error("Error in gRPC call:", error);
-                    reject(new Error("Product update failed!"));
-                } else {
-                    console.log("Received gRPC response:", response);
-                    resolve(response);
+    async updateProduct(name: string, uniqueCode: string, size: string, imageUrl: string, color: string, enabled: boolean): Promise<any> {
+        console.log("Client.ts -> Only uniqueCode:", uniqueCode)
+
+        return new Promise((resolve, reject) => {
+            this.productClient.UpdateProduct(
+                {
+                    name,
+                    uniqueCode,
+                    size,
+                    imageUrl,
+                    color,
+                    enabled
+                },
+                (error: grpc.ServiceError | null, response: any) => {
+                    if (error) {
+                        console.error("Error in gRPC call:", error);
+                        reject(new Error("Product update failed!"));
+                    } else {
+                        console.log("Received gRPC response:", response);
+                        resolve(response);
+                    }
                 }
-            }
-        );
-    });
-}
+            );
+        });
+    }
 
 
     async searchProduct(name?: string, uniqueCode?: string, size?: string, color?: string): Promise<any> {
