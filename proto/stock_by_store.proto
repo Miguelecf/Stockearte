@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package stock_by_store;  // Reemplaza con el nombre de tu paquete
+
+// Mensaje que representa el stock por tienda
+message StockByStore {
+    int32 id = 1;
+    int32 store_id = 2;     // Clave foránea a Store
+    int32 product_id = 3;   // Clave foránea a Product
+    int32 stock = 4;        // Cantidad en stock
+}
+
+// Mensaje que representa el ID del stock (para obtener stock por ID)
+message StockId {
+    int32 id = 1;  // Mensaje para encapsular el ID
+}
+
+// Mensaje para la solicitud de asignación de stock por tienda
+message AssignStockRequest {
+    int32 store_id = 1;     // ID de la tienda
+    int32 product_id = 2;   // ID del producto
+    int32 stock = 3;        // Cantidad de stock a asignar
+}
+
+// Servicio para gestionar el stock por tienda
+service StockByStoreService {
+    // Reemplazo de CreateStock por AssignStockByStore
+    rpc AssignStockByStore(AssignStockRequest) returns (StockByStore);
+    
+    rpc UpdateStock(StockByStore) returns (StockByStore);
+    rpc GetStock(StockId) returns (StockByStore);  // Usar el mensaje StockId
+    
+    //rpc DeleteStock(StockId) returns (google.protobuf.Empty);  // Usar el mensaje StockId
+    //rpc ListStocks(google.protobuf.Empty) returns (stream StockByStore);  // Usar Empty como argumento
+}
