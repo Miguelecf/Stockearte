@@ -138,7 +138,6 @@ app.post('/disable-product', async (req: Request, res: Response) => {
 });
 
 app.post('/update-product', async (req: Request, res: Response) => {
-    console.log("Index.ts -> Request body", req.body)
     try {
         const {
             name,
@@ -159,11 +158,9 @@ app.post('/update-product', async (req: Request, res: Response) => {
         if (!updatedProduct) {
             return res.status(404).json({ message: 'Product not found' });
         }
-
-        // Si la actualización es exitosa, devolver el producto actualizado o un mensaje de éxito
         res.status(200).json({ message: 'Product updated successfully', product: updatedProduct });
     } catch (error) {
-        console.error('Error updating product:', error);
+        console.error('Error updating product:',error)
         res.status(500).json({ message: 'Error updating product' });
     }
 });

@@ -119,3 +119,53 @@ class ProductService(product_pb2_grpc.ProductService):
             product_response.enabled = product.enabled
 
         return response
+    
+    
+    def UpdateProduct(self, request: product_pb2.UpdateProductRequest, context: grpc.ServicerContext) -> product_pb2.Product:
+    # Validar que el unique_code no esté vacío
+        unique_code = request.unique_code
+        if not unique_code:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details("The unique code field cannot be empty.")
+            return product_pb2.ProductResponse()
+
+        # Verificar si al menos un campo para actualizar ha sido proporcionado (además de unique_code)
+        if all(param is None for param in [request.name, request.size, request.image_url, request.color, request.enabled]):
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details("At least one field to update must be provided.")
+            return product_pb2.ProductResponse()
+
+        try:
+            # Lógica de actualización del producto
+            updated_product = self.product_repository.update_product(
+                unique_code = unique_code,
+                name        = request.name,
+                size        = request.size,
+                image_url   = request.image_url,
+                color       = request.color,
+                enabled     = request.enabled
+            )
+
+            # Retorna el producto actualizado
+            return product_pb2.ProductResponse(
+                unique_code = updated_product.unique_code,
+                name        = updated_product.name,
+                size        = updated_product.size,
+                image_url   = updated_product.image_url,
+                color       = updated_product.color,
+                enabled     = updated_product.enabled
+            )
+
+        except ValueError as ve:
+            print(f"Validation error: {str(ve)}")
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details(str(ve))
+            return product_pb2.ProductResponse()  # Devuelve Product vacío en caso de error de validación
+
+        except Exception as e:
+            print(f"Unexpected error during product update: {str(e)}")
+            print("Product_service")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f"An error occurred while updating the product: {str(e)}")
+            return product_pb2.ProductResponse()  # Devuelve Product vacío en caso de error inesperado
+

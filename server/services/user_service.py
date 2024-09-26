@@ -5,8 +5,8 @@ import concurrent.futures as futures
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../generated'))
 
 import grpc
-import user_pb2
-import user_pb2_grpc
+from generated import user_pb2
+from generated import user_pb2_grpc
 from sqlalchemy.orm import Session
 from server.entities.user import User
 from server.entities.base import SessionLocal

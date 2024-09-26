@@ -71,7 +71,6 @@ class Client {
     }
 
     async updateUser(username: string, password: string, firstName: string, lastName: string, enabled: boolean): Promise<any> {
-        console.log("client.ts", username, firstName, lastName)
         return new Promise((resolve, reject) => {
             this.userClient.UpdateUser(
                 {
@@ -203,8 +202,6 @@ class Client {
     }
 
     async updateProduct(name: string, uniqueCode: string, size: string, imageUrl: string, color: string, enabled: boolean): Promise<any> {
-        console.log("Client.ts -> Only uniqueCode:", uniqueCode)
-
         return new Promise((resolve, reject) => {
             this.productClient.UpdateProduct(
                 {
@@ -217,7 +214,7 @@ class Client {
                 },
                 (error: grpc.ServiceError | null, response: any) => {
                     if (error) {
-                        console.error("Error in gRPC call:", error);
+                        console.error("Error in gRPC call:", error,'El response:',response);
                         reject(new Error("Product update failed!"));
                     } else {
                         console.log("Received gRPC response:", response);
