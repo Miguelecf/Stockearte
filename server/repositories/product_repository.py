@@ -97,8 +97,6 @@ class ProductRepository:
         if enabled is not None:  # Esto permite True y False
             product.enabled = enabled
 
-            
-
         try:
             self.session.commit()
             self.session.refresh(product)
