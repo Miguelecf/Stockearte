@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package product;
 
-
-
 // Service definition for Product management
 service  ProductService {
 
