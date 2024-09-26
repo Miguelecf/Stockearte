@@ -80,7 +80,7 @@ class ProductRepository:
             raise ValueError("Unique code is required to update a product.")
 
         product = self.session.query(Product).filter(Product.unique_code == unique_code).first()
-
+        # product = self.get_product_by_code(unique_code)
         if not product:
             raise ValueError(f"Product with unique_code {unique_code} not found.")
 

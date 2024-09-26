@@ -11,7 +11,7 @@ class LoginUserCase:
             password = request.password
             
             # Retrieve the user from the database using username
-            user = self.user_repository.get_user_by_username(username)
+            user = self.user_repository.search_user(username)
             
             if user:
                 # Check if the provided password matches (plain text comparison)
