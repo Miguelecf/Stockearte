@@ -11,6 +11,7 @@ yarn-error.log*
 logs/
 *.log
 
+entities/base.py
 # 
 .entities/base.py
 .base.py
