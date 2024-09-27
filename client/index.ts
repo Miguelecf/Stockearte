@@ -109,12 +109,15 @@ app.post('/disable-store', async (req: Request, res: Response) => {
 });
 
 app.get('/search-store', async (req: Request, res: Response) => {
-    console.log("INDEXTS",req.query);
     try {
         const { code, enabled } = req.query;
+
+        // Convertimos 'enabled' a booleano correctamente
+        const isEnabled = enabled === 'true'; // Solo será true si el valor de enabled es exactamente 'true'
+
         const stores = await client.searchStore(
             code as string, 
-            enabled as unknown as boolean
+            isEnabled // Pasamos el valor booleano real
         );
 
         if (!stores || stores.length === 0) {
@@ -127,6 +130,7 @@ app.get('/search-store', async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error searching for stores' });
     }
 });
+
 
 //-----------------------------product--------------------------------------------------
 app.post('/create-product', async (req: Request, res: Response) => {

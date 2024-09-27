@@ -160,28 +160,24 @@ class Client {
     }
 
     async searchStore(code: string, enabled: boolean): Promise<any> {
-        console.log("clientTS", code, enabled);
         return new Promise((resolve, reject) => {
-            //const request: any = {};
-            //if (code) request.code = code;
-            //if (enabled !== undefined) request.enabled = enabled;
-    
-            // Llamamos al método gRPC con los parámetros construidos
-            this.storeClient.SearchStore( // Corregido: eliminé el punto antes de (
-                { code, enabled }, // Usa los parámetros directamente
+            console.log("Request to gRPC:", { code, enabled }); // Log de solicitud
+            this.storeClient.SearchStore(
+                { code, enabled },
                 (error: grpc.ServiceError | null, response: any) => {
                     if (error) {
                         console.error("Error in gRPC call:", error);
-                        reject(new Error("Product search failed!"));
+                        reject(new Error(`Product search failed: ${error.message}`)); // Mensaje de error mejorado
                     } else {
                         console.log("Received gRPC response:", response);
-                        resolve(response.products); // Devolver la lista de productos
+                        resolve(response.stores); // Cambiado a `stores`
                     }
                 }
             );
         });
     }
-    
+
+
 
     //-----------------------------------------------PRODUCT-------------------------------------------
 
