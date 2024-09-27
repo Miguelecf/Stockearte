@@ -58,3 +58,30 @@ class StoreRepository:
             return store
         else:
             raise ValueError("Store not found")
+        
+
+    def search_store(
+        self,
+        code: str = None,
+        enabled: bool = None,
+    ):
+        print("storerepo 1 " ,code,enabled)
+        # Crear una consulta base
+        query = self.session.query(Store)
+
+        # Aplicar filtros según los parámetros de búsqueda proporcionados
+        if code:
+            query = query.filter(Store.code == code)
+        # if enabled is not None:  # Verificamos si enabled es None o un valor booleano
+            query = query.filter(Store.enabled == enabled)
+
+        # Ejecutar la consulta
+        stores = query.all()
+        print("storerepo 2 " ,stores)
+        # Si no se encuentran tiendas, puedes manejarlo de la siguiente manera
+        if not stores:
+            raise ValueError("No stores found matching the search criteria.")
+
+        # Devolver las tiendas encontradas
+        return stores
+

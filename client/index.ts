@@ -7,6 +7,7 @@ const client = new Client('localhost:50051'); // Use the port your gRPC server l
 
 const app = express();
 app.use(express.json());
+
 //-----------------------------User--------------------------------------------------
 app.post('/create-user', async (req: Request, res: Response) => {
     try {
@@ -104,6 +105,26 @@ app.post('/disable-store', async (req: Request, res: Response) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error disabling store' });
+    }
+});
+
+app.get('/search-store', async (req: Request, res: Response) => {
+    console.log("INDEXTS",req.query);
+    try {
+        const { code, enabled } = req.query;
+        const stores = await client.searchStore(
+            code as string, 
+            enabled as unknown as boolean
+        );
+
+        if (!stores || stores.length === 0) {
+            return res.status(404).json({ message: 'No stores found' });
+        }
+
+        res.status(200).json({ stores });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error searching for stores' });
     }
 });
 
