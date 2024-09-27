@@ -30,8 +30,10 @@ class Client {
         this.productClient = new productProto.product.ProductService(host, grpc.credentials.createInsecure());
     }
 
-    async createUser(username: string, password: string, firstName: string, lastName: string, 
-                    enabled: boolean, storeId?: number): Promise<string> {
+    //-----------------------------------------------USER-------------------------------------------
+
+    async createUser(username: string, password: string, firstName: string, lastName: string,
+        enabled: boolean, storeId?: number): Promise<string> {
         return new Promise((resolve, reject) => {
             this.userClient.CreateUser(
                 {
@@ -93,8 +95,6 @@ class Client {
         });
     }
 
-
-
     async searchUser(username: string): Promise<any> {
         console.log("Searching for user:", username);
         return new Promise((resolve, reject) => {
@@ -112,7 +112,7 @@ class Client {
             );
         });
     }
-
+    //-----------------------------------------------STORE-------------------------------------------
     async createStore(code: string, address: string, city: string, state: string, enabled: boolean): Promise<any> {
         // Validar código de la tienda
         if (!/^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{3,50}$/.test(code)) {
@@ -158,6 +158,28 @@ class Client {
             });
         });
     }
+
+    async searchStore(code: string, enabled: boolean): Promise<any> {
+        return new Promise((resolve, reject) => {
+            console.log("Request to gRPC:", { code, enabled }); // Log de solicitud
+            this.storeClient.SearchStore(
+                { code, enabled },
+                (error: grpc.ServiceError | null, response: any) => {
+                    if (error) {
+                        console.error("Error in gRPC call:", error);
+                        reject(new Error(`Product search failed: ${error.message}`)); // Mensaje de error mejorado
+                    } else {
+                        console.log("Received gRPC response:", response);
+                        resolve(response.stores); // Cambiado a `stores`
+                    }
+                }
+            );
+        });
+    }
+
+
+
+    //-----------------------------------------------PRODUCT-------------------------------------------
 
     async createProduct(name: string, uniqueCode: string, size: string, imageUrl: string, color: string, enabled: boolean): Promise<any> {
         console.log(uniqueCode, imageUrl)
@@ -214,7 +236,7 @@ class Client {
                 },
                 (error: grpc.ServiceError | null, response: any) => {
                     if (error) {
-                        console.error("Error in gRPC call:", error,'El response:',response);
+                        console.error("Error in gRPC call:", error, 'El response:', response);
                         reject(new Error("Product update failed!"));
                     } else {
                         console.log("Received gRPC response:", response);

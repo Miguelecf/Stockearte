@@ -6,8 +6,9 @@ package store;
 
 service StoreService {
 
-    rpc CreateStore(CreateStoreRequest) returns (StoreResponse);
+    rpc CreateStore(CreateStoreRequest)   returns (StoreResponse);
     rpc DisableStore(DisableStoreRequest) returns (StoreResponse);
+    rpc SearchStore (SearchStoreRequest)  returns (SearchStoreResponse);
 }
 
 
@@ -50,3 +51,12 @@ message StoreResponse {
     bool enabled = 5;
 }
 
+
+message SearchStoreRequest {
+    string code  = 1;      
+    bool enabled = 2;     
+}
+
+message SearchStoreResponse {
+    repeated Store stores = 1; 
+}
