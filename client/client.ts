@@ -181,13 +181,11 @@ class Client {
 
     //-----------------------------------------------PRODUCT-------------------------------------------
 
-    async createProduct(name: string, uniqueCode: string, size: string, imageUrl: string, color: string, enabled: boolean): Promise<any> {
-        console.log(uniqueCode, imageUrl)
+    async createProduct(name: string, size: string, imageUrl: string, color: string, enabled: boolean): Promise<any> {
         return new Promise((resolve, reject) => {
             this.productClient.CreateProduct(
                 {
                     name,
-                    uniqueCode,
                     size,
                     imageUrl,
                     color,
@@ -249,7 +247,6 @@ class Client {
 
 
     async searchProduct(name?: string, uniqueCode?: string, size?: string, color?: string): Promise<any> {
-        console.log(size);
         return new Promise((resolve, reject) => {
             this.productClient.SearchProduct(
                 { uniqueCode, name, size, color },

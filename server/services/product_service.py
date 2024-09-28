@@ -34,7 +34,6 @@ class ProductService(product_pb2_grpc.ProductService):
         try:
             product = self.create_product_use_case.execute(
                 name=request.name,
-                unique_code=request.unique_code,
                 size=request.size,
                 image_url=request.image_url,
                 color=request.color,
@@ -42,7 +41,7 @@ class ProductService(product_pb2_grpc.ProductService):
             )
             return product_pb2.ProductResponse(
                 name=product.name,
-                unique_code=product.unique_code,
+                unique_code = product.unique_code,
                 size=product.size,
                 image_url=product.image_url,
                 color=product.color,
