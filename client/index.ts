@@ -188,6 +188,54 @@ app.get('/search-product', async (req: Request, res: Response) => {
     }
 });
 
+app.post('/create-product-store', async (req: Request, res: Response) => {
+    try {
+        // Extraer los detalles del producto y tienda desde el cuerpo de la solicitud
+        const { product_code, store_code, stock } = req.body;
+
+        // Llamar al método createProductStore desde el cliente gRPC
+        const productStore = await client.createProductStore(product_code, store_code, stock);
+
+        // Responder con los detalles del producto-tienda creado
+        res.status(201).json(productStore);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error creating product-store relationship' });
+    }
+});
+
+app.post('/search-product-store', async (req: Request, res: Response) => {
+    try {
+        // Extraer los códigos del producto y tienda desde el cuerpo de la solicitud
+        const { product_code, store_code } = req.body;
+
+        // Llamar al método searchProductStore desde el cliente gRPC
+        const productStore = await client.searchProductStore(product_code, store_code);
+
+        // Responder con los detalles de la relación producto-tienda
+        res.status(200).json(productStore);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error searching product-store relationship' });
+    }
+});
+
+app.post('/update-product-store', async (req: Request, res: Response) => {
+    try {
+        // Extraer los detalles del producto y tienda desde el cuerpo de la solicitud
+        const { product_code, store_code, stock } = req.body;
+
+        // Llamar al método updateProductStore desde el cliente gRPC
+        const updatedProductStore = await client.updateProductStore(product_code, store_code, stock);
+
+        // Responder con los detalles de la relación producto-tienda actualizada
+        res.status(200).json(updatedProductStore);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error updating product-store relationship' });
+    }
+});
+
 
 
 

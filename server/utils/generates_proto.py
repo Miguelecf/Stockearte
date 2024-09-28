@@ -44,3 +44,5 @@ generate_proto('user')
 generate_proto('store')
 
 generate_proto('product')
+
+generate_proto('product_store')

@@ -15,4 +15,4 @@ class Product(Base):
     color = Column(String(50), nullable=False)
     enabled = Column(Boolean, default=True)
     # Relación con StockByStore
-    #stocks = relationship("StockByStore", back_populates="products")
+    product_stores = relationship('ProductStore', back_populates='product')

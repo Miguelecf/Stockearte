@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package product_store;
+
+// Servicio para manejar la relación entre productos y tiendas
+service ProductStoreService {
+    rpc CreateProductStore(CreateProductStoreRequest) returns (ProductStoreResponse);
+    rpc UpdateProductStore(UpdateProductStoreRequest) returns (ProductStoreResponse);
+    rpc SearchProductStore(SearchProductStoreRequest) returns (ProductStoreResponse);
+}
+
+// Mensaje para definir la relación entre producto y tienda
+message ProductStore {
+    int32 id = 1;
+    int32 product_id = 2;  
+    int32 store_id = 3;    
+    int32 stock = 4;       
+}
+
+// Solicitud para asignar stock a un producto en una tienda (CreateProductStore)
+message CreateProductStoreRequest {
+    string product_code = 1;  // Cambié a product_code como en tu service
+    string store_code = 2;    // Cambié a store_code como en tu service
+    int32 stock = 3;
+}
+
+// Solicitud para actualizar el stock de un producto en una tienda (UpdateProductStore)
+message UpdateProductStoreRequest {
+    string product_code = 1;
+    string store_code = 2;
+    int32 stock = 3;
+}
+
+// Solicitud para buscar la relación producto-tienda (SearchProductStore)
+message SearchProductStoreRequest {
+    string product_code = 1;
+    string store_code = 2;
+}
+
+// Respuesta para las operaciones relacionadas con ProductStore
+message ProductStoreResponse {
+    string product_code = 1;
+    string store_code = 2;
+    int32 stock = 3;
+}
