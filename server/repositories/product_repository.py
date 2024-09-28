@@ -16,11 +16,6 @@ class ProductRepository:
         enabled: bool,
     ) -> Product:
 
-        # Valida que otros campos no estén vacíos
-        #   if not name or not unique_code or not size or not image_url or not color:
-        #      raise ValueError("Name, unique_code, size, image_url and color fields cannot be empty.")
-        print("repository", name, unique_code, size, image_url, color, enabled)
-
         product = Product(
             name=name,
             unique_code=unique_code,
@@ -49,7 +44,6 @@ class ProductRepository:
         return product
 
     def get_product_by_code(self, unique_code: str) -> Product:
-        print("En el get_product", unique_code)
         try:
             product = (
                 self.session.query(Product)

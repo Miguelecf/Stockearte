@@ -116,7 +116,7 @@ app.get('/search-store', async (req: Request, res: Response) => {
         const isEnabled = enabled === 'true'; // Solo será true si el valor de enabled es exactamente 'true'
 
         const stores = await client.searchStore(
-            code as string, 
+            code as string,
             isEnabled // Pasamos el valor booleano real
         );
 
@@ -136,12 +136,11 @@ app.get('/search-store', async (req: Request, res: Response) => {
 app.post('/create-product', async (req: Request, res: Response) => {
     try {
         const { name,
-            uniqueCode,
             size,
             imageUrl,
             color,
             enabled } = req.body;
-        const product = await client.createProduct(name, uniqueCode, size, imageUrl, color, enabled);
+        const product = await client.createProduct(name, size, imageUrl, color, enabled);
         res.status(201).json(product);
     } catch (error) {
         console.error(error);
@@ -185,7 +184,7 @@ app.post('/update-product', async (req: Request, res: Response) => {
         }
         res.status(200).json({ message: 'Product updated successfully', product: updatedProduct });
     } catch (error) {
-        console.error('Error updating product:',error)
+        console.error('Error updating product:', error)
         res.status(500).json({ message: 'Error updating product' });
     }
 });
