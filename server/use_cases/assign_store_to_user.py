@@ -2,7 +2,7 @@ from repositories.user_repository import UserRepository
 from server.entities.user import User
 from server.generated.user_pb2 import AssignStoreToUserRequest
 
-class AssignStoreToUser:
+class AssignStoreToUserUseCase:
     def __init__(self,user_repository: UserRepository):
         self.user_repository = user_repository
         

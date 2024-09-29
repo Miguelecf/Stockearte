@@ -10,6 +10,7 @@ service UserService{
     rpc UpdateUser(UpdateUserRequest) returns (User){}
     rpc SearchUser(SearchUserRequest) returns (User){}
     rpc AssignStoreToUser(AssignStoreToUserRequest) returns (User){}
+    rpc SearchUserByStore(SearchUserByStoreRequest) returns (UserListResponse){}
 }
 
 message User{
@@ -55,4 +56,12 @@ message AssignStoreToUserRequest{
 message LoginRequest{
     string username = 1;
     string password = 2;
+}
+
+message SearchUserByStoreRequest{
+    string store_code = 1;
+}
+
+message UserListResponse{
+    repeated User users = 1; 
 }
