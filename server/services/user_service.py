@@ -155,3 +155,41 @@ class UserService(user_pb2_grpc.UserService):
             context.set_details(
                 f"An error occurred while updating the user: {str(e)}")
             return user_pb2.User()  # Devuelve User vacío    
+        
+    def AssignStoreToUser(self, request: user_pb2.AssignStoreToUserRequest, context: grpc.ServicerContext) -> user_pb2.User:
+        user_id = request.user_id
+        
+        if not user_id:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details("The user_id field cannot be empty")
+            return user_pb2.User()
+        
+        try:
+            # Asignar la tienda al usuario
+            user_store = self.user_repository.assign_store_to_user(
+                user_id=user_id,
+                store_code=request.store_code
+            )
+            
+            # Después de asignar la tienda, obtener al usuario completo
+            user = self.user_repository.get_user_by_id(user_id=user_id)
+
+            # Devolver el usuario mapeado al objeto gRPC
+            return user_pb2.User(
+                id=user.id,
+                username=user.username,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                enabled=user.enabled,
+                store_id=user.store_id  # O el código de la tienda si es necesario
+            )
+        
+        except ValueError as e:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details(f"Error: {str(e)}")
+            return user_pb2.User()
+        
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f"An unexpected error occurred: {str(e)}")
+            return user_pb2.User()     

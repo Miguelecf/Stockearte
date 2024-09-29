@@ -112,6 +112,26 @@ class Client {
             );
         });
     }
+
+    async assignStoreToUser(userId: number, storeCode: string): Promise<any> {
+        return new Promise((resolve,reject)=>{
+            this.userClient.AssignStoreToUser({
+                userId,storeCode
+            },
+            (error:grpc.ServiceError | null, response: any)=> {
+                if (error) {
+                    console.error("Error in gRPC call:", error);
+                    reject(new Error("User search failed!"));
+                }else{
+                    console.log("Received gRPC response:", response);
+                    resolve(response); // Asegúrate de que este sea el campo correcto
+                }
+            })
+        })
+
+
+    }
+
     //-----------------------------------------------STORE-------------------------------------------
     async createStore(code: string, address: string, city: string, state: string, enabled: boolean): Promise<any> {
         // Validar código de la tienda

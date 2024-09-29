@@ -60,3 +60,31 @@ class UserRepository:
                                username}: {str(e)}")
 
         return user
+    
+    def get_user_by_id(self, user_id: int) -> User:
+        return self.session.query(User).filter(User.id == user_id).first()
+
+    def assign_store_to_user(self,user_id: int, store_code: str):
+        from server.repositories.store_repository import StoreRepository
+         
+        user = self.session.query(User).filter(User.id == user_id).first()
+        
+        if not user:
+            raise ValueError(f"User with id {user_id} not found")
+        
+        store = StoreRepository(self.session).get_store_by_code(store_code)
+        
+        if not store:
+            raise ValueError(f"Store with code {store_code} not found")
+        
+        user.store_id = store.id 
+        
+        try:
+            self.session.commit()
+            self.session.refresh(user)
+            
+        except Exception as e:
+            self.session.rollback()
+            raise RuntimeError(f"An error occurred while assigning store to user: {str(e)}")
+        
+        return user

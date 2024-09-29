@@ -9,6 +9,7 @@ service UserService{
     rpc Login(LoginRequest) returns (User){}
     rpc UpdateUser(UpdateUserRequest) returns (User){}
     rpc SearchUser(SearchUserRequest) returns (User){}
+    rpc AssignStoreToUser(AssignStoreToUserRequest) returns (User){}
 }
 
 message User{
@@ -44,6 +45,11 @@ message CreateUserRequest{
 
     // relacion con store
     int32 store_id = 6;
+}
+
+message AssignStoreToUserRequest{
+    int32 user_id = 1;
+    string store_code = 2;
 }
 
 message LoginRequest{
