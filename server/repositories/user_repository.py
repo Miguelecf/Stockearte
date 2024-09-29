@@ -66,7 +66,7 @@ class UserRepository:
 
     def assign_store_to_user(self,user_id: int, store_code: str):
         from server.repositories.store_repository import StoreRepository
-         
+        
         user = self.session.query(User).filter(User.id == user_id).first()
         
         if not user:
@@ -88,3 +88,15 @@ class UserRepository:
             raise RuntimeError(f"An error occurred while assigning store to user: {str(e)}")
         
         return user
+
+    def search_users_by_store(self, store_code: str):
+        # Primero, buscar el store_id usando el store_code
+        from server.repositories.store_repository import StoreRepository
+        store = StoreRepository(self.session).get_store_by_code(store_code)
+        
+        if not store:
+            raise ValueError(f"No store found with code: {store_code}")
+        
+        # Luego, buscar los usuarios por store_id
+        return self.session.query(User).filter(User.store_id == store.id).all()
+

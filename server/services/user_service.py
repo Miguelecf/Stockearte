@@ -193,3 +193,31 @@ class UserService(user_pb2_grpc.UserService):
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"An unexpected error occurred: {str(e)}")
             return user_pb2.User()     
+        
+    def SearchUserByStore(self, request: user_pb2.SearchUserByStoreRequest, context: grpc.ServicerContext) -> user_pb2.UserListResponse:
+        store_code = request.store_code
+        
+        if not store_code:
+            raise ValueError("The store_code field cannot be empty")
+        
+        found_users = self.user_repository.search_users_by_store(
+            store_code=store_code
+        )
+        
+        response = user_pb2.UserListResponse()
+        
+        for user in found_users:
+            # Añadir cada usuario a la respuesta, omitiendo la contraseña
+            user_message = user_pb2.User(
+                id=user.id,
+                username=user.username,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                enabled=user.enabled,
+                store_id=user.store_id,
+            )
+            response.users.append(user_message)  # Asumiendo que 'users' es una lista en UserListResponse
+
+        return response
+
+            

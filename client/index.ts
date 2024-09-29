@@ -158,6 +158,33 @@ app.post('/assign-store',async(req: Request, res: Response)=>{
     }
 });
 
+app.get('/search-user-by-store', async (req: Request, res: Response) => {
+    const { storeCode } = req.query; // Asumiendo que el storeCode se envía como un parámetro de consulta
+
+    if (!storeCode) {
+        return res.status(400).json({ message: 'storeCode is required' });
+    }
+
+    try {
+        const response = await client.searchUserByStore(storeCode as string);
+        
+        // Verificar si hay usuarios en la respuesta
+        if (!response.users || response.users.length === 0) {
+            return res.status(404).json({ message: 'No users found for the given store code' });
+        }
+
+        res.status(200).json({
+            message: 'Users retrieved successfully',
+            users: response.users, // Aquí simplemente devolvemos los usuarios tal como vienen
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error retrieving users' });
+    }
+});
+
+
+
 
 //-----------------------------product--------------------------------------------------
 app.post('/create-product', async (req: Request, res: Response) => {
