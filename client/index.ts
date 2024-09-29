@@ -131,6 +131,33 @@ app.get('/search-store', async (req: Request, res: Response) => {
     }
 });
 
+app.post('/assign-store',async(req: Request, res: Response)=>{
+    const {userId, storeCode} = req.body;
+
+    if(!userId || !storeCode){
+        return res.status(400).json({message: 'userId and storeCode are required'});
+    }
+
+    try{
+        const user = await client.assignStoreToUser(userId,storeCode);
+        
+        res.status(200).json({
+            message: 'Store assigned successfully',
+            user: {
+                id: user.id,
+                username: user.username,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                enabled: user.enabled,
+                storeId: user.storeId,
+            },
+        });
+    } catch (error){
+        console.error(error);
+        res.status(500).json({ message: 'Error assigning store' });
+    }
+});
+
 
 //-----------------------------product--------------------------------------------------
 app.post('/create-product', async (req: Request, res: Response) => {
