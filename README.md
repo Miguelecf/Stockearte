@@ -11,11 +11,12 @@ create schema store_system;
 use store_system;
 ```
 
-### 2. Install Python Dependencies
+### 2. Install Python Dependencies(SERVER)
 
 Install the required Python packages listed in `requirements.txt`:
 
 ```bash
+cd server
 pip install -r requirements.txt
 ```
 
@@ -27,10 +28,26 @@ Before running the following script, **remember to modify the `DATABASE_URL` in 
 DATABASE_URL = "mysql+pymysql://user:password@localhost:3306/store_system"
 ```
 
-After updating, run the following command to create the necessary database tables:
+#### Environment Variables
+
+Define the following environment variables in a `.env` file at the root of the server project:
 
 ```bash
-python create_db.py
+DB_USER=root
+DB_PASSWORD=1612
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=store_system
+```
+
+After updating, run the following command to create the necessary database tables:
+
+- pip install cryptography
+- pip install python-dotenv
+
+```bash
+cd /stockearte
+python -m server.utils.create_db
 ```
 
 ### 4. Generate gRPC Code
@@ -38,6 +55,8 @@ python create_db.py
 Generate the gRPC code from your `.proto` files:
 
 ```bash
+cd server
+cd utils
 python generates_proto.py
 ```
 
@@ -46,7 +65,8 @@ python generates_proto.py
 Start the gRPC server:
 
 ```bash
-python grpc_server.py
+cd /stockearte
+python python -m server.grpc.grpc_server
 ```
 
 ### 6. Set Up and Run the TypeScript Client
@@ -59,7 +79,7 @@ python grpc_server.py
 
 2. **Install the required Node.js packages:**
 
-   Ensure that you have Node.js and npm installed. Then, install the dependencies listed in `package.json`:
+   Ensure that you have Node.js(node v.21) and npm installed. Then, install the dependencies listed in `package.json`:
 
    ```bash
    npm install

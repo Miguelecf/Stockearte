@@ -30,7 +30,6 @@ __pycache__/
 venv/
 .venv/ # Excluir el entorno virtual personalizado
 *.env
-.env.*
 generated/
 .generated
 
