@@ -66,7 +66,7 @@ Start the gRPC server:
 
 ```bash
 cd /stockearte
-python python -m server.grpc.grpc_server
+python -m server.grpc.grpc_server
 ```
 
 ### 6. Set Up and Run the TypeScript Client
