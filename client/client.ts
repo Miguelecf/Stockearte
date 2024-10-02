@@ -8,26 +8,31 @@ import * as path from "path";
 const userProtoPath = path.resolve(__dirname, "../proto/user.proto");
 const storeProtoPath = path.resolve(__dirname, "../proto/store.proto");
 const productProtoPath = path.resolve(__dirname, "../proto/product.proto");
-
+const productStoreProtoPath = path.resolve(__dirname,"../proto/product_store.proto")
 // Load .proto files
 const userPackageDefinition = protoLoader.loadSync(userProtoPath);
 const storePackageDefinition = protoLoader.loadSync(storeProtoPath);
 const productPackageDefinition = protoLoader.loadSync(productProtoPath);
+const productStorePackageDefinition = protoLoader.loadSync(productStoreProtoPath);
+
 
 // Combine package definitions
 const userProto = grpc.loadPackageDefinition(userPackageDefinition) as any;
 const storeProto = grpc.loadPackageDefinition(storePackageDefinition) as any;
 const productProto = grpc.loadPackageDefinition(productPackageDefinition) as any;
+const productStoreProto = grpc.loadPackageDefinition(productStorePackageDefinition) as any;
 
 class Client {
     private userClient: any;
     private storeClient: any;
     private productClient: any;
+    private productStoreClient: any; 
 
     constructor(host: string) {
         this.userClient = new userProto.user.UserService(host, grpc.credentials.createInsecure());
         this.storeClient = new storeProto.store.StoreService(host, grpc.credentials.createInsecure());
         this.productClient = new productProto.product.ProductService(host, grpc.credentials.createInsecure());
+        this.productStoreClient = new productStoreProto.product_store.ProductStoreService(host,grpc.credentials.createInsecure());
     }
 
     //-----------------------------------------------USER-------------------------------------------
@@ -298,6 +303,28 @@ class Client {
             );
         });
     }
+
+//-----------------------------PRODUCT_STORE--------------------------------------------------
+async createProductStore(storeCode?: string, productCode?: string, stock?: number,enabled?: boolean): Promise<any>{
+    console.log("client.ts ---> ",storeCode, productCode, stock, enabled)
+    return new Promise((resolve,reject)=>{
+        this.productStoreClient.CreateProductStore({
+            storeCode,
+            productCode,
+            stock,
+            enabled
+        },
+    (error: grpc.ServiceError | null, response: any )=> {
+        if(error) {
+            console.error("Error in gRPC call:", error);
+            reject(new Error("ProductStore creation failed!"));
+        } else{
+            resolve(response.message);
+        }
+    })
+    })
+}
+
 
 
 }

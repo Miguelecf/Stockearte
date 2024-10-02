@@ -15,6 +15,9 @@ class StoreRepository:
                 "Store code must be between 3 and 50 characters long.")
 
     def create_store(self, code: str, address: str, city: str, state: str, enabled: bool) -> Store:
+        
+        code = code.upper()
+        
         # Validar que el código sea alfanumérico
         self._validate_code(code)
 
@@ -65,7 +68,6 @@ class StoreRepository:
 
 
     def search_store(self, code: str = None, enabled: bool = None):
-        print("storerepo 1", code, enabled)
 
         # Crear una consulta base
         query = self.session.query(Store)
@@ -81,9 +83,6 @@ class StoreRepository:
         # Ejecutar la consulta
         stores = query.all()
         
-        # Mostrar el estado de enabled para cada tienda encontrada
-        print("storerepo 2", [store.enabled for store in stores])
-
         # Si no se encuentran tiendas, puedes manejarlo de la siguiente manera
         if not stores:
             raise ValueError("No stores found matching the search criteria.")

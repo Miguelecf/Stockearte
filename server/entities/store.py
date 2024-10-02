@@ -12,7 +12,6 @@ class Store(Base):
     city = Column(String(100), nullable=False)
     state = Column(String(100), nullable=False)
     enabled = Column(Boolean, default=True)
-    
-    # Use string-based references for relationships to avoid circular imports
-    # stocks = relationship("StockByStore", back_populates="store")
     users = relationship("User", back_populates="store")
+    stocks = relationship("ProductStore", back_populates="store")
+    

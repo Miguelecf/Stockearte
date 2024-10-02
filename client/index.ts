@@ -183,6 +183,8 @@ app.get('/search-user-by-store', async (req: Request, res: Response) => {
     }
 });
 
+// Agregar el updateStore monstruo del lagonés. 
+
 
 
 
@@ -265,6 +267,30 @@ app.get('/search-product', async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error searching for products' });
     }
 });
+
+//-----------------------------PRODUCT_STORE--------------------------------------------------
+app.post('/create-product-store', async (req: Request, res: Response) => {
+    try {
+        console.log(req.body)
+        const { storeCode, 
+            productCode,
+            stock,
+            enabled } = req.body;
+
+        // Validación de entrada
+        if (!storeCode || !productCode || stock === undefined || enabled === undefined) {
+            return res.status(400).json({ message: 'Missing required fields' });
+        }
+
+        // Llamada al cliente gRPC para crear la relación ProductStore
+        const productStore = await client.createProductStore(storeCode, productCode, stock, enabled);
+        res.status(201).json(productStore);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error creating ProductStore' });
+    }
+});
+
 
 
 
