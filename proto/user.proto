@@ -20,17 +20,18 @@ message User{
     string first_name = 4;
     string last_name = 5;
     bool enabled = 6;
+    bool is_central = 7;
     // Relación con Store
-    int32 store_id = 7;
+    int32 store_id = 8;
 }
 
 message UpdateUserRequest{
-    string username = 2;
-    string password = 3;
-    string first_name = 4;
-    string last_name = 5;
-    bool enabled = 6;
-    int32 store_id = 7; 
+    string username = 1;
+    string password = 2;
+    string first_name = 3;
+    string last_name = 4;
+    bool enabled = 5;
+    int32 store_id = 6; 
 }
 
 message SearchUserRequest{
@@ -43,9 +44,9 @@ message CreateUserRequest{
     string first_name = 3;
     string last_name = 4;
     bool enabled = 5;
-
+    bool is_central = 6;
     // relacion con store
-    int32 store_id = 6;
+    int32 store_id = 7;
 }
 
 message AssignStoreToUserRequest{

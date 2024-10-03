@@ -12,6 +12,7 @@ class User(Base):
     first_name = Column(String(100), nullable=False)
     last_name = Column(String(100), nullable=False)
     enabled = Column(Boolean, default=True)
+    is_central = Column(Boolean, default = False)
     # Relación con Store
     store_id = Column(Integer, ForeignKey("stores.id"), nullable=True)
     
