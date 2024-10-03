@@ -11,8 +11,8 @@ app.use(express.json());
 //-----------------------------User--------------------------------------------------
 app.post('/create-user', async (req: Request, res: Response) => {
     try {
-        const { username, password, firstName, lastName, enabled, storeId } = req.body;
-        const user = await client.createUser(username, password, firstName, lastName, enabled, storeId);
+        const { username, password, firstName, lastName, enabled,isCentral, storeId } = req.body;
+        const user = await client.createUser(username, password, firstName, lastName, enabled, isCentral, storeId);
         res.status(201).json(user);
     } catch (error) {
         console.error(error);
@@ -183,7 +183,7 @@ app.get('/search-user-by-store', async (req: Request, res: Response) => {
     }
 });
 
-// Agregar el updateStore monstruo del lagonés. 
+// Agregar el updateStore monstruo del lago ness. 
 
 
 
@@ -290,7 +290,6 @@ app.post('/create-product-store', async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error creating ProductStore' });
     }
 });
-
 
 
 

@@ -29,6 +29,7 @@ class UserService(user_pb2_grpc.UserService):
             first_name=request.first_name,
             last_name=request.last_name,
             enabled=request.enabled,
+            is_central = request.is_central,
             store_id=request.store_id
         )
     
@@ -42,6 +43,7 @@ class UserService(user_pb2_grpc.UserService):
                     first_name=user.first_name,
                     last_name=user.last_name,
                     enabled=user.enabled,
+                    is_central = user.is_central,
                     store_id=user.store_id,
             )
         except ValueError as e:

@@ -1,3 +1,4 @@
+import pymysql
 from sqlalchemy.orm import Session
 from server.entities.user import User
 
@@ -6,28 +7,42 @@ class UserRepository:
     def __init__(self, session: Session):
         self.session = session
 
-    def create_user(self, username: str, password: str, first_name: str, last_name: str, enabled: bool, store_id: int) -> User:
-        # Handle case where store_id is zero or invalid by setting it to None
+    def create_user(self, username: str, password: str, first_name: str, last_name: str,
+                enabled: bool, is_central: bool, store_id: int) -> User:
+    # Handle case where store_id is zero or invalid by setting it to None
         store_id = None if store_id <= 0 else store_id
 
-        # Create a new User object
-        user = User(
-            username=username,
-            password=password,
-            first_name=first_name,
-            last_name=last_name,
-            enabled=enabled,
-            store_id=store_id
-        )
+        try:
+            # Create a new User object
+            user = User(
+                username=username,
+                password=password,
+                first_name=first_name,
+                last_name=last_name,
+                enabled=enabled,
+                is_central=is_central,
+                store_id=store_id
+            )
 
-        # Add the user to the database session
-        self.session.add(user)
+            # Add the user to the database session
+            self.session.add(user)
 
-        # Commit the changes to the database
-        self.session.commit()
+            # Commit the changes to the database
+            self.session.commit()
 
-        # Return the newly created user
-        return user
+            # Return the newly created user
+            return user
+
+        except pymysql.err.IntegrityError as e:
+            # Rollback the transaction if there's a duplicate entry
+            self.session.rollback()
+            raise ValueError(f"Failed to create user: {str(e)}")
+
+        except Exception as e:
+            # Rollback the transaction for any other exceptions
+            self.session.rollback()
+            raise ValueError(f"An unexpected error occurred: {str(e)}")
+
 
     def search_user(self, username: str) -> User:
         return self.session.query(User).filter(User.username == username).first()
@@ -60,43 +75,43 @@ class UserRepository:
                                username}: {str(e)}")
 
         return user
-    
+
     def get_user_by_id(self, user_id: int) -> User:
         return self.session.query(User).filter(User.id == user_id).first()
 
-    def assign_store_to_user(self,user_id: int, store_code: str):
+    def assign_store_to_user(self, user_id: int, store_code: str):
         from server.repositories.store_repository import StoreRepository
-        
+
         user = self.session.query(User).filter(User.id == user_id).first()
-        
+
         if not user:
             raise ValueError(f"User with id {user_id} not found")
-        
+
         store = StoreRepository(self.session).get_store_by_code(store_code)
-        
+
         if not store:
             raise ValueError(f"Store with code {store_code} not found")
-        
-        user.store_id = store.id 
-        
+
+        user.store_id = store.id
+
         try:
             self.session.commit()
             self.session.refresh(user)
-            
+
         except Exception as e:
             self.session.rollback()
-            raise RuntimeError(f"An error occurred while assigning store to user: {str(e)}")
-        
+            raise RuntimeError(
+                f"An error occurred while assigning store to user: {str(e)}")
+
         return user
 
     def search_users_by_store(self, store_code: str):
         # Primero, buscar el store_id usando el store_code
         from server.repositories.store_repository import StoreRepository
         store = StoreRepository(self.session).get_store_by_code(store_code)
-        
+
         if not store:
             raise ValueError(f"No store found with code: {store_code}")
-        
+
         # Luego, buscar los usuarios por store_id
         return self.session.query(User).filter(User.store_id == store.id).all()
-

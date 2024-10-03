@@ -16,6 +16,10 @@ class CreateUserUseCase:
             raise ValueError("First name is required")
         if not request.last_name:
             raise ValueError("Last name is required")
+        
+        if request.is_central is None:
+            request.is_central = False
+
 
         if request.store_id is not None and request.store_id < 0:
             raise ValueError("Store ID must be a non-negative integer or None")
@@ -27,6 +31,7 @@ class CreateUserUseCase:
                 first_name=request.first_name,
                 last_name=request.last_name,
                 enabled=request.enabled,
+                is_central=request.is_central,
                 store_id=request.store_id  # Handle None values in repository
             )
             return user
