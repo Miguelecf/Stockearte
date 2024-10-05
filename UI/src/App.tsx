@@ -1,11 +1,18 @@
 import React from "react";
-import Login from "./components/Login";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Login from "./ui/pages/Login";
+import Dashboard from "./ui/pages/Dashboard";
+import NotFound from "./ui/pages/NotFound";
 
 const App: React.FC = () => {
   return (
-    <div>
-      <Login />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Router>
   );
 };
 
