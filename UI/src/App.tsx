@@ -5,6 +5,7 @@ import NotFound from "./ui/pages/NotFound";
 import CentralDashboard from "./ui/pages/central/CentralDashboard";
 import StoreDashboard from "./ui/pages/central/store/StoreDashboard";
 import ProductDashboard from "./ui/pages/central/product/ProductDashboard";
+import UserDashboard from "./ui/pages/central/user/UserDashboard";
 
 const App: React.FC = () => {
   return (
@@ -13,6 +14,7 @@ const App: React.FC = () => {
         <Route path="/" element={<Login />} />
         <Route path="/central-dashboard/" element={<CentralDashboard />} />
         <Route path="/central-dashboard/stores" element={<StoreDashboard />} />
+        <Route path="/central-dashboard/users" element={<UserDashboard />} />
         <Route
           path="/central-dashboard/products"
           element={<ProductDashboard />}

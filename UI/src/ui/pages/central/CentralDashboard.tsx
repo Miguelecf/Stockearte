@@ -11,7 +11,7 @@ const CentralDashboard = () => {
             <Link to="/central-dashboard/stores">Gestión de Tiendas</Link>
           </li>
           <li>
-            <Link to="/central/user-management">Gestión de Usuarios</Link>
+            <Link to="/central-dashboard/users">Gestión de Usuarios</Link>
           </li>
           <li>
             <Link to="/central-dashboard/products">Gestión de Productos</Link>

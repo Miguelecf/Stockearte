@@ -16,8 +16,10 @@ export interface Product {
 }
 
 export interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
+  username: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  enabled: boolean;
+  isCentral: boolean;
 }
