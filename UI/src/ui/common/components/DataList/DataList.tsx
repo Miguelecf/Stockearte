@@ -8,7 +8,7 @@ interface DataListProps<T> {
   columns: (keyof T)[];
   type?: "table" | "card";
   onAdd: () => void;
-  onDelete: (item: T) => void;
+  onSwitchState: (item: T) => void;
   onFilter?: (filter: string) => void;
 }
 
@@ -17,7 +17,7 @@ const DataList = <T,>({
   columns,
   type = "table",
   onAdd,
-  onDelete,
+  onSwitchState,
   onFilter,
 }: DataListProps<T>) => {
   const { filter, handleFilterChange, filteredData } = useDataList<T>({
@@ -37,13 +37,13 @@ const DataList = <T,>({
         <DataListTable
           columns={columns}
           filteredData={filteredData}
-          onDelete={onDelete}
+          onSwitchState={onSwitchState}
         />
       ) : (
         <DataListCards
           columns={columns}
           filteredData={filteredData}
-          onDelete={onDelete}
+          onSwitchState={onSwitchState}
         />
       )}
       <Button onClick={onAdd}>Add New</Button>

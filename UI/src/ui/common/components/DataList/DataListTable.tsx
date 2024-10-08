@@ -10,13 +10,13 @@ import {
 interface DataListTableProps<T> {
   columns: (keyof T)[];
   filteredData: T[];
-  onDelete: (item: T) => void;
+  onSwitchState: (item: T) => void;
 }
 
 const DataListTable = <T,>({
   columns,
   filteredData,
-  onDelete,
+  onSwitchState,
 }: DataListTableProps<T>) => (
   <TableContainer>
     <Table>
@@ -35,7 +35,7 @@ const DataListTable = <T,>({
               <TableCell key={String(column)}>{String(item[column])}</TableCell>
             ))}
             <TableCell>
-              <Button onClick={() => onDelete(item)}>Delete</Button>
+              <Button onClick={() => onSwitchState(item)}>Switch State</Button>
             </TableCell>
           </TableRow>
         ))}

@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./ui/pages/Login";
 import NotFound from "./ui/pages/NotFound";
 import CentralDashboard from "./ui/pages/central/CentralDashboard";
-import StoreDashboard from "./ui/pages/central/StoreDashboard";
+import StoreDashboard from "./ui/pages/central/store/StoreDashboard";
 
 const App: React.FC = () => {
   return (

@@ -3,13 +3,13 @@ import { CardContainer, Card, Button } from "./DataListStyles";
 interface DataListCardsProps<T> {
   columns: (keyof T)[];
   filteredData: T[];
-  onDelete: (item: T) => void;
+  onSwitchState: (item: T) => void;
 }
 
 const DataListCards = <T,>({
   columns,
   filteredData,
-  onDelete,
+  onSwitchState,
 }: DataListCardsProps<T>) => (
   <CardContainer>
     {filteredData.map((item, index) => (
@@ -20,7 +20,7 @@ const DataListCards = <T,>({
             {String(item[column])}
           </div>
         ))}
-        <Button onClick={() => onDelete(item)}>Delete</Button>
+        <Button onClick={() => onSwitchState(item)}>Switch State</Button>
       </Card>
     ))}
   </CardContainer>

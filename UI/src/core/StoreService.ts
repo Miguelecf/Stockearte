@@ -15,6 +15,33 @@ class StoreService {
         return response.data;
       });
   }
+
+  public static async listAllEnabled() {
+    return axiosInstance
+      .get(`/search-store?enabled=true`, {})
+      .then((response) => {
+        return response.data;
+      });
+  }
+
+  public static async listAllDisabled() {
+    return axiosInstance
+      .get(`/search-store?enabled=false`, {})
+      .then((response) => {
+        return response.data;
+      });
+  }
+
+  public static async disableStore(code: string, newState: boolean) {
+    return axiosInstance
+      .post(`/disable-store`, {
+        enabled: newState,
+        code,
+      })
+      .then((response) => {
+        return response.data;
+      });
+  }
 }
 
 export default StoreService;
