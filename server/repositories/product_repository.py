@@ -107,7 +107,8 @@ class ProductRepository:
         unique_code: str = None,
         size: str = None,
         color: str = None,
-    ):
+        enabled: bool = None  # Aceptamos enabled como booleano
+        ):
         # Crear una consulta base
         query = self.session.query(Product)
 
@@ -121,6 +122,10 @@ class ProductRepository:
         if color:
             query = query.filter(Product.color.ilike(f"%{color}%"))
 
+        # Filtro por enabled si se proporciona un valor, incluyendo False
+        if enabled is not None:
+            query = query.filter(Product.enabled == enabled)
+
         # Ejecutar la consulta
         products = query.all()
 
@@ -130,6 +135,7 @@ class ProductRepository:
 
         # Devolver los productos encontrados
         return products
+
 
     def disable_product(self, unique_code: str, enabled: bool) -> Product:
         # Obtener el producto por su código único
