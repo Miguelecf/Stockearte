@@ -103,5 +103,4 @@ class StoreService(store_pb2_grpc.StoreService):
             store_response.state = store.state
             store_response.enabled = store.enabled
 
-        print("storeservice 2", response)
         return response

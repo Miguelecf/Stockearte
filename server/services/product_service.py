@@ -86,24 +86,21 @@ class ProductService(product_pb2_grpc.ProductService):
             # Consider providing a clearer error message
             return product_pb2.ProductResponse()
 
-    def SearchProduct(self, request, context) -> product_pb2.ProductListResponse:
+    def SearchProduct(self, request, context):
         # Extraer parámetros de búsqueda del request
         name = request.name if request.name else None
         unique_code = request.unique_code if request.unique_code else None
         size = request.size if request.size else None
         color = request.color if request.color else None
-
-        # Validar que al menos un parámetro de búsqueda haya sido proporcionado
-        if all(param is None for param in [name, unique_code, size, color]):
-            context.abort(grpc.StatusCode.INVALID_ARGUMENT,
-                          "At least one search parameter must be provided.")
+        enabled = request.enabled  # Tomamos directamente el valor de enabled, que será True o False
 
         # Llamar al repositorio para buscar productos
         found_products = self.product_repository.search_product(
             name=name,
             unique_code=unique_code,
             size=size,
-            color=color
+            color=color,
+            enabled=enabled  # Pasamos el valor de enabled, que será True o False
         )
 
         # Mapear los productos encontrados a la respuesta gRPC
@@ -118,6 +115,7 @@ class ProductService(product_pb2_grpc.ProductService):
             product_response.enabled = product.enabled
 
         return response
+
     
     
     def UpdateProduct(self, request: product_pb2.UpdateProductRequest, context: grpc.ServicerContext) -> product_pb2.Product:

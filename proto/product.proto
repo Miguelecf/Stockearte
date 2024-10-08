@@ -68,4 +68,5 @@ message SearchProductRequest {
     string unique_code = 2;
     string size = 3;
     string color = 4;
+    bool enabled = 5;
 }

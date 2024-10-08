@@ -278,25 +278,29 @@ app.post("/update-product", async (req: Request, res: Response) => {
 });
 
 app.get("/search-product", async (req: Request, res: Response) => {
-  console.log(req.query);
-  try {
-    // Extraemos los posibles parámetros de búsqueda
-    const { name, uniqueCode, size, color } = req.query;
+    console.log(req.query);
+    try {
+      // Extraemos los posibles parámetros de búsqueda, incluyendo enabled
+      const { name, uniqueCode, size, color, enabled } = req.query;
 
-    // Llamamos a la función searchProduct pasando los valores extraídos de la query
-    const products = await client.searchProduct(
-      name as string,
-      uniqueCode as string,
-      size as string,
-      color as string
-    );
+      // Convertimos 'enabled' a booleano si está presente en la query
+      const enabledBoolean = enabled ? (enabled === "true") : undefined;
 
-    // Devolvemos la lista de productos encontrados
-    res.status(200).json(products);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error searching for products" });
-  }
+      // Llamamos a la función searchProduct pasando los valores extraídos de la query
+      const products = await client.searchProduct(
+        name as string,
+        uniqueCode as string,
+        size as string,
+        color as string,
+        enabledBoolean // Incluimos el campo enabled en la búsqueda
+      );
+
+      // Devolvemos la lista de productos encontrados
+      res.status(200).json(products);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error searching for products" });
+    }
 });
 
 //-----------------------------PRODUCT_STORE--------------------------------------------------
