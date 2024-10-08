@@ -39,16 +39,24 @@ app.post("/create-user", async (req: Request, res: Response) => {
 });
 
 app.post("/login", async (req: Request, res: Response) => {
-  // Fixed async syntax
+  const { username, password } = req.body;
+
   try {
-    const { username, password } = req.body; // Extract username and password
-    const message = await client.loginUser(username, password);
-    res.status(200).json({ message }); // Send login success message
+      const loginResponse = await client.loginUser(username, password);
+      
+      // Aquí se puede crear un nuevo objeto que contenga el mensaje y la respuesta del login
+      const responseWithMessage = {
+          message: "Login successful",
+          user: loginResponse  // Esto contiene todos los detalles del usuario
+      };
+
+      res.status(200).json(responseWithMessage); // Enviamos la respuesta completa
   } catch (error) {
-    console.error(error);
-    res.status(401).json({ message: "Login failed" }); // Return 401 for login failure
+      console.error(error);
+      res.status(500).json({ message: "Login failed" });
   }
 });
+
 
 app.get("/search-user", async (req: Request, res: Response) => {
   console.log(req.query);

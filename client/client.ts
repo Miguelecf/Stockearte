@@ -62,8 +62,8 @@ class Client {
         });
     }
 
-    async loginUser(username: string, password: string): Promise<string> {
-        return new Promise((resolve, reject) => { // Use curly braces, not parentheses
+    async loginUser(username: string, password: string): Promise<any> {  // Cambia Promise<string> a Promise<any> para que acepte cualquier objeto
+        return new Promise((resolve, reject) => {
             this.userClient.Login(
                 { username, password },
                 (error: grpc.ServiceError | null, response: any) => {
@@ -71,7 +71,7 @@ class Client {
                         console.error("Error in gRPC call:", error);
                         reject(new Error("Login failed!"));
                     } else {
-                        resolve(`User ${response.username} logged in successfully!`);
+                        resolve(response);  // Devolver solo la respuesta
                     }
                 }
             );

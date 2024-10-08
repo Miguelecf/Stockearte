@@ -65,25 +65,24 @@ class UserService(user_pb2_grpc.UserService):
             user = login_user_case.execute(request)
             
             # Return the user information if login is successful
-            return user_pb2.User(
-                id=user.id,
-                username=user.username,
-                password=user.password,  # Remember this is plain text for now
+            return user_pb2.LoginResponse(
+                username=user.username, # Remember this is plain text for now
                 first_name=user.first_name,
                 last_name=user.last_name,
                 enabled=user.enabled,
+                is_central = user.is_central,
                 store_id=user.store_id
             )
         except ValueError as e:
             # Handle invalid login attempts (e.g., wrong username/password)
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details(str(e))
-            return user_pb2.User()
+            return user_pb2.LoginResponse()
         except Exception as e:
             # Handle any unexpected errors
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"An unexpected error occurred: {str(e)}")
-            return user_pb2.User()
+            return user_pb2.LoginResponse()
         
     def SearchUser(self, request, context):
         # Aquí implementamos la búsqueda del usuario

@@ -6,7 +6,7 @@ package user;
 service UserService{
     
     rpc CreateUser(CreateUserRequest) returns (User){}
-    rpc Login(LoginRequest) returns (User){}
+    rpc Login(LoginRequest) returns (LoginResponse){}
     rpc UpdateUser(UpdateUserRequest) returns (User){}
     rpc SearchUser(SearchUserRequest) returns (User){}
     rpc AssignStoreToUser(AssignStoreToUserRequest) returns (User){}
@@ -57,6 +57,16 @@ message AssignStoreToUserRequest{
 message LoginRequest{
     string username = 1;
     string password = 2;
+}
+
+message LoginResponse{
+    string username = 1; // Note: you may want to use a more secure approach for storing passwords
+    string first_name = 2;
+    string last_name = 3;
+    bool enabled = 4;
+    bool is_central = 5;
+    // Relación con Store
+    int32 store_id = 6;
 }
 
 message SearchUserByStoreRequest{
