@@ -4,6 +4,7 @@ import Modal from "../../../common/components/Modal";
 import ContentModal from "./ContentModal";
 import { User } from "../../../../core/domain/entities";
 import useUsers from "./useUsers";
+import DashboardNav from "../../../common/components/DashboardNav";
 
 const UserDashboard: React.FC = () => {
   const { users, addUser, switchStateUser, loading, error } = useUsers();
@@ -28,6 +29,7 @@ const UserDashboard: React.FC = () => {
   return (
     <div>
       <h1>Users Dashboard</h1>
+      <DashboardNav />
       <DataList
         data={users}
         columns={["username", "firstName", "lastName", "enabled", "isCentral"]}

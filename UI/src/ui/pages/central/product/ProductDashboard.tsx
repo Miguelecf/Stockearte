@@ -4,6 +4,7 @@ import Modal from "../../../common/components/Modal";
 import ContentModal from "./ContentModal";
 import { Product } from "../../../../core/domain/entities";
 import useProducts from "./useProducts";
+import DashboardNav from "../../../common/components/DashboardNav";
 
 const ProductDashboard: React.FC = () => {
   const { products, addProduct, switchStateProduct, loading, error } =
@@ -29,6 +30,7 @@ const ProductDashboard: React.FC = () => {
   return (
     <div>
       <h1>Products Dashboard</h1>
+      <DashboardNav />
       <DataList
         data={products}
         columns={["name", "uniqueCode", "size", "color", "enabled"]}

@@ -3,6 +3,7 @@ import DataList from "../../../common/components/DataList/DataList";
 import Modal from "../../../common/components/Modal";
 import ContentModal from "./ContentModal";
 import useStores from "./useStores";
+import DashboardNav from "../../../common/components/DashboardNav";
 
 const StoreDashboard: React.FC = () => {
   const { stores, addStore, switchStateStore, loading, error } = useStores();
@@ -26,6 +27,7 @@ const StoreDashboard: React.FC = () => {
   return (
     <div>
       <h1>Stores Dashboard</h1>
+      <DashboardNav />
       <DataList
         data={stores}
         columns={["code", "address", "city", "state", "enabled"]}
