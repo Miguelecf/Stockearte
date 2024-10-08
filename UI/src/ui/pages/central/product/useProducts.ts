@@ -9,8 +9,7 @@ const useProducts = () => {
 
   const getProductListEnabled = async () => {
     try {
-      const { products: productsEnabled } =
-        await ProductService.listAllEnabled();
+      const productsEnabled = await ProductService.listAllEnabled();
       return productsEnabled;
     } catch (error) {
       console.error("Error loading enabled products", error);
@@ -20,8 +19,7 @@ const useProducts = () => {
 
   const getProductListDisabled = async () => {
     try {
-      const { products: productsDisabled } =
-        await ProductService.listAllDisabled();
+      const productsDisabled = await ProductService.listAllDisabled();
       return productsDisabled.map((product: Product) => ({
         ...product,
         enabled: false,
