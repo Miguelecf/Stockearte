@@ -7,10 +7,12 @@ export interface Store {
 }
 
 export interface Product {
-  id: string;
   name: string;
-  price: number;
-  stock: number;
+  uniqueCode: string;
+  size: string;
+  imageUrl: string;
+  color: string;
+  enabled: boolean;
 }
 
 export interface User {
