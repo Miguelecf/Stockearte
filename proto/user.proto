@@ -11,18 +11,21 @@ service UserService{
     rpc SearchUser(SearchUserRequest) returns (User){}
     rpc AssignStoreToUser(AssignStoreToUserRequest) returns (User){}
     rpc SearchUserByStore(SearchUserByStoreRequest) returns (UserListResponse){}
+    rpc ListUsers(UserListRequest) returns (UserListResponse){}
 }
 
 message User{
     int32 id = 1;
     string username = 2;
-    string password = 3;  // Note: you may want to use a more secure approach for storing passwords
+    string password = 3; 
     string first_name = 4;
     string last_name = 5;
     bool enabled = 6;
     bool is_central = 7;
-    // Relación con Store
     int32 store_id = 8;
+}
+
+message UserListRequest { //Whitout password
 }
 
 message UpdateUserRequest{

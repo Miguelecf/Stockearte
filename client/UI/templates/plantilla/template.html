@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head th:fragment="head">
+	<meta charset="UTF-8">
+	<title>Inicio</title> 
+	<link rel="icon" type="image/png" href="/static/image/unla1.ico">
+	<link rel="stylesheet" th:href="@{/css/cdn.jsdelivr.net_npm_bootstrap@5.3.0_dist_css_bootstrap.min.css}">
+</head>
+
+<body>
+	<!-- BARRA DE NAVEGACION -->
+	<header th:fragment="header">
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+			<div class="container">
+				<a class="navbar-brand" th:href="@{/home}">
+					<strong >Unla</strong>
+				</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+					data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+					aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<!--  ENLACES DEL MENU  -->
+				<div class="collapse navbar-collapse" id="navbarSupportedContent">
+					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+						<li class="nav-item"><a class="nav-link" th:href="@{/evento/listar}">Logs</a></li>
+						<li class="nav-item"><a class="nav-link" th:href="@{/evento/newevento}">Eventos</a></li>
+						<li class="nav-item"><a class="nav-link" th:href="@{/dispositivo/listar}">Dispositivos</a></li> <!-- Visualizas TODOS los sensores-->
+						<li class="nav-item"><a class="nav-link" th:href="@{/dispositivo/newsluz}">Sensor luz</a></li>	<!--  Agregas los de luz-->
+						<li class="nav-item"><a class="nav-link" th:href="@{/dispositivo/newsproxi}">Sensor Proximidad</a></li> 			<!--  Agregas los de proximidad-->
+					</ul>
+				</div>
+			</div>
+			<div class="container1">
+				<a class="navbar-brand navbar-dark bg-red" th:href="@{/logout}">
+					<strong >Cerrar sesion</strong>
+				</a>
+			</div>
+		</nav>
+	</header>
+
+	<!-- CONTENIDO -->
+	<div class="container"></div>
+	<!-- PIE DE PAGINA -->
+<footer th:fragment="footer" class="bg-dark text-center text-white fixed-bottom">
+	<div class="container">
+		<p>Grupo 5 - 2023.</p>
+	</div>
+	<script type="text/javascript"
+		th:src="@{/js/cdn.jsdelivr.net_npm_bootstrap@5.3.0_dist_js_bootstrap.bundle.min.js}"></script>
+	<script type="text/javascript"
+		th:src="@{/js/cdn.jsdelivr.net_npm_@popperjs_core@2.11.8_dist_umd_popper.min.js}"></script>
+	<script type="text/javascript"
+		th:src="@{/js/cdn.jsdelivr.net_npm_bootstrap@5.3.0_dist_js_bootstrap.min.js}"></script>
+</footer>
+</body>
+</html>

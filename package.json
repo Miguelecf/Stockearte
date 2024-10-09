@@ -1,0 +1,14 @@
+{
+  "name": "stockearte",
+  "version": "1.0.0",
+  "description": "First, execute the following SQL script to set up the database schema:",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ari",
+  "license": "ISC",
+  "dependencies": {
+    "stockearte": "file:"
+  }
+}

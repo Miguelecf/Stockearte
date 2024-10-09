@@ -11,14 +11,34 @@ create schema store_system;
 use store_system;
 ```
 
+### 3.Check python version
+
+python --version
+
 ### 2. Install Python Dependencies(SERVER)
 
-Install the required Python packages listed in `requirements.txt`:
+python get-pip.py 
 
-```bash
+If you don't have it, run this command
+curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+
+Comment the protoc == 0.0.2 in requirements.txt
+
+validate that we have installed protoc before with 
+pip --version
+
+If not installed, run: pip install protoc
+
+Install the required Python packages listed in `requirements.txt`
+
 cd server
 pip install -r requirements.txt
-```
+
+pip install protobuf
+
+pip install cryptography
+
+pip install python-dotenv
 
 ### 3. Set Up the Database
 
@@ -34,21 +54,22 @@ Define the following environment variables in a `.env` file at the root of the s
 
 ```bash
 DB_USER=root
-DB_PASSWORD=1612
+DB_PASSWORD=root
 DB_HOST=localhost
 DB_PORT=3306
 DB_NAME=store_system
 ```
 
-After updating, run the following command to create the necessary database tables:
-
-- pip install cryptography
-- pip install python-dotenv
-
 ```bash
 cd /stockearte
 python -m server.utils.create_db
 ```
+
+In case you do not create the tables, run this command with the path where we have the python path
+//Poner ubicacion de la carpeta
+$env:PYTHONPATH="C:\Users\Ariel Colaluci\Stockearte" 
+python create_db.py
+
 
 ### 4. Generate gRPC Code
 

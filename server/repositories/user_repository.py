@@ -115,3 +115,6 @@ class UserRepository:
 
         # Luego, buscar los usuarios por store_id
         return self.session.query(User).filter(User.store_id == store.id).all()
+
+    def list_users(self): # Obtener todos los usuarios sin aplicar ningún filtro
+        return self.session.query(User).all()

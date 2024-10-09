@@ -221,5 +221,25 @@ class UserService(user_pb2_grpc.UserService):
             response.users.append(user_message)  # Asumiendo que 'users' es una lista en UserListResponse
 
         return response
+    
+    def ListUsers(self, request: user_pb2.UserListRequest, context: grpc.ServicerContext) -> user_pb2.UserListResponse:
+        users = self.user_repository.list_users()
+        if not users:
+            raise ValueError("No users found.")
+        
+        response = user_pb2.UserListResponse()
+        for user in users:
+            user_message = user_pb2.User(
+                id=user.id,
+                username=user.username,
+                password= user.password,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                enabled=user.enabled,
+                is_central=user.is_central,
+                store_id=user.store_id,
+            )
+            response.users.append(user_message)
+        return response
 
             

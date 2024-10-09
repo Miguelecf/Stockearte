@@ -71,8 +71,22 @@ app.get("/search-user", async (req: Request, res: Response) => {
   }
 });
 
+app.get("/list-users", async (req: Request, res: Response) => {
+  try {
+    const users = await client.listUsers();
+    if (!users || users.length === 0) {
+      return res.status(404).json({ message: "No users found" });
+    }
+    res.status(200).json({ users });
+  } catch (error) {
+    console.error("Error en el endpoint:", error);
+    res.status(500).json({ message: "Error listing users" });
+  }
+});
+
+
 app.post("/update-user", async (req: Request, res: Response) => {
-  console.log("Index.ts -> Request body", req.body);
+
   try {
     const { username, password, firstName, lastName, enabled } = req.body;
 
