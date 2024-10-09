@@ -8,8 +8,6 @@ class SearchStoreUseCase:
         self.store_repository = store_repository
 
     def execute(self, code: str = None, enabled: bool = None) -> list[Store]:
-        print("search_storepy 1 ", code, enabled)
-
         if enabled is None:
             enabled = False
 
@@ -17,5 +15,4 @@ class SearchStoreUseCase:
             code=code,
             enabled=enabled
         )
-        print("search_storepy 2 ", code, enabled)
         return stores  # Devolver la lista de stores encontrados
