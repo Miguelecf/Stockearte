@@ -1,4 +1,4 @@
- -- BDD
+-- BDD
 use store_system;
 
 -- INSERTS
