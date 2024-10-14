@@ -12,7 +12,7 @@ DB_HOST = os.getenv("DB_HOST")
 DB_PORT = os.getenv("DB_PORT", "3306") 
 DB_NAME = os.getenv("DB_NAME")
 
-DATABASE_URL = "mysql+pymysql://root:root@localhost:3306/store_system"
+DATABASE_URL = "mysql+pymysql://root:1612@localhost:3306/store_system"
 #DATABASE_URL = "mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 engine = create_engine(DATABASE_URL)
 
