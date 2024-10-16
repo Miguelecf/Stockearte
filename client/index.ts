@@ -355,6 +355,12 @@ app.post("/create-product-store", async (req: Request, res: Response) => {
   }
 });
 
+//-----------------------------ORDER--------------------------------------------
+
+
+
+
+
 const port = 3000;
 app.listen(port, () => {
   console.log(`Server started on port ${port}`); // Added back the missing console.log line

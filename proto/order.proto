@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+package order;
+
+// Servicio para manejar las órdenes de compra
+service OrderService {
+    rpc CreateOrder(OrderRequest) returns (OrderResponse);
+    rpc GetOrder(GetOrderRequest) returns (GetOrderResponse);
+    rpc UpdateOrder(UpdateOrderRequest) returns (OrderResponse);
+    rpc DeleteOrder(DeleteOrderRequest) returns (google.protobuf.Empty);
+}
+
+
+enum OrderStatus{
+    SOLICITADA = 0;
+    ACEPTADA = 1;
+    RECHAZADA = 2;
+    RECIBIDA = 3;
+}
+
+
+message Order{
+    int32 id = 1;
+    OrderStatus status = 2;
+    string observations = 3;
+    string dispatch_order = 4;
+    google.protobuf.Timestamp request_date = 5;
+    google.protobuf.Timestamp received_date = 6;
+    int32 store_id = 7; 
+    repeated OrderItem items = 8;
+}
+
+message OrderRequest{
+    OrderStatus status = 1;
+    string observations = 2;
+    string dispatch_order = 3;
+    google.protobuf.Timestamp request_date = 4;
+    google.protobuf.Timestamp received_date = 5;
+    int32 store_id = 6; 
+    repeated OrderItem items = 7;
+}
+
+message OrderResponse {
+    Order order = 1; // Orden creada
+}
+
+message OrderItem{
+    int32 id= 1;
+    int32 order_id = 2;
+    string item_code = 3;
+    string color = 4;
+    string size = 5;
+    int32 quantity = 6;
+}
+
+message OrderItemRequest{
+    int32 order_id = 1;
+    string item_code = 2;
+    string color = 3;
+    string size = 4;
+    int32 quantity = 5;
+}
+
+message GetOrderRequest {
+    int64 id = 1; // ID de la orden a obtener
+}
+
+message GetOrderResponse{
+    Order order = 1; // Orden obtenida
+}
+
+// Mensaje para actualizar una orden
+message UpdateOrderRequest {
+    int64 id = 1; // ID de la orden a actualizar
+    OrderStatus status = 2; // Nuevo estado
+    string observations = 3; // Nuevas observaciones
+    string dispatch_order = 4; // Nuevo código de orden de despacho
+}
+
+// Mensaje para eliminar una orden
+message DeleteOrderRequest {
+    int64 id = 1; // ID de la orden a eliminar
+}

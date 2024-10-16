@@ -35,7 +35,7 @@ class Client {
         this.productStoreClient = new productStoreProto.product_store.ProductStoreService(host, grpc.credentials.createInsecure());
     }
 
-    //-----------------------------------------------USER-------------------------------------------
+//-----------------------------------------------USER-------------------------------------------
 
     async createUser(username: string, password: string, firstName: string, lastName: string,
         enabled: boolean, isCentral: boolean, storeId?: number): Promise<string> {
@@ -172,7 +172,7 @@ class Client {
     
 
 
-    //-----------------------------------------------STORE-------------------------------------------
+//-----------------------------------------------STORE-------------------------------------------
     async createStore(code: string, address: string, city: string, state: string, enabled: boolean): Promise<any> {
         // Validar código de la tienda
         if (!/^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{3,50}$/.test(code)) {
@@ -239,7 +239,7 @@ class Client {
 
 
 
-    //-----------------------------------------------PRODUCT-------------------------------------------
+//-----------------------------------------------PRODUCT-------------------------------------------
 
     async createProduct(name: string, size: string, imageUrl: string, color: string, enabled: boolean): Promise<any> {
         return new Promise((resolve, reject) => {
@@ -323,7 +323,7 @@ class Client {
         });
     }
 
-    //-----------------------------PRODUCT_STORE--------------------------------------------------
+//-----------------------------PRODUCT_STORE--------------------------------------------------
     async createProductStore(storeCode?: string, productCode?: string, stock?: number, enabled?: boolean): Promise<any> {
         console.log("client.ts ---> ", storeCode, productCode, stock, enabled)
         return new Promise((resolve, reject) => {
@@ -347,5 +347,8 @@ class Client {
 
 
 }
+
+//-----------------------------ORDER--------------------------------------------
+
 
 export default Client;
