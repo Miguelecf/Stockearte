@@ -17,14 +17,14 @@ python --version
 
 ### 2. Install Python Dependencies(SERVER)
 
-python get-pip.py 
+python get-pip.py
 
 If you don't have it, run this command
 curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 
 Comment the protoc == 0.0.2 in requirements.txt
 
-validate that we have installed protoc before with 
+validate that we have installed protoc before with
 pip --version
 
 If not installed, run: pip install protoc
@@ -67,9 +67,8 @@ python -m server.utils.create_db
 
 In case you do not create the tables, run this command with the path where we have the python path
 //Poner ubicacion de la carpeta
-$env:PYTHONPATH="C:\Users\Ariel Colaluci\Stockearte" 
+$env:PYTHONPATH="C:\Users\Ariel Colaluci\Stockearte"
 python create_db.py
-
 
 ### 4. Generate gRPC Code
 
@@ -113,6 +112,28 @@ python -m server.grpc.grpc_server
    ```
 
 This will start the TypeScript client, which will connect to the gRPC server running on your machine.
+
+### 7. Set Up and Run the UI
+
+1. **Navigate to the client directory:**
+
+   ```bash
+   cd UI
+   ```
+
+2. **Install the required Node.js packages:**
+
+   Ensure that you have Node.js(node v.21) and npm installed. Then, install the dependencies listed in `package.json`:
+
+   ```bash
+   npm install
+   ```
+
+3. **Start the client:**
+
+   ```bash
+   npm run dev
+   ```
 
 ### Notes
 

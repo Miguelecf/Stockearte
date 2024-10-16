@@ -2,17 +2,27 @@ import { Link } from "react-router-dom";
 import { styled } from "styled-components";
 
 const CentralDashboard = () => {
+  const isCentral = JSON.parse(localStorage.getItem("isCentral") as string);
+
   return (
     <Container>
       <h1>Dashboard Casa Central</h1>
       <nav>
         <ul>
+          {isCentral && (
+            <>
+              <li>
+                <Link to="/central-dashboard/stores">Gestión de Tiendas</Link>
+              </li>
+              <li>
+                <Link to="/central-dashboard/users">Gestión de Usuarios</Link>
+              </li>
+            </>
+          )}
           <li>
-            <Link to="/central-dashboard/stores">Gestión de Tiendas</Link>
+            <Link to="/">Logout</Link>
           </li>
-          <li>
-            <Link to="/central-dashboard/users">Gestión de Usuarios</Link>
-          </li>
+
           <li>
             <Link to="/central-dashboard/products">Gestión de Productos</Link>
           </li>

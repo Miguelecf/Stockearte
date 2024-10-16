@@ -35,7 +35,11 @@ const DataListTable = <T,>({
               <TableCell key={String(column)}>{String(item[column])}</TableCell>
             ))}
             <TableCell>
-              <Button onClick={() => onSwitchState(item)}>Switch State</Button>
+              {onSwitchState && (
+                <Button onClick={() => onSwitchState(item)}>
+                  Switch State
+                </Button>
+              )}
             </TableCell>
           </TableRow>
         ))}

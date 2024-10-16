@@ -37,11 +37,9 @@ class UserService {
   }
 
   public static async listAllEnabled() {
-    return axiosInstance
-      .get(`/search-user?enabled=true`, {})
-      .then((response) => {
-        return response.data;
-      });
+    return axiosInstance.get(`/list-users`, {}).then((response) => {
+      return response.data;
+    });
   }
 
   public static async listAllDisabled() {

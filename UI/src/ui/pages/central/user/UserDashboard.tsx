@@ -35,7 +35,7 @@ const UserDashboard: React.FC = () => {
         columns={["username", "firstName", "lastName", "enabled", "isCentral"]}
         type="table"
         onAdd={() => setIsModalOpen(true)}
-        onSwitchState={switchStateUser}
+        onSwitchState={undefined}
         onFilter={(filter) => console.log("Filtering by:", filter)}
       />
 

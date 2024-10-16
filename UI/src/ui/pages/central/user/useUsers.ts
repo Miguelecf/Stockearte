@@ -10,22 +10,9 @@ const useUsers = () => {
   const getUserListEnabled = async () => {
     try {
       const { users: usersEnabled } = await UserService.listAllEnabled();
-      return usersEnabled;
+      return usersEnabled.users;
     } catch (error) {
       console.error("Error loading enabled users", error);
-      return [];
-    }
-  };
-
-  const getUserListDisabled = async () => {
-    try {
-      const { users: usersDisabled } = await UserService.listAllDisabled();
-      return usersDisabled.map((user: User) => ({
-        ...user,
-        enabled: false,
-      }));
-    } catch (error) {
-      console.error("Error loading disabled users", error);
       return [];
     }
   };
@@ -34,13 +21,9 @@ const useUsers = () => {
     setLoading(true);
     setError(null);
 
-    const [usersEnabled, usersDisabled] = await Promise.all([
-      getUserListEnabled(),
-      getUserListDisabled(),
-    ]);
+    const users = await getUserListEnabled();
 
-    const combinedUsers = [...usersEnabled, ...usersDisabled] as User[];
-    setUsers(combinedUsers);
+    setUsers(users);
     setLoading(false);
   };
 

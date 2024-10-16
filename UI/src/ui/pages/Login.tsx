@@ -11,7 +11,12 @@ const Login: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await UserService.loginRequest(username, password);
+      const response = await UserService.loginRequest(username, password);
+      if (response?.user?.isCentral)
+        localStorage.setItem(
+          "isCentral",
+          JSON.stringify(response?.user?.isCentral)
+        );
 
       alert("Login successful!");
 

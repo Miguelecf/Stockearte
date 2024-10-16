@@ -8,7 +8,7 @@ interface DataListProps<T> {
   columns: (keyof T)[];
   type?: "table" | "card";
   onAdd: () => void;
-  onSwitchState: (item: T) => void;
+  onSwitchState?: (item: T) => void;
   onFilter?: (filter: string) => void;
 }
 
