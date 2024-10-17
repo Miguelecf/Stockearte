@@ -356,8 +356,19 @@ app.post("/create-product-store", async (req: Request, res: Response) => {
 });
 
 //-----------------------------ORDER--------------------------------------------
+app.post("/create-order", async (req: Request, res: Response) => {
+  try {
+    const { storeId, observations, dispatchOrder } = req.body;
 
+    const requestDate = new Date(); // Obtiene la fecha actual
 
+    const order = await client.createOrder(storeId, observations, dispatchOrder);
+    res.status(201).json(order);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error creating order" });
+  }
+});
 
 
 

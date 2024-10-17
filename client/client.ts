@@ -9,30 +9,33 @@ const userProtoPath = path.resolve(__dirname, "../proto/user.proto");
 const storeProtoPath = path.resolve(__dirname, "../proto/store.proto");
 const productProtoPath = path.resolve(__dirname, "../proto/product.proto");
 const productStoreProtoPath = path.resolve(__dirname, "../proto/product_store.proto")
+const orderProtoPath = path.resolve(__dirname, "../proto/order.proto");
 // Load .proto files
 const userPackageDefinition = protoLoader.loadSync(userProtoPath);
 const storePackageDefinition = protoLoader.loadSync(storeProtoPath);
 const productPackageDefinition = protoLoader.loadSync(productProtoPath);
 const productStorePackageDefinition = protoLoader.loadSync(productStoreProtoPath);
-
+const orderPackageDefinition = protoLoader.loadSync(orderProtoPath);
 
 // Combine package definitions
 const userProto = grpc.loadPackageDefinition(userPackageDefinition) as any;
 const storeProto = grpc.loadPackageDefinition(storePackageDefinition) as any;
 const productProto = grpc.loadPackageDefinition(productPackageDefinition) as any;
 const productStoreProto = grpc.loadPackageDefinition(productStorePackageDefinition) as any;
-
+const orderProto = grpc.loadPackageDefinition(orderPackageDefinition) as any; 
 class Client {
     private userClient: any;
     private storeClient: any;
     private productClient: any;
     private productStoreClient: any;
+    private orderClient: any; 
 
     constructor(host: string) {
         this.userClient = new userProto.user.UserService(host, grpc.credentials.createInsecure());
         this.storeClient = new storeProto.store.StoreService(host, grpc.credentials.createInsecure());
         this.productClient = new productProto.product.ProductService(host, grpc.credentials.createInsecure());
         this.productStoreClient = new productStoreProto.product_store.ProductStoreService(host, grpc.credentials.createInsecure());
+        this.orderClient = new orderProto.order.OrderService (host, grpc.credentials.createInsecure());
     }
 
 //-----------------------------------------------USER-------------------------------------------
@@ -343,12 +346,34 @@ class Client {
                 })
         })
     }
-
-
-
-}
-
 //-----------------------------ORDER--------------------------------------------
-
-
+        async createOrder(
+            storeId: number,
+            observations: string,
+            dispatchOrder: string
+        ): Promise<any> {
+            console.log("client.ts ---> ", storeId, observations, dispatchOrder);
+        
+            return new Promise((resolve, reject) => {
+                const orderRequest = {
+                    storeId,
+                    observations,
+                    dispatchOrder,
+                    requestDate: new Date().toISOString(), // Genera la fecha actual en formato ISO
+                };
+        
+                this.orderClient.CreateOrder(orderRequest, (error: grpc.ServiceError | null, response: any) => {
+                    if (error) {
+                        console.error("Error in gRPC call:", error);
+                        reject(new Error("Order creation failed!"));
+                    } else {
+                        console.log("Received gRPC response:", response);
+                        resolve(response); // Assuming the response contains relevant order information
+                    }
+                });
+            });
+        }
+        
+}
+       
 export default Client;
