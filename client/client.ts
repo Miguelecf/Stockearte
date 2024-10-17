@@ -347,32 +347,35 @@ class Client {
         })
     }
 //-----------------------------ORDER--------------------------------------------
-        async createOrder(
-            storeId: number,
-            observations: string,
-            dispatchOrder: string
-        ): Promise<any> {
-            console.log("client.ts ---> ", storeId, observations, dispatchOrder);
-        
-            return new Promise((resolve, reject) => {
-                const orderRequest = {
-                    storeId,
-                    observations,
-                    dispatchOrder,
-                    requestDate: new Date().toISOString(), // Genera la fecha actual en formato ISO
-                };
-        
-                this.orderClient.CreateOrder(orderRequest, (error: grpc.ServiceError | null, response: any) => {
-                    if (error) {
-                        console.error("Error in gRPC call:", error);
-                        reject(new Error("Order creation failed!"));
-                    } else {
-                        console.log("Received gRPC response:", response);
-                        resolve(response); // Assuming the response contains relevant order information
-                    }
-                });
+    async createOrder(
+        storeId: number,
+        observations: string,
+        dispatchOrder: string
+    ): Promise<any> {
+        console.log("client.ts ---> ", storeId, observations, dispatchOrder);
+
+        return new Promise((resolve, reject) => {
+            const orderRequest = {
+                status: 0, // Siempre establecer como SOLICITADA
+                storeId,
+                observations,
+                dispatchOrder,
+                requestDate: new Date(), // Asegúrate de que esté en formato ISO
+                items: [] // Añade los items si es necesario
+            };
+
+            this.orderClient.CreateOrder(orderRequest, (error: grpc.ServiceError | null, response: any) => {
+                if (error) {
+                    console.error("Error in gRPC call:", error);
+                    reject(new Error("Order creation failed!"));
+                } else {
+                    console.log("Received gRPC response:", response);
+                    resolve(response); // Asumiendo que la respuesta contiene información relevante de la orden
+                }
             });
-        }
+        });
+    }
+
         
 }
        

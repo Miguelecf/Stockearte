@@ -7,11 +7,13 @@ package order;
 
 // Servicio para manejar las órdenes de compra
 service OrderService {
+    
     rpc CreateOrder(OrderRequest) returns (OrderResponse);
     rpc GetOrder(GetOrderRequest) returns (GetOrderResponse);
     rpc AddOrderItems(AddOrderItemsRequest) returns (OrderResponse);
     rpc UpdateOrder(UpdateOrderRequest) returns (OrderResponse);
     rpc DeleteOrder(DeleteOrderRequest) returns (google.protobuf.Empty);
+    
 }
 
 
