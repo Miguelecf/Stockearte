@@ -24,7 +24,7 @@ class OrderRepository:
             status=OrderStatus.SOLICITADA,
             observations=observations,
             dispatch_order=dispatch_order,
-            request_date=request_date,
+            request_date= datetime.now(),
         )
         self.session.add(order)
 

@@ -2,6 +2,8 @@ from repositories.order_repository import OrderRepository
 from server.entities.order import Order
 from server.entities.order_item import OrderItem
 from server.generated.order_pb2 import OrderResponse, OrderItemRequest
+from server.entities.order import OrderStatus
+from datetime import datetime
 
 class CreateOrderUseCase:
     def __init__(self, order_repository: OrderRepository):
@@ -14,23 +16,13 @@ class CreateOrderUseCase:
         if not request.observations:
             raise ValueError("observations es requerido.")
 
-        # Verifica que el estado sea válido
-        if request.status is None or request.status not in OrderStatus:
-            raise ValueError("status es inválido.")
-
-        # Verifica que request_date se pueda convertir
-        try:
-            request_date = request.request_date.ToDateTime()
-        except Exception as e:
-            raise ValueError(f"Error al convertir request_date: {str(e)}")
-        
-        # Crear la orden independientemente de los items
+        # Aquí el status se establece directamente a SOLICITADA
         order = self.order_repository.create_order(
             store_id=request.store_id,
-            status=request.status.name,
+            status=OrderStatus.SOLICITADA.value,  # Establece siempre a SOLICITADA
             observations=request.observations,
             dispatch_order=request.dispatch_order,
-            request_date=request_date
+            request_date=datetime.now()
         )
         
         # Si hay items en la request, los guarda.
@@ -48,3 +40,4 @@ class CreateOrderUseCase:
             self.order_repository.save_order_items(order_items)
 
         return order
+

@@ -2,7 +2,8 @@ import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 import { rejects } from "assert";
 import * as path from "path";
-
+import { Timestamp } from 'google-protobuf/google/protobuf/timestamp_pb'; 
+import { convertTimestampToDate } from './utils/extras'
 
 // Paths to both .proto files
 const userProtoPath = path.resolve(__dirname, "../proto/user.proto");
@@ -354,29 +355,43 @@ class Client {
     ): Promise<any> {
         console.log("client.ts ---> ", storeId, observations, dispatchOrder);
 
-        return new Promise((resolve, reject) => {
-            const orderRequest = {
-                status: 0, // Siempre establecer como SOLICITADA
-                storeId,
-                observations,
-                dispatchOrder,
-                requestDate: new Date(), // Asegúrate de que esté en formato ISO
-                items: [] // Añade los items si es necesario
-            };
+        const orderRequest = {
+            storeId,
+            observations,
+            dispatchOrder,
+            items: [] // Añade los items si es necesario
+        };
 
+        return new Promise((resolve, reject) => {
             this.orderClient.CreateOrder(orderRequest, (error: grpc.ServiceError | null, response: any) => {
                 if (error) {
                     console.error("Error in gRPC call:", error);
-                    reject(new Error("Order creation failed!"));
-                } else {
-                    console.log("Received gRPC response:", response);
-                    resolve(response); // Asumiendo que la respuesta contiene información relevante de la orden
+                    return reject(new Error("Order creation failed!"));
                 }
+                
+                // Asumiendo que la respuesta contiene un objeto `order`
+                console.log("Received gRPC response:", response);
+                const order = response.order;
+
+                // Convierte las fechas a formato legible
+                const requestDate = convertTimestampToDate(order.requestDate);
+                const receivedDate = order.receivedDate && Object.keys(order.receivedDate).length
+                    ? convertTimestampToDate(order.receivedDate)
+                    : null;
+
+                // Crea un objeto más limpio para devolver
+                const cleanOrderResponse = {
+                    id: order.id,
+                    observations: order.observations,
+                    dispatchOrder: order.dispatchOrder,
+                    requestDate,
+                    receivedDate,
+                    storeId: order.storeId,
+                };
+
+                resolve(cleanOrderResponse);
             });
         });
-    }
-
-        
-}
-       
+    }    
+}  
 export default Client;
