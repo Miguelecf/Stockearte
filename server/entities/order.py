@@ -5,10 +5,10 @@ from sqlalchemy.orm import relationship
 import enum
 
 class OrderStatus(enum.Enum):
-    SOLICITADA = 1
-    ACEPTADA = 2
-    RECHAZADA = 3
-    RECIBIDA = 4
+    SOLICITADA = 0
+    ACEPTADA = 1
+    RECHAZADA = 2
+    RECIBIDA = 3
     
 class Order(Base):
     

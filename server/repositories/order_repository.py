@@ -37,6 +37,7 @@ class OrderRepository:
 
         return order
 
+
     def get_order_by_id(self, order_id: int) -> Order:
         try:
             order = self.session.query(Order).filter(Order.id == order_id).first()

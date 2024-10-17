@@ -10,6 +10,7 @@ from server.services import user_service
 from server.services import store_service
 from server.services import product_service
 from server.services import product_store_service
+from server.services import order_service
 
 import grpc
 from generated import user_pb2 as user_pb2
@@ -29,6 +30,7 @@ def serve():
     store_pb2_grpc.add_StoreServiceServicer_to_server(store_service.StoreService(),server)
     product_pb2_grpc.add_ProductServiceServicer_to_server(product_service.ProductService(),server)
     product_store_pb2_grpc.add_ProductStoreServiceServicer_to_server(product_store_service.ProductStoreService(),server)
+    order_pb2_grpc.add_OrderServiceServicer_to_server(order_service.OrderService(),server)
     
     server.add_insecure_port('[::]:50051')
     server.start()

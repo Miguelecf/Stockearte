@@ -1,7 +1,7 @@
 from repositories.order_repository import OrderRepository
 from server.entities.order import Order
 from server.entities.order_item import OrderItem
-from server.generated.order_pb2 import CreateOrder, OrderResponse, OrderItemRequest
+from server.generated.order_pb2 import OrderRequest, OrderResponse, OrderItemRequest
 
 
 class AddOrderItemsUseCase:
