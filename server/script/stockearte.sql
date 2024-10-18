@@ -1,4 +1,5 @@
 -- BDD
+create schema store_system;
 use store_system;
 
 -- INSERTS
@@ -101,3 +102,9 @@ select * from stores;
 
 
 select * from product_store;
+
+
+select * from orders;
+
+
+select * from orders_items;

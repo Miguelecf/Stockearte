@@ -368,6 +368,33 @@ app.post("/create-order", async (req: Request, res: Response) => {
   }
 });
 
+app.post("/update-order", async (req: Request, res: Response) => {
+  try {
+    //const { id } = req.params;
+    const {id, status, observations, dispatchOrder, storeId, items } = req.body;
+
+    // Verifica que el ID de la orden esté presente y conviértelo a número
+    const orderId = parseInt(id, 10);
+   // if (isNaN(orderId)) {
+    //  return res.status(400).json({ message: "Invalid Order ID" });
+   // }
+
+    // Actualiza solo los campos presentes en el request
+    const updatedOrder = await client.updateOrder(orderId, {
+      status: status || undefined,  // Si el campo no está presente, pasa undefined
+      observations: observations || undefined,
+      dispatchOrder: dispatchOrder || undefined,
+      storeId: storeId || undefined,
+      items: items || undefined
+    });
+
+    res.status(200).json(updatedOrder);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error updating order" });
+  }
+});
+
 
 
 const port = 3000;

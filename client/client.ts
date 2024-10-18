@@ -393,5 +393,61 @@ class Client {
             });
         });
     }    
+
+    async updateOrder(
+        id: number,
+        updateFields: {
+            status?: number;
+            observations?: string;
+            dispatchOrder?: string;
+            storeId?: number;
+            items?: any[];  // Ajusta el tipo si es necesario
+        }
+    ): Promise<any> {
+        console.log("client.ts ---> Updating order with ID:", id, updateFields);
+    
+        // Construye el objeto de request con los campos opcionales
+        const orderRequest = {
+            id,
+            ...updateFields  // Solo se envían los campos presentes
+        };
+    
+        return new Promise((resolve, reject) => {
+            this.orderClient.UpdateOrder(orderRequest, (error: grpc.ServiceError | null, response: any) => {
+                if (error) {
+                    console.error("Error in gRPC call:", error);
+                    return reject(new Error("Order update failed!"));
+                }
+    
+                // Asumiendo que la respuesta contiene un objeto `order`
+                console.log("Received gRPC response:", response);
+                const order = response.order;
+    
+                // Convierte las fechas a formato legible
+                const requestDate = convertTimestampToDate(order.requestDate);
+                const receivedDate = order.receivedDate && Object.keys(order.receivedDate).length
+                    ? convertTimestampToDate(order.receivedDate)
+                    : null;
+    
+                // Crea un objeto más limpio para devolver
+                const cleanOrderResponse = {
+                    id: order.id,
+                    status: order.status,
+                    observations: order.observations,
+                    dispatchOrder: order.dispatchOrder,
+                    requestDate,
+                    receivedDate,
+                    storeId: order.storeId,
+                };
+    
+                resolve(cleanOrderResponse);
+            });
+        });
+    }
+    
+
+
+
+
 }  
 export default Client;
