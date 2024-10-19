@@ -10,7 +10,11 @@ from server.use_cases.create_order import CreateOrderUseCase
 from server.use_cases.add_order_items import AddOrderItemsUseCase
 #from datetime import datetime
 from google.protobuf.timestamp_pb2 import Timestamp
+from my_kafka.kafka_producer import send_order_to_kafka
+from server.repositories.store_repository import StoreRepository
+
 class OrderService(order_pb2_grpc.OrderService):
+    
     
     def __init__(self):
         # Iniciar una sesión de la base de datos
@@ -18,20 +22,47 @@ class OrderService(order_pb2_grpc.OrderService):
         self.order_repository = OrderRepository(self.db)
         self.create_order_use_case = CreateOrderUseCase(self.order_repository)
         self.add_order_items_use_case = AddOrderItemsUseCase(self.order_repository)
+        self.store_repository = StoreRepository(self.db)
 
     def CreateOrder(self, request, context):
         print("Received request:", request)  
         try:
+            # Ejecutar la creación de la orden
             order = self.create_order_use_case.execute(request)
             
-            # Crear Timestamps
+            # Crear el timestamp para la fecha de solicitud
             request_date = Timestamp()
             request_date.GetCurrentTime()  # Obtener tiempo actual
 
+            # Verificar y establecer la fecha de recepción
             received_date = Timestamp()
             if order.received_date:
                 received_date.FromDatetime(order.received_date)
+            else:
+                received_date = None  # Asegúrate de que sea None si no hay fecha
 
+            # Llama a la función para enviar el mensaje a Kafka
+            store = self.store_repository.get_store_by_id(order.store_id)
+            store_code = store.code
+            
+            if not store_code:
+                raise ValueError("Store code not found.")
+
+            send_order_to_kafka(
+                store_code=store_code,  # Código de la tienda
+                order_id=order.id,  # ID de la orden
+                items=[{
+                    "id": item.id,
+                    "order_id": item.order_id,
+                    "item_code": item.item_code,
+                    "color": item.color,
+                    "size": item.size,
+                    "quantity": item.quantity
+                } for item in order.items],  # Lista de ítems
+                request_date=request_date.ToDatetime().isoformat()  # Convertir el timestamp a formato ISO
+            )
+
+            # Retorna la respuesta de la orden
             return order_pb2.OrderResponse(
                 order=order_pb2.Order(
                     id=order.id,
@@ -61,6 +92,7 @@ class OrderService(order_pb2_grpc.OrderService):
             context.set_details(f"Error while creating order: {str(e)}")
             context.set_code(grpc.StatusCode.INTERNAL)
             return order_pb2.OrderResponse()
+
 
 
     def AddOrderItems(self, request, context):
