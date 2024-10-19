@@ -1,0 +1,98 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+package order;
+
+// Servicio para manejar las órdenes de compra
+service OrderService {
+    rpc CreateOrder(OrderRequest) returns (OrderResponse);
+    rpc GetOrder(GetOrderRequest) returns (GetOrderResponse);
+    rpc AddOrderItems(AddOrderItemsRequest) returns (OrderResponse);
+    rpc UpdateOrder(UpdateOrderRequest) returns (OrderResponse);
+    rpc DeleteOrder(DeleteOrderRequest) returns (google.protobuf.Empty);
+}
+
+// Enumeración de estados de la orden
+enum OrderStatus {
+    SOLICITADA = 0;
+    ACEPTADA = 1;
+    RECHAZADA = 2;
+    RECIBIDA = 3;
+}
+
+// Mensaje que representa una orden
+message Order {
+    int32 id = 1; // ID de la orden
+    OrderStatus status = 2; // Estado de la orden
+    string observations = 3; // Observaciones
+    string dispatch_order = 4; // Código de orden de despacho
+    google.protobuf.Timestamp request_date = 5; // Fecha de solicitud
+    google.protobuf.Timestamp received_date = 6; // Fecha de recepción
+    int32 store_id = 7; // ID de la tienda
+    repeated OrderItem items = 8; // Lista de items
+}
+
+// Mensaje que representa una solicitud de creación de orden
+message OrderRequest {
+    string observations = 1; // Observaciones
+    string dispatch_order = 2; // Código de orden de despacho
+    google.protobuf.Timestamp request_date = 3; // Fecha de solicitud
+    google.protobuf.Timestamp received_date = 4; // Fecha de recepción
+    int32 store_id = 5; // ID de la tienda
+    repeated OrderItem items = 6; // Lista de items
+}
+
+// Mensaje que representa una respuesta de creación de orden
+message OrderResponse {
+    Order order = 1; 
+}
+
+// Mensaje que representa un item de la orden
+message OrderItem {
+    int32 id = 1; // ID del item
+    int32 order_id = 2; // ID de la orden
+    string item_code = 3; // Código del item
+    string color = 4; // Color del item
+    string size = 5; // Tamaño del item
+    int32 quantity = 6; // Cantidad del item
+}
+
+// Mensaje que representa una solicitud de item
+message OrderItemRequest {
+    int32 order_id = 1; // ID de la orden
+    string item_code = 2; // Código del item
+    string color = 3; // Color del item
+    string size = 4; // Tamaño del item
+    int32 quantity = 5; // Cantidad del item
+}
+
+// Mensaje para agregar items a una orden
+message AddOrderItemsRequest {
+    int32 order_id = 1; // ID de la orden 
+    repeated OrderItemRequest items = 2; // Lista de items a agregar
+}
+
+// Mensaje para obtener una orden
+message GetOrderRequest {
+    int32 id = 1; // ID de la orden a obtener
+}
+
+// Mensaje que representa la respuesta para obtener una orden
+message GetOrderResponse {
+    Order order = 1; // Orden obtenida
+}
+
+// Mensaje para actualizar una orden
+message UpdateOrderRequest {
+    int32 id = 1; // ID de la orden a actualizar
+    OrderStatus status = 2; // Nuevo estado
+    string observations = 3; // Nuevas observaciones
+    string dispatch_order = 4; // Nuevo código de orden de despacho
+}
+
+// Mensaje para eliminar una orden
+message DeleteOrderRequest {
+    int32 id = 1; // ID de la orden a eliminar
+}

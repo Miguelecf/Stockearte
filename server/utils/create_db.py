@@ -1,6 +1,6 @@
 from sqlalchemy.exc import SQLAlchemyError
 from server.entities.base  import Base, SessionLocal, engine
-from server.entities import product_store, user,store,product
+from server.entities import product_store, user,store,product,order,order_item
 
 def init_db():
     try:

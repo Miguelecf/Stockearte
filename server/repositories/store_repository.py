@@ -51,7 +51,15 @@ class StoreRepository:
 
         # Devolver la tienda creada
         return store
-
+    def get_store_by_id(self, store_id: int) -> Store:
+        """Obtiene una tienda por su ID."""
+        store = self.session.query(Store).filter(Store.id == store_id).first()
+        
+        if not store:
+            raise ValueError(f"Store not found for the given id: {store_id}")
+        
+        return store
+    
     def get_store_by_code(self, code: str) -> Store:
         return self.session.query(Store).filter(Store.code == code).first()
 

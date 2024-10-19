@@ -9,7 +9,8 @@ def generate_proto(proto_name):
     proto_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'proto'))  # Ruta al directorio proto
     proto_file = os.path.join(proto_dir, f'{proto_name}.proto')  # Ruta al archivo .proto
     output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'generated'))
-
+    proto_include = os.path.join(os.path.dirname(protoc.__file__), '_proto')
+    
     # Crear el directorio de salida si no existe
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -23,6 +24,7 @@ def generate_proto(proto_name):
     result = protoc.main((
         '',
         f'-I{proto_dir}',
+        f'-I{proto_include}',
         f'--python_out={output_dir}',
         f'--grpc_python_out={output_dir}',
         proto_file,
@@ -40,3 +42,4 @@ generate_proto('user')
 generate_proto('store')
 generate_proto('product')
 generate_proto('product_store')
+generate_proto('order')
