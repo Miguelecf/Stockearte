@@ -3,7 +3,9 @@ from sqlalchemy.orm import Session, Query
 from server.entities.order import Order , OrderStatus
 from server.entities.order_item import OrderItem
 from typing import List
-
+from datetime import datetime
+from server.entities.order import Order, OrderStatus
+from server.entities.order_item import OrderItem
 from datetime import datetime
 
 class OrderRepository:
@@ -11,31 +13,46 @@ class OrderRepository:
         self.session = session 
         
     
+
     def create_order(
-        self,
-        store_id: int,
-        status: str,
-        observations: str,
-        dispatch_order: str,
-        request_date: datetime,
-    ) -> Order:
+    self,
+    store_id: int,
+    status: str,
+    observations: str,
+    dispatch_order: str,
+    request_date: datetime,
+    items: list[OrderItem] = None  # Aceptar una lista de items opcionalmente
+) -> Order:
+    # Crea la instancia de la orden usando los valores proporcionados
         order = Order(
-            store_id=store_id,
-            status=OrderStatus.SOLICITADA,
-            observations=observations,
-            dispatch_order=dispatch_order,
-            request_date= datetime.now(),
-        )
+        store_id=store_id,
+        status=OrderStatus.SOLICITADA,
+        observations=observations,
+        dispatch_order=dispatch_order,
+        request_date=request_date,
+    )
         self.session.add(order)
 
         try:
+            # Intentar guardar la orden en la base de datos
             self.session.commit()
-            self.session.refresh(order)
+            self.session.refresh(order)  # Refresca para obtener la información más reciente de la DB
+
+            # Guardar los OrderItems si se proporcionan
+            if items:
+                for item in items:
+                    item.order_id = order.id  # Asegurar que cada item tenga el ID de la orden
+                    self.session.add(item)
+                
+                # Guardar los items en la base de datos
+                self.session.commit()
+
         except Exception as e:
-            self.session.rollback()
-            raise RuntimeError(f"An error occurred while creating the order: {str(e)}")
+            self.session.rollback()  # Revertir la transacción en caso de error
+            raise RuntimeError(f"An error occurred while creating the order and its items: {str(e)}")
 
         return order
+
 
 
     def get_order_by_id(self, order_id: int) -> Order:

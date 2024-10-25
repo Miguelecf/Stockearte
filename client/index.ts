@@ -358,9 +358,16 @@ app.post("/create-product-store", async (req: Request, res: Response) => {
 //-----------------------------ORDER--------------------------------------------
 app.post("/create-order", async (req: Request, res: Response) => {
   try {
-    const { storeId, observations, dispatchOrder } = req.body;
+    const { storeId, observations, dispatchOrder, items } = req.body;
 
-    const order = await client.createOrder(storeId, observations, dispatchOrder);
+    const formattedItems = Array.isArray(items) ? items.map(item => ({
+      itemCode: item.itemCode,
+      color: item.color,
+      size: item.size,
+      quantity: item.quantity,
+    })) : [];
+
+    const order = await client.createOrder(storeId, observations, dispatchOrder, formattedItems);
     res.status(201).json(order);
   } catch (error) {
     console.error(error);
