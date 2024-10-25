@@ -20,9 +20,10 @@ producer = KafkaProducer(bootstrap_servers='localhost:9092',
                             v).encode('utf-8')
                          )
 
-def send_order_to_kafka(store_code, order_id, items, request_date):
+def send_order_to_kafka(store_code, observations, order_id, items, request_date):
     message = {
         "store_code": store_code,
+        "observations": observations,  # Observaciones aquí
         "order_id": order_id,
         "items": items,
         "request_date": request_date
@@ -42,9 +43,13 @@ def process_order(order, store_repository, request_date):
         # Obtén el código de la tienda
         store_code = store.code  # Aquí obtienes el código como string
 
+        # Extraer las observaciones desde el objeto order
+        observations = order.observations  # Aquí se extraen las observaciones
+
         # Llama a la función de enviar el mensaje a Kafka
         send_order_to_kafka(
-            store_code=store_code,  # Envías el código a Kafka
+            store_code=store_code, 
+            observations=observations,  # Envías las observaciones a Kafka
             order_id=order.id,
             items=[{
                 "id": item.id,
@@ -54,8 +59,9 @@ def process_order(order, store_repository, request_date):
                 "size": item.size,
                 "quantity": item.quantity
             } for item in order.items],
-            request_date=request_date.ToDatetime().isoformat()
+            request_date=request_date.ToDatetime().strftime("%Y-%m-%d %H:%M:%S")  # Formato amigable para la fecha
         )
 
     except ValueError as e:
-        print(f"Error: {str(e)}")  # Manejo de errores
+        print(f"Error: {str(e)}")
+

@@ -50,6 +50,7 @@ class OrderService(order_pb2_grpc.OrderService):
 
             send_order_to_kafka(
                 store_code=store_code,  # Código de la tienda
+                observations=order.observations,
                 order_id=order.id,  # ID de la orden
                 items=[{
                     "id": item.id,
