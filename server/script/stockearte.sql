@@ -29,7 +29,7 @@ INSERT INTO stores (id, code, address, city, state, enabled) VALUES ('999','T999
 
 -- USERS
 
-INSERT INTO USERS VALUES (1,'admin ','admin ','Jhon ','Smith ',true ,true,999);
+INSERT INTO USERS VALUES (1,'admin','admin','Jhon','Smith',true ,true,999);
 INSERT INTO USERS VALUES (2,'normal','normal','Peter ','Jones',true ,false,4);
 INSERT INTO USERS VALUES (3,'storecenter','storecenter','Christina ','Taylor',true,true ,2);
 INSERT INTO USERS VALUES (4,'store1','store1','Paul ','Brownfalse',true,false,9);
