@@ -351,15 +351,21 @@ class Client {
     async createOrder(
         storeId: number,
         observations: string,
-        dispatchOrder: string
+        dispatchOrder: string,
+        items: Array<{ itemCode: string; color: string; size: string; quantity: number; }>
     ): Promise<any> {
-        console.log("client.ts ---> ", storeId, observations, dispatchOrder);
+        console.log("client.ts ---> ", storeId, observations, dispatchOrder, items);
 
         const orderRequest = {
             storeId,
             observations,
             dispatchOrder,
-            items: [] // Añade los items si es necesario
+            items: items.map(item => ({
+                itemCode: item.itemCode,
+                color: item.color,
+                size: item.size,
+                quantity: item.quantity,
+            }))
         };
 
         return new Promise((resolve, reject) => {
@@ -368,18 +374,15 @@ class Client {
                     console.error("Error in gRPC call:", error);
                     return reject(new Error("Order creation failed!"));
                 }
-                
-                // Asumiendo que la respuesta contiene un objeto `order`
+
                 console.log("Received gRPC response:", response);
                 const order = response.order;
 
-                // Convierte las fechas a formato legible
                 const requestDate = convertTimestampToDate(order.requestDate);
                 const receivedDate = order.receivedDate && Object.keys(order.receivedDate).length
                     ? convertTimestampToDate(order.receivedDate)
                     : null;
 
-                // Crea un objeto más limpio para devolver
                 const cleanOrderResponse = {
                     id: order.id,
                     observations: order.observations,
@@ -387,11 +390,12 @@ class Client {
                     requestDate,
                     receivedDate,
                     storeId: order.storeId,
+                    items: order.items // Esto contiene los `OrderItems` devueltos
                 };
 
                 resolve(cleanOrderResponse);
             });
         });
-    }    
+    }   
 }  
 export default Client;

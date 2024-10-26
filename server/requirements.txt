@@ -1,8 +1,13 @@
+cffi==1.17.1
+cryptography==43.0.1
 grpcio==1.66.1
 grpcio-tools==1.66.1
+kafka-python==2.0.2
 protobuf==5.28.1
-#protoc==0.0.2
+protoc==0.0.2
+pycparser==2.22
 PyMySQL==1.1.1
+python-dotenv==1.0.1
 setuptools==75.1.0
 SQLAlchemy==2.0.35
 typing_extensions==4.12.2
