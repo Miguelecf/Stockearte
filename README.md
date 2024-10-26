@@ -40,6 +40,8 @@ pip install cryptography
 
 pip install python-dotenv
 
+pip install kafka
+
 ### 3. Set Up the Database
 
 Before running the following script, **remember to modify the `DATABASE_URL` in `entities/base.py`** to match your database credentials:
@@ -79,6 +81,12 @@ cd server
 cd utils
 python generates_proto.py
 ```
+RUN KAFKA AND ZOOKEEPER
+PS C:\kafka\bin\windows> .\zookeeper-server-start.bat C:\kafka\config\zookeeper.properties
+
+
+PS C:\kafka\bin\windows> .\kafka-server-start.bat C:\kafka\config\server.properties
+
 
 ### 5. Run the gRPC Server
 
@@ -125,15 +133,18 @@ This will start the TypeScript client, which will connect to the gRPC server run
 
    Ensure that you have Node.js(node v.21) and npm installed. Then, install the dependencies listed in `package.json`:
 
-   ```bash
-   npm install
-   ```
+   npm install @vitejs/plugin-react 
+   
+   npm install @vitejs/plugin-react-swc
+
 
 3. **Start the client:**
 
    ```bash
    npm run dev
    ```
+
+
 
 ### Notes
 
