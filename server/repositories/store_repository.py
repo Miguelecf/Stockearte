@@ -76,27 +76,36 @@ class StoreRepository:
 
 
     def search_store(self, code: str = None, enabled: bool = None):
+        try:
+            # Crear una consulta base
+            query = self.session.query(Store)
 
-        # Crear una consulta base
-        query = self.session.query(Store)
+            # Aplicar filtros según los parámetros de búsqueda proporcionados
+            if code:
+                query = query.filter(Store.code == code)
 
-        # Aplicar filtros según los parámetros de búsqueda proporcionados
-        if code:
-            query = query.filter(Store.code == code)
+            # Aplicar el filtro solo si `enabled` no es None (ya que False es un valor válido)
+            if enabled is not None:
+                query = query.filter(Store.enabled == enabled)
 
-        # Aplicar el filtro solo si `enabled` no es None (ya que False es un valor válido)
-        if enabled is not None:
-            query = query.filter(Store.enabled == enabled)
+            # Ejecutar la consulta
+            stores = query.all()
 
-        # Ejecutar la consulta
-        stores = query.all()
-        
-        # Si no se encuentran tiendas, puedes manejarlo de la siguiente manera
-        if not stores:
-            raise ValueError("No stores found matching the search criteria.")
+            # Si no se encuentran tiendas, puedes manejarlo de la siguiente manera
+            if not stores:
+                raise ValueError("No stores found matching the search criteria.")
 
-        # Devolver las tiendas encontradas
-        return stores
+            # Devolver las tiendas encontradas
+            return stores
+
+        except Exception as e:
+            # Realiza un rollback en caso de error para limpiar la sesión
+            self.session.rollback()
+            print(f"Error during store search: {e}")
+            raise  # Re-lanza la excepción para que el cliente gRPC reciba el error
+        finally:
+            # Asegúrate de cerrar la sesión para liberar los recursos
+            self.session.close()
 
 
 
