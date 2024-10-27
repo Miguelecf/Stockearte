@@ -66,14 +66,14 @@ class Client {
         });
     }
 
-    async loginUser(username: string, password: string): Promise<any> {  // Cambia Promise<string> a Promise<any> para que acepte cualquier objeto
+    async loginUser(username: string, password: string): Promise<any> {
         return new Promise((resolve, reject) => {
             this.userClient.Login(
                 { username, password },
                 (error: grpc.ServiceError | null, response: any) => {
                     if (error) {
-                        console.error("Error in gRPC call:", error);
-                        reject(new Error("Login failed!"));
+                        console.error("Error in gRPC call:", error.message);
+                        reject(new Error(`Login failed: ${error.message}`));
                     } else {
                         resolve(response);  // Devolver solo la respuesta
                     }
@@ -81,6 +81,7 @@ class Client {
             );
         });
     }
+    
 
     async updateUser(username: string, password: string, firstName: string, lastName: string, enabled: boolean): Promise<any> {
         return new Promise((resolve, reject) => {
@@ -397,5 +398,9 @@ class Client {
             });
         });
     }   
+    // async updateOrder
+    //async deleteOrder
+
+
 }  
 export default Client;

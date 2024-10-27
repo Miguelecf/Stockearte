@@ -44,7 +44,6 @@ app.post("/login", async (req: Request, res: Response) => {
   try {
       const loginResponse = await client.loginUser(username, password);
       
-      // Aquí se puede crear un nuevo objeto que contenga el mensaje y la respuesta del login
       const responseWithMessage = {
           message: "Login successful",
           user: loginResponse  // Esto contiene todos los detalles del usuario

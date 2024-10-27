@@ -1,7 +1,7 @@
 import pymysql
 from sqlalchemy.orm import Session
 from server.entities.user import User
-
+from sqlalchemy.exc import SQLAlchemyError
 
 class UserRepository:
     def __init__(self, session: Session):
@@ -45,7 +45,12 @@ class UserRepository:
 
 
     def search_user(self, username: str) -> User:
-        return self.session.query(User).filter(User.username == username).first()
+        try:
+            user = self.session.query(User).filter(User.username == username).first()
+            return user
+        except SQLAlchemyError as e:
+            self.session.rollback()  # Realiza el rollback en caso de error
+            raise e  # Vuelve a lanzar la excepción para que sea manejada en otro lugar
 
     def update_user(self,  username: str, password: str = None, first_name: str = None, last_name: str = None, enabled: bool = None,):
         if not username:
