@@ -6,7 +6,7 @@ const apiClient = axios.create({
         'Content-Type': 'application/json',
     },
 });
-
+// -----------USER-------------
 export default {
     async listUsers() {
       const response = await apiClient.get('/list-users'); // Endpoint para listar usuarios
