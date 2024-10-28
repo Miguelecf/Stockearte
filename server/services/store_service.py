@@ -74,8 +74,6 @@ class StoreService(store_pb2_grpc.StoreService):
             return store_pb2.StoreResponse()  # Consider providing a clearer error message
 
     def SearchStore(self, request, context) -> store_pb2.SearchStoreResponse:
-        print("storeservice 1", request)
-
         # Extraer parámetros de búsqueda del request
         code = request.code if request.code else None
 

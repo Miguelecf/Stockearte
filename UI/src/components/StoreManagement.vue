@@ -3,10 +3,13 @@
       <router-link to="/" class="back-button">Volver al Dashboard</router-link>
       <h2>Gestión de Tiendas</h2>
       <div class="filter-container">
-        <input v-model="filterCode" placeholder="Buscar por código" />
-        <input v-model="filterState" placeholder="Buscar por estado" />
-        <button @click="filterStores" class="filter-button">Buscar</button>
-      </div>
+    <input type="text" class="filter-input" v-model="storeCode" placeholder="Buscar por código de tienda" />
+    <label>
+        <input type="checkbox" v-model="enabled" /> Habilitado?
+    </label>
+    <button @click="searchStores" class="filter-button">Buscar</button>
+</div>
+
       <div class="table-container">
         <table>
           <thead>
@@ -52,8 +55,9 @@
             <input v-model="newStore.city" placeholder="Ciudad" required />
             <input v-model="newStore.state" placeholder="Estado" required />
             <label>
-              Habilitado:
+              Habilitado?
               <input type="checkbox" v-model="newStore.enabled" />
+              <h3>Habilidato?</h3>
             </label>
             <button type="submit" class="submit-button">Crear Tienda</button>
             <button type="button" @click="showAddStoreForm = false" class="cancel-button">Cancelar</button>
@@ -85,11 +89,18 @@
     methods: {
       async fetchStores() {
         try {
-          const response = await apiClient.getStores();
-          this.stores = response.stores;
-        } catch (error) {
-          console.error('Error al obtener las tiendas:', error);
-        }
+        const responseDisabled = await apiClient.searchStore({ enabled: false });
+        const disabledStores = responseDisabled?.stores || [];
+        const responseEnabled = await apiClient.searchStore({ enabled: true });
+        const enabledStores = responseEnabled?.stores || [];
+
+        const allStores = [...disabledStores, ...enabledStores];
+
+        // Asigna la lista combinada a this.stores
+        this.stores = allStores;
+    } catch (error) {
+        console.error('Error al obtener las tiendas:', error);
+    }
       },
       async addStore() {
         try {
@@ -247,5 +258,56 @@
   .submit-button:hover, .cancel-button:hover {
     background-color: #7a1522;
   }
+
+
+
+.filter-button:hover {
+    background-color: #7a1522; /* Color más oscuro al pasar el mouse */
+}
+  
+
+
+.filter-input::placeholder {
+    color: #fff; /* Color del texto placeholder */
+}
+
+.filter-input:focus {
+    outline: none; /* Eliminar borde azul al hacer foco */
+    background-color: #7a1522; /* Color más oscuro al hacer foco */
+}
+
+.filter-container {
+    display: flex; /* Usa flexbox */
+    align-items: center; /* Centra verticalmente los elementos */
+    gap: 10px; /* Espacio entre el input y el botón */
+}
+
+.filter-button {
+    margin-left: 0; /* Asegúrate de que no haya margen izquierdo */
+}
+
+.filter-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-input {
+    border-radius: 5px; /* Bordes redondeados */
+    background-color: #333; /* Fondo oscuro */
+    color: #fff; /* Texto blanco */
+    padding: 10px; /* Espaciado interno */
+}
+
+.filter-button {
+    background-color: #9b1b30; /* Color granate */
+    color: #fff; /* Texto blanco */
+    border: none; /* Sin borde */
+    border-radius: 5px; /* Bordes redondeados */
+    padding: 10px 15px; /* Espaciado interno */
+    cursor: pointer; /* Cambia el cursor al pasar el ratón */
+}
+
+
   </style>
   

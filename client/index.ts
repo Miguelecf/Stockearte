@@ -157,12 +157,11 @@ app.get("/search-store", async (req: Request, res: Response) => {
   try {
     const { code, enabled } = req.query;
 
-    // Convertimos 'enabled' a booleano correctamente
-    const isEnabled = enabled === "true"; // Solo será true si el valor de enabled es exactamente 'true'
+    const isEnabled = enabled === "true";
 
     const stores = await client.searchStore(
       code as string,
-      isEnabled // Pasamos el valor booleano real
+      isEnabled 
     );
 
     if (!stores || stores.length === 0) {
