@@ -24,4 +24,16 @@ export default {
       const response = await apiClient.delete(`/delete-user/${id}`); // Ajusta según tu lógica
       return response.data;
     },*/
+
+
+// ----------STORE------------------------
+async searchStore() {
+  const response = await apiClient.get('/search-store'); // Endpoint para listar usuarios
+  return response.data; // Ajusta esto según la estructura de tu respuesta
+},
+async createStore(data) {
+  const response = await apiClient.post('/create-store', data); // Endpoint para crear usuario
+  return response.data;
+},
+
   };
