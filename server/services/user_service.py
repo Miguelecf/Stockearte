@@ -114,48 +114,76 @@ class UserService(user_pb2_grpc.UserService):
             return user_pb2.User()
         
         
-    def UpdateUser(self, request: user_pb2.UpdateUserRequest, context: grpc.ServicerContext) -> user_pb2.User:
-        # Validar que el username no esté vacío
-        username = request.username
-        if not username:
+    def UpdateUser(self, request: user_pb2.User, context: grpc.ServicerContext) -> user_pb2.User:
+        # Validar que el id no esté vacío
+        user_id = request.id
+        if not user_id:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
-            context.set_details("The username field cannot be empty.")
-            return user_pb2.User()  
+            context.set_details("The id field cannot be empty.")
+            return user_pb2.User()
 
-        if all(param is None for param in [request.password, request.first_name, request.last_name, request.enabled]):
+        if all(param is None for param in [request.username, request.password, request.first_name, request.last_name, request.enabled, request.is_central, request.store_id]):
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details("At least one field to update must be provided.")
-            return user_pb2.User()  
+            return user_pb2.User()
 
         try:
+            # Buscar el usuario por ID
+            user = self.user_repository.get_user_by_id(user_id)
+            if not user:
+                context.set_code(grpc.StatusCode.NOT_FOUND)
+                context.set_details(f"User with ID {user_id} not found.")
+                return user_pb2.User()
+
+            # Actualizar solo los campos que se proporcionen
+            if request.username:
+                user.username = request.username
+            if request.password:
+                user.password = request.password
+            if request.first_name:
+                user.first_name = request.first_name
+            if request.last_name:
+                user.last_name = request.last_name
+            if request.enabled is not None:
+                user.enabled = request.enabled
+            if request.is_central is not None:
+                user.is_central = request.is_central
+            if request.store_id:
+                user.store_id = request.store_id
+
+            # Guardar los cambios en el repositorio
             updated_user = self.user_repository.update_user(
-                username    = username,
-                password    = request.password,
-                first_name  = request.first_name,
-                last_name   = request.last_name,
-                enabled     = request.enabled
+                user_id=user.id,  # o user_id según tu lógica
+                username=request.username,
+                password=request.password,
+                first_name=request.first_name,
+                last_name=request.last_name,
+                enabled=request.enabled
             )
 
-            return user_pb2.User(            
-                username    = updated_user.username,
-                password    = updated_user.password,
-                first_name  = updated_user.first_name,
-                last_name   = updated_user.last_name,
-                enabled     = updated_user.enabled
+            # Retornar el usuario actualizado
+            return user_pb2.User(
+                id=updated_user.id,
+                username=updated_user.username,
+                password=updated_user.password,
+                first_name=updated_user.first_name,
+                last_name=updated_user.last_name,
+                enabled=updated_user.enabled,
+                is_central=updated_user.is_central,
+                store_id=updated_user.store_id
             )
 
         except ValueError as ve:
             print(f"Validation error: {str(ve)}")
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details(str(ve))
-            return user_pb2.User()  # Devuelve User vacío
+            return user_pb2.User()
 
         except Exception as e:
             print(f"Unexpected error during user update: {str(e)}")
             context.set_code(grpc.StatusCode.INTERNAL)
-            context.set_details(
-                f"An error occurred while updating the user: {str(e)}")
-            return user_pb2.User()  # Devuelve User vacío    
+            context.set_details(f"An error occurred while updating the user: {str(e)}")
+            return user_pb2.User()    
         
     def AssignStoreToUser(self, request: user_pb2.AssignStoreToUserRequest, context: grpc.ServicerContext) -> user_pb2.User:
         user_id = request.user_id

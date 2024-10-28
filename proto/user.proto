@@ -7,7 +7,7 @@ service UserService{
     
     rpc CreateUser(CreateUserRequest) returns (User){}
     rpc Login(LoginRequest) returns (LoginResponse){}
-    rpc UpdateUser(UpdateUserRequest) returns (User){}
+    rpc UpdateUser(User) returns (User){}
     rpc SearchUser(SearchUserRequest) returns (User){}
     rpc AssignStoreToUser(AssignStoreToUserRequest) returns (User){}
     rpc SearchUserByStore(SearchUserByStoreRequest) returns (UserListResponse){}
@@ -26,15 +26,6 @@ message User{
 }
 
 message UserListRequest { //Whitout password
-}
-
-message UpdateUserRequest{
-    string username = 1;
-    string password = 2;
-    string first_name = 3;
-    string last_name = 4;
-    bool enabled = 5;
-    int32 store_id = 6; 
 }
 
 message SearchUserRequest{

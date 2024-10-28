@@ -1,6 +1,6 @@
 from repositories.user_repository   import UserRepository
 from server.entities.user           import User
-from server.generated.user_pb2      import UpdateUserRequest
+from server.generated.user_pb2      import User
 
 class UpdateUserUseCase:
     def __init__(self, user_repository: UserRepository):

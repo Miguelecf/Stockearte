@@ -82,15 +82,27 @@ class Client {
         });
     }
 
-    async updateUser(username: string, password: string, firstName: string, lastName: string, enabled: boolean): Promise<any> {
+    async updateUser(
+        id: number, 
+        username: string, 
+        password: string, 
+        firstName: string, 
+        lastName: string, 
+        enabled: boolean, 
+        isCentral: boolean, 
+        storeId: number | null
+    ): Promise<any> {
         return new Promise((resolve, reject) => {
             this.userClient.UpdateUser(
                 {
+                    id,
                     username,
                     password,
-                    firstName,
-                    lastName,
-                    enabled
+                    firstName: firstName,
+                    lastName: lastName,
+                    enabled,
+                    isCentral: isCentral,
+                    storeId: storeId
                 },
                 (error: grpc.ServiceError | null, response: any) => {
                     if (error) {

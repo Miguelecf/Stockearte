@@ -26,7 +26,7 @@
                         <td>{{ user.isCentral ? 'Sí' : 'No' }}</td>
                         <td>{{ user.storeId }}</td>
                         <td>
-                            <button @click="editUser(user.id)" class="action-button">Editar</button>
+                            <button @click="editUser(user)" class="action-button">Editar</button>
                             <button @click="deleteUser(user.id)" class="action-button delete">Eliminar</button>
                         </td>
                     </tr>
@@ -59,6 +59,27 @@
             </div>
 
         </div>
+        <!-- Modal para editar user-->
+        <div v-if="showEditUserForm" class="modal">
+            <div class="modal-content">
+                <span class="close" @click="showEditUserForm = false">&times;</span>
+                <h3>Editar Usuario</h3>
+
+                <form @submit.prevent="updateUser">
+                    <input v-model="editUserData.id" placeholder="Codigo de Usuario" required readonly />
+                    <input v-model="editUserData.username" placeholder="Nombre de Usuario" required />
+                    <input v-model="editUserData.password" placeholder="Contraseña" required />
+                    <input v-model="editUserData.firstName" placeholder="Primer Nombre" required />
+                    <input v-model="editUserData.lastName" placeholder="Apellido" required />
+                    <label>
+                        Habilitado:
+                        <input type="checkbox" v-model="editUserData.enabled" />
+                    </label>
+                    <button type="submit" class="submit-button">Actualizar Usuario</button>
+                    <button type="button" @click="showEditUserForm = false" class="cancel-button">Cancelar</button>
+                </form>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -80,6 +101,16 @@ export default {
                 isCentral: false, // Valor por defecto
                 storeId: null, // ID de tienda, puede ser null si no aplica
             },
+            editUserData: {
+                id: null,
+                username: '',
+                password: '',
+                firstName: '',
+                lastName: '',
+                enabled: false,
+            },
+            showEditUserForm: false,
+            selectedUser: null
         };
     },
     methods: {
@@ -112,10 +143,58 @@ export default {
                     console.error("Error", error.message);
                 }
             }
-        }
-        ,
-        editUser(id) {
-            console.log(`Editar usuario con ID: ${id}`);
+        },
+        editUser(user) {
+            this.selectedUser = user; // Almacena el usuario seleccionado
+            this.editUserData.id = user.id; // Asegúrate de asignar el ID
+            this.editUserData.username = user.username || '';
+            this.editUserData.password = user.password || '';
+            this.editUserData.firstName = user.firstName || '';
+            this.editUserData.lastName = user.lastName || '';
+            this.editUserData.enabled = user.enabled || false;
+            this.showEditUserForm = true; // Muestra el formulario de edición
+        },
+        async updateUser() {
+            try {
+                const response = await apiClient.updateUser({
+                    id: this.editUserData.id,
+                    username: this.editUserData.username,
+                    password: this.editUserData.password,
+                    firstName: this.editUserData.firstName,
+                    lastName: this.editUserData.lastName,
+                    enabled: this.editUserData.enabled,
+                });
+                console.log("Usuario actualizado:", response);
+
+                // Actualizar la lista de usuarios
+                await this.fetchUsers();
+                this.showEditUserForm = false; // Cierra el formulario
+                this.resetEditUser(); // Reinicia el formulario de edición
+            } catch (error) {
+                // Verificar si hay una respuesta del backend
+                if (error.response) {
+                    // Si el código de estado es 409, es un conflicto por duplicado
+                    if (error.response.status === 409) {
+                        this.errorMessage = error.response.data.message; // Mensaje específico del backend
+                    } else {
+                        this.errorMessage = "Error al actualizar el usuario."; // Mensaje genérico para otros errores
+                    }
+                } else {
+                    this.errorMessage = "Error de conexión con el servidor."; // Error de red o configuración
+                }
+                console.error("Error al actualizar el usuario:", error); // Registrar el error para debugging
+            }
+        },
+
+        resetEditUser() {
+            this.editUserData = {
+                username: '',
+                password: '',
+                firstName: '',
+                lastName: '',
+                enabled: false,
+            };
+            this.selectedUser = null; // Si no necesitas mantener el usuario seleccionado, esto está bien
         },
         deleteUser(id) {
             console.log(`Eliminar usuario con ID: ${id}`);
@@ -126,6 +205,7 @@ export default {
     },
 };
 </script>
+
 
 
 
@@ -222,11 +302,11 @@ th {
 /*MODAL STYLES DEL FORM DE AGREGAR USUARIO*/
 
 .user-management {
-  padding: 20px;
+    padding: 20px;
 }
 
 .table-container {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 .modal {
@@ -238,66 +318,109 @@ th {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Fondo negro con opacidad */
-    z-index: 1000; /* Asegura que el modal esté en la parte superior */
+    background-color: rgba(0, 0, 0, 0.7);
+    /* Fondo negro con opacidad */
+    z-index: 1000;
+    /* Asegura que el modal esté en la parte superior */
 }
 
 .modal-content {
-    background-color: #000; /* Fondo negro para el contenido del modal */
-    color: #fff; /* Texto blanco */
-    padding: 30px; /* Espaciado interno */
-    border-radius: 10px; /* Bordes redondeados */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); /* Sombra */
-    width: 400px; /* Ancho del modal */
-    position: relative; /* Para el botón de cerrar */
+    background-color: #000;
+    /* Fondo negro para el contenido del modal */
+    color: #fff;
+    /* Texto blanco */
+    padding: 30px;
+    /* Espaciado interno */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    /* Sombra */
+    width: 400px;
+    /* Ancho del modal */
+    position: relative;
+    /* Para el botón de cerrar */
 }
 
 .close {
-    position: absolute; /* Posicionamiento absoluto */
-    top: 10px; /* Ajusta la posición superior */
-    right: 15px; /* Ajusta la posición derecha */
-    color: #fff; /* Color del botón de cerrar */
-    font-size: 24px; /* Tamaño del texto */
-    cursor: pointer; /* Cambia el cursor al pasar el ratón */
+    position: absolute;
+    /* Posicionamiento absoluto */
+    top: 10px;
+    /* Ajusta la posición superior */
+    right: 15px;
+    /* Ajusta la posición derecha */
+    color: #fff;
+    /* Color del botón de cerrar */
+    font-size: 24px;
+    /* Tamaño del texto */
+    cursor: pointer;
+    /* Cambia el cursor al pasar el ratón */
 }
 
 h3 {
-    margin-bottom: 20px; /* Espaciado inferior */
-    font-size: 22px; /* Tamaño del encabezado */
+    margin-bottom: 20px;
+    /* Espaciado inferior */
+    font-size: 22px;
+    /* Tamaño del encabezado */
 }
 
 input[type="text"],
 input[type="password"],
 input[type="checkbox"] {
-    width: 100%; /* Ancho completo */
-    padding: 10px; /* Espaciado interno */
-    margin-bottom: 15px; /* Espaciado inferior */
-    border: none; /* Sin borde */
-    border-radius: 5px; /* Bordes redondeados */
-    background-color: #333; /* Fondo gris oscuro para los inputs */
-    color: #fff; /* Texto blanco */
-    font-size: 16px; /* Tamaño de fuente */
+    width: 100%;
+    /* Ancho completo */
+    padding: 10px;
+    /* Espaciado interno */
+    margin-bottom: 15px;
+    /* Espaciado inferior */
+    border: none;
+    /* Sin borde */
+    border-radius: 5px;
+    /* Bordes redondeados */
+    background-color: #333;
+    /* Fondo gris oscuro para los inputs */
+    color: #fff;
+    /* Texto blanco */
+    font-size: 16px;
+    /* Tamaño de fuente */
 }
 
 input[type="checkbox"] {
-    width: auto; /* Ancho automático para los checkboxes */
-    margin-right: 5px; /* Espaciado a la derecha */
+    width: auto;
+    /* Ancho automático para los checkboxes */
+    margin-right: 5px;
+    /* Espaciado a la derecha */
 }
 
 .submit-button,
 .cancel-button {
-    background-color: #9b1b30; /* Color granate */
-    color: #fff; /* Texto blanco */
-    border: none; /* Sin borde */
-    border-radius: 5px; /* Bordes redondeados */
-    padding: 10px 15px; /* Espaciado interno */
-    cursor: pointer; /* Cambia el cursor al pasar el ratón */
-    transition: background-color 0.3s ease; /* Transición de fondo */
-    margin-right: 10px; /* Espaciado entre botones */
+    background-color: #9b1b30;
+    /* Color granate */
+    color: #fff;
+    /* Texto blanco */
+    border: none;
+    /* Sin borde */
+    border-radius: 5px;
+    /* Bordes redondeados */
+    padding: 10px 15px;
+    /* Espaciado interno */
+    cursor: pointer;
+    /* Cambia el cursor al pasar el ratón */
+    transition: background-color 0.3s ease;
+    /* Transición de fondo */
+    margin-right: 10px;
+    /* Espaciado entre botones */
 }
 
 .submit-button:hover,
 .cancel-button:hover {
-    background-color: #7a1522; /* Color más oscuro al pasar el ratón */
+    background-color: #7a1522;
+    /* Color más oscuro al pasar el ratón */
+}
+
+.error-message {
+    color: red;
+    /* Color del texto del mensaje de error */
+    margin-bottom: 10px;
+    /* Espacio debajo del mensaje de error */
 }
 </style>
