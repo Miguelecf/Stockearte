@@ -1,12 +1,24 @@
-# React + TypeScript + Vite
+# ui
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Project setup
+```
+npm install
+```
 
-Currently, two official plugins are available:
+### Compiles and hot-reloads for development
+```
+npm run serve
+```
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Compiles and minifies for production
+```
+npm run build
+```
 
-## User Flow:
+### Lints and fixes files
+```
+npm run lint
+```
 
-![alt text](public/userFlow.png)
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).

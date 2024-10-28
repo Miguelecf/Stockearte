@@ -6,18 +6,20 @@
         <table>
           <thead>
             <tr>
-              <th>ID</th>
+              <th>Codigo</th>
+              <th>Username</th>
               <th>Nombre</th>
               <th>Apellido</th>
               <th>Habilitado</th>
               <th>Es Casa Central</th>
-              <th>ID de Tienda</th>
+              <th>Codigo de Tienda</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="user in users" :key="user.id">
+            <tr v-for="user in users.users" :key="user.id">
               <td>{{ user.id }}</td>
+              <td>{{ user.username }}</td>
               <td>{{ user.firstName }}</td>
               <td>{{ user.lastName }}</td>
               <td>{{ user.enabled ? 'Sí' : 'No' }}</td>
@@ -34,6 +36,46 @@
       <button @click="addUser" class="add-user-button">Agregar Usuario</button>
     </div>
   </template>
+
+<script>
+import apiClient from '@/api/apiClient.ts';
+
+export default {
+  name: "UserManagement",
+  data() {
+    return {
+      users: [],
+    };
+  },
+  methods: {
+    async fetchUsers() {
+      try {
+        const response = await apiClient.listUsers(); // Llama a la API para obtener usuarios
+        this.users = response.users; // Ajusta esto según la estructura de la respuesta
+        console.log("Usuarios cargados:", response); // Imprime los usuarios para verificar
+      } catch (error) {
+        console.error("Error al obtener los usuarios:", error);
+      }
+    },
+    addUser() {
+      console.log("Agregar usuario");
+    },
+    editUser(id) {
+      console.log(`Editar usuario con ID: ${id}`);
+    },
+    deleteUser(id) {
+      console.log(`Eliminar usuario con ID: ${id}`);
+    },
+  },
+  mounted() {
+    this.fetchUsers(); // Llama a la función cuando se monta el componente para cargar los usuarios
+  },
+};
+</script>
+
+
+
+
   <style scoped>.user-management {
     padding: 40px 20px;
     display: flex;
@@ -107,6 +149,7 @@
   
   .add-user-button {
     background-color: #444;
+    font-size: large;
     border: none;
     border-radius: 5px;
     color: white;
