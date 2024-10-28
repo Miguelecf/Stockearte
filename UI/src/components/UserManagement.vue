@@ -64,7 +64,9 @@
             <div class="modal-content">
                 <span class="close" @click="showEditUserForm = false">&times;</span>
                 <h3>Editar Usuario</h3>
+
                 <form @submit.prevent="updateUser">
+                    <input v-model="editUserData.id" placeholder="Codigo de Usuario" required readonly />
                     <input v-model="editUserData.username" placeholder="Nombre de Usuario" required />
                     <input v-model="editUserData.password" placeholder="Contraseña" required />
                     <input v-model="editUserData.firstName" placeholder="Primer Nombre" required />
@@ -100,6 +102,7 @@ export default {
                 storeId: null, // ID de tienda, puede ser null si no aplica
             },
             editUserData: {
+                id: null,
                 username: '',
                 password: '',
                 firstName: '',
@@ -141,20 +144,20 @@ export default {
                 }
             }
         },
-        editUser(user) { // Método para cargar los datos en el formulario
+        editUser(user) {
             this.selectedUser = user; // Almacena el usuario seleccionado
-            // Precarga datos en editUserData
-            this.editUserData.username = user.username;
-            this.editUserData.password = user.password;
-            this.editUserData.firstName = user.firstName;
-            this.editUserData.lastName = user.lastName;
-            this.editUserData.enabled = user.enabled;
+            this.editUserData.id = user.id; // Asegúrate de asignar el ID
+            this.editUserData.username = user.username || '';
+            this.editUserData.password = user.password || '';
+            this.editUserData.firstName = user.firstName || '';
+            this.editUserData.lastName = user.lastName || '';
+            this.editUserData.enabled = user.enabled || false;
             this.showEditUserForm = true; // Muestra el formulario de edición
         },
-
         async updateUser() {
             try {
                 const response = await apiClient.updateUser({
+                    id: this.editUserData.id,
                     username: this.editUserData.username,
                     password: this.editUserData.password,
                     firstName: this.editUserData.firstName,
@@ -164,24 +167,34 @@ export default {
                 console.log("Usuario actualizado:", response);
 
                 // Actualizar la lista de usuarios
-                await this.fetchUsers(); // Refresca la lista de usuarios
-                this.showEditUserForm = false; // Oculta el formulario de edición
+                await this.fetchUsers();
+                this.showEditUserForm = false; // Cierra el formulario
                 this.resetEditUser(); // Reinicia el formulario de edición
             } catch (error) {
-                console.error("Error al actualizar el usuario:", error);
-                // Manejo de errores...
+                // Verificar si hay una respuesta del backend
+                if (error.response) {
+                    // Si el código de estado es 409, es un conflicto por duplicado
+                    if (error.response.status === 409) {
+                        this.errorMessage = error.response.data.message; // Mensaje específico del backend
+                    } else {
+                        this.errorMessage = "Error al actualizar el usuario."; // Mensaje genérico para otros errores
+                    }
+                } else {
+                    this.errorMessage = "Error de conexión con el servidor."; // Error de red o configuración
+                }
+                console.error("Error al actualizar el usuario:", error); // Registrar el error para debugging
             }
         },
 
         resetEditUser() {
-            this.editUserData = { // Reinicia editUserData
+            this.editUserData = {
                 username: '',
                 password: '',
                 firstName: '',
                 lastName: '',
                 enabled: false,
             };
-            this.selectedUser = null; // Limpia el usuario seleccionado
+            this.selectedUser = null; // Si no necesitas mantener el usuario seleccionado, esto está bien
         },
         deleteUser(id) {
             console.log(`Eliminar usuario con ID: ${id}`);
@@ -402,5 +415,12 @@ input[type="checkbox"] {
 .cancel-button:hover {
     background-color: #7a1522;
     /* Color más oscuro al pasar el ratón */
+}
+
+.error-message {
+    color: red;
+    /* Color del texto del mensaje de error */
+    margin-bottom: 10px;
+    /* Espacio debajo del mensaje de error */
 }
 </style>
