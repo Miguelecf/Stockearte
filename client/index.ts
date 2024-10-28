@@ -94,35 +94,33 @@ app.get("/list-users", async (req: Request, res: Response) => {
 
 
 app.post("/update-user", async (req: Request, res: Response) => {
-
   try {
-    const { username, password, firstName, lastName, enabled } = req.body;
+      const { id, username, password, firstName, lastName, enabled, isCentral, storeId } = req.body;
 
-    if (!username) {
-      return res
-        .status(400)
-        .json({ message: "username is required for updating a user" });
-    }
+      if (!id) {
+          return res.status(400).json({ message: "id is required for updating a user" });
+      }
 
-    // Llamar al método updateUser del cliente
-    const updatedUser = await client.updateUser(
-      username,
-      password,
-      firstName,
-      lastName,
-      enabled
-    );
+      // Llamar al método updateUser del cliente con el id y otros campos
+      const updatedUser = await client.updateUser(
+          id,
+          username,
+          password,
+          firstName,
+          lastName,
+          enabled,
+          isCentral,
+          storeId
+      );
 
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
+      if (!updatedUser) {
+          return res.status(404).json({ message: "User not found" });
+      }
 
-    res
-      .status(200)
-      .json({ message: "User updated successfully", user: updatedUser });
+      res.status(200).json({ message: "User updated successfully", user: updatedUser });
   } catch (error) {
-    console.error("Error updating user:", error);
-    res.status(500).json({ message: "Error updating user" });
+      console.error("Error updating user:", error);
+      res.status(500).json({ message: "Error updating user" });
   }
 });
 
