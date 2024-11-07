@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOAP Client</title>
+</head>
+<body>
+    <h1>SOAP Client</h1>
+
+    <form method="POST">
+        <button type="submit">Solicitar Hello World</button>
+    </form>
+
+    {% if response %}
+        <h2>Respuesta del servidor:</h2>
+        <p>{{ response }}</p>
+    {% endif %}
+</body>
+</html>
