@@ -20,7 +20,6 @@
               <th>Ciudad</th>
               <th>Estado</th>
               <th>Habilitado</th>
-              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -57,7 +56,6 @@
             <label>
               Habilitado?
               <input type="checkbox" v-model="newStore.enabled" />
-              <h3>Habilidato?</h3>
             </label>
             <button type="submit" class="submit-button">Crear Tienda</button>
             <button type="button" @click="showAddStoreForm = false" class="cancel-button">Cancelar</button>
@@ -95,8 +93,7 @@
         const enabledStores = responseEnabled?.stores || [];
 
         const allStores = [...disabledStores, ...enabledStores];
-
-        // Asigna la lista combinada a this.stores
+        
         this.stores = allStores;
     } catch (error) {
         console.error('Error al obtener las tiendas:', error);
