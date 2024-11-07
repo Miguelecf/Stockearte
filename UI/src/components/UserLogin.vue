@@ -1,10 +1,10 @@
 <template>
     <div class="login-container">
-        <h2>Login</h2>
+        <h2>Bienvenido a Stockearte</h2>
         <div class="login-form">
-            <input v-model="username" class="input-field" placeholder="Username" />
-            <input v-model="password" type="password" class="input-field" placeholder="Password" />
-            <button @click="login" class="submit-button">Login</button>
+            <input v-model="username" class="input-field" placeholder="Usuario" />
+            <input v-model="password" type="password" class="input-field" placeholder="Contraseña" />
+            <button @click="login" class="submit-button">Iniciar Sesión</button>
         </div>
 
         <div v-if="error" class="error-message">

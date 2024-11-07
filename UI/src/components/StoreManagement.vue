@@ -14,7 +14,7 @@
         <table>
           <thead>
             <tr>
-              <th>ID</th>
+              <th>#</th>
               <th>Código</th>
               <th>Dirección</th>
               <th>Ciudad</th>

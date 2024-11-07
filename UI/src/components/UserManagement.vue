@@ -6,7 +6,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Codigo</th>
+                        <th>#</th>
                         <th>Username</th>
                         <th>Nombre</th>
                         <th>Apellido</th>
