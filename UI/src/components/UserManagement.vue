@@ -1,12 +1,12 @@
 <template>
     <div class="user-management">
-        <router-link to="/" class="back-button">Volver al Dashboard</router-link>
+        <router-link to="/main" class="back-button">Volver al Dashboard</router-link>
         <h2>Gestión de Usuarios</h2>
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
-                        <th>Codigo</th>
+                        <th>#</th>
                         <th>Username</th>
                         <th>Nombre</th>
                         <th>Apellido</th>
