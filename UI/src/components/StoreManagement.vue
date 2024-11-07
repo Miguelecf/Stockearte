@@ -32,9 +32,6 @@
                 <td>{{ store?.enabled ? 'Sí' : 'No' }}</td>
                 <td>
                 <button @click="editStore(store?.id)" class="action-button" v-if="store?.id">Editar</button>
-                <button @click="toggleStoreState(store?.id)" class="action-button" v-if="store?.id">
-                {{ store?.enabled ? 'Deshabilitar' : 'Habilitar' }}
-                </button>
         </td>
         </tr>
 
