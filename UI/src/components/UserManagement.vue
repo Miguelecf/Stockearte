@@ -27,7 +27,6 @@
                         <td>{{ user.storeId }}</td>
                         <td>
                             <button @click="editUser(user)" class="action-button">Editar</button>
-                            <button @click="deleteUser(user.id)" class="action-button delete">Eliminar</button>
                         </td>
                     </tr>
                 </tbody>

@@ -20,11 +20,6 @@ export default {
       const response = await apiClient.post('/update-user', data); // Endpoint para actualizar usuario
       return response.data;
     },
-    /*async deleteUser(id) {
-      const response = await apiClient.delete(`/delete-user/${id}`); // Ajusta según tu lógica
-      return response.data;
-    },*/
-
 
 // ----------STORE------------------------
 async searchStore() {
