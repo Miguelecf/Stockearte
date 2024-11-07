@@ -1,6 +1,6 @@
 <template>
     <div class="store-management">
-      <router-link to="/" class="back-button">Volver al Dashboard</router-link>
+      <router-link to="/main" class="back-button">Volver al Dashboard</router-link>
       <h2>Gestión de Tiendas</h2>
       <div class="filter-container">
     <input type="text" class="filter-input" v-model="storeCode" placeholder="Buscar por código de tienda" />
