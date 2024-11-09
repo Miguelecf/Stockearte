@@ -8,8 +8,10 @@
 <body>
     <h1>SOAP Client</h1>
 
-    <form method="POST">
-        <button type="submit">Solicitar Hello World</button>
+    <form method="POST" enctype="multipart/form-data">
+        <label for="csv_file">Selecciona el archivo CSV:</label>
+        <input type="file" name="csv_file" accept=".csv" required>
+        <button type="submit">Subir y Procesar CSV</button>
     </form>
 
     {% if response %}

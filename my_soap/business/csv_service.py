@@ -1,27 +1,31 @@
+# csv_service.py
 import csv
 from io import StringIO
 from spyne import Application, rpc, ServiceBase, Unicode
 from spyne.protocol.soap import Soap11
 from spyne.server.wsgi import WsgiApplication
-from flask import Flask
+from flask import Flask, request
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
+from zeep import Client
 
-# Inicializamos la aplicación Flask
+# Inicializamos la aplicación flask
 app = Flask(__name__)
 
-# Definimos el servicio SOAP para manejar la carga del CSV
+# Definimos el servicio SOAP
+
+
 class CSVService(ServiceBase):
     @rpc(Unicode, _returns=Unicode)
     def upload_csv(ctx, csv_content):
         # Creamos un objeto StringIO para leer el contenido del archivo CSV
+
         data = []
         csv_reader = csv.reader(StringIO(csv_content), delimiter=';')
         
-        # Procesar las filas del CSV
         for row in csv_reader:
-            print("Fila leída:", row)  # Para verificar qué filas estamos leyendo
+            print("Fila leída:", row) # Quiero ver que fila imprime
         
-            # Validamos que la fila tenga 5 campos
+        for row in csv_reader:
             if len(row) == 5:
                 data.append({
                     "usuario": row[0],
@@ -31,10 +35,10 @@ class CSVService(ServiceBase):
                     "codigo de tienda": row[4]
                 })
             else:
-                return "Error en la carga del archivo CSV: Fila incorrecta"
-        
-        # Respuesta con el número de usuarios procesados
-        return f"Usuarios procesados: {len(data)}"
+                return "Error en la carga del archivo CSV"
+
+            return f"Usuarios procesados:{len(data)}"
+
 
 # Configuración de la aplicación SOAP
 soap_app = Application(
