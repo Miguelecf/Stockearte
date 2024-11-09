@@ -1,59 +1,75 @@
-# csv_service.py
 import csv
 from io import StringIO
-from spyne import Application, rpc, ServiceBase, Unicode
-from spyne.protocol.soap import Soap11
-from spyne.server.wsgi import WsgiApplication
-from flask import Flask, request
-from werkzeug.middleware.dispatcher import DispatcherMiddleware
-from zeep import Client
+from spyne import ServiceBase, rpc, Unicode
+from server.entities.user import User
+from server.entities.store import Store
+from server.entities.product import Product
+from server.entities.order import Order
+from server.entities.order_item import OrderItem
+from server.entities.product_store import ProductStore
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
-# Inicializamos la aplicación flask
-app = Flask(__name__)
-
-# Definimos el servicio SOAP
-
+# Configuración de la base de datos
+DATABASE_URL = "mysql+pymysql://root:1612@localhost/store_system"
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 class CSVService(ServiceBase):
     @rpc(Unicode, _returns=Unicode)
     def upload_csv(ctx, csv_content):
-        # Creamos un objeto StringIO para leer el contenido del archivo CSV
+        # Crear la sesión dentro del contexto del servicio SOAP
+        session = SessionLocal()
 
         data = []
-        csv_reader = csv.reader(StringIO(csv_content), delimiter=';')
-        
+        csv_content = csv_content.lstrip('\ufeff')
+
+        csv_reader = csv.DictReader(StringIO(csv_content), delimiter=';')
+
+        # Procesar las filas del CSV
         for row in csv_reader:
-            print("Fila leída:", row) # Quiero ver que fila imprime
-        
-        for row in csv_reader:
+            print(f"Claves del diccionario: {list(row.keys())}")
+            print("Fila leída:", row)
+
             if len(row) == 5:
-                data.append({
-                    "usuario": row[0],
-                    "contraseña": row[1],
-                    "nombre": row[2],
-                    "apellido": row[3],
-                    "codigo de tienda": row[4]
-                })
+                user_data = {
+                    "usuario": row["usuario"],
+                    "contraseña": row["contraseña"],
+                    "nombre": row["nombre"],
+                    "apellido": row["apellido"],
+                    "codigo de tienda": row["codigo de tienda"]
+                }
+                data.append(user_data)
             else:
-                return "Error en la carga del archivo CSV"
+                return "Error en la carga del archivo CSV: Fila incorrecta"
+        
+        try:
+            for row in data:
+                print(f"Buscando tienda con código: {row['codigo de tienda']}")
 
-            return f"Usuarios procesados:{len(data)}"
+                store = session.query(Store).filter(Store.code == row['codigo de tienda']).first()
 
+                if store:
+                    print(f"Tienda encontrada: {store.code} - {store.id}")
+                    user = User(
+                        username=row["usuario"],
+                        password=row["contraseña"],
+                        first_name=row["nombre"],
+                        last_name=row["apellido"],
+                        store_id=store.id
+                    )
+                    session.add(user)
+                else:
+                    print(f"Error: Tienda con código {row['codigo de tienda']} no encontrada.")
+                    return f"Error: Tienda con código {row['codigo de tienda']} no encontrada."
 
-# Configuración de la aplicación SOAP
-soap_app = Application(
-    [CSVService],
-    tns='spyne.csv.service',
-    in_protocol=Soap11(),
-    out_protocol=Soap11()
-)
-
-# Integrar la aplicación SOAP con Flask
-app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
-    '/soap': WsgiApplication(soap_app)
-})
-
-# Ejecutar el servidor
-if __name__ == "__main__":
-    print("Servidor SOAP corriendo en http://127.0.0.1:5000/soap?wsdl")
-    app.run(port=5000)
+            session.commit()
+            return f"Usuarios procesados: {len(data)}"
+        
+        except Exception as e:
+            session.rollback()
+            print(f"Error al insertar los usuarios: {str(e)}")
+            return f"Error al insertar los usuarios: {str(e)}"
+        
+        finally:
+            session.close()
