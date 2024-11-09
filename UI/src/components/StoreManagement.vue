@@ -20,6 +20,7 @@
               <th>Ciudad</th>
               <th>Estado</th>
               <th>Habilitado</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>

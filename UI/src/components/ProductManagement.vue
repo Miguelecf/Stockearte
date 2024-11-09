@@ -1,59 +1,64 @@
 <template>
-    <div class="product-management">
-        <router-link to="/" class="back-button">Volver al Dashboard</router-link>
-        <h2>Gestión de Productos</h2>
-        <div class="filter-container">
-            <input v-model="filter" placeholder="Filtrar..." class="filter-input" />
-            <button @click="searchProducts" class="search-button">Buscar</button>
+    <div class="store-management">
+      <router-link to="/main" class="back-button">Volver al Dashboard</router-link>
+      <h2>Gestión de productos</h2>
+      <div class="filter-container">
+    <input type="text" class="filter-input" v-model="storeCode" placeholder="Buscar por código de producto" />
+    <label>
+        <input type="checkbox" v-model="enabled" /> Habilitado?
+    </label>
+    <button @click="searchStores" class="filter-button">Buscar</button>
+</div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Código</th>
+              <th>Nombre</th>
+              <th>Tamaño</th>
+              <th>Color</th>
+              <th>Habilitado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="product in products" :key="product?.id">
+              <td>{{ product?.id || 'N/A' }}</td>
+              <td>{{ product?.unique_code || 'N/A' }}</td>
+              <td>{{ product?.name || 'N/A' }}</td>
+              <td>{{ product?.size || 'N/A' }}</td>
+              <td>{{ product?.color || 'N/A' }}</td>
+              <td>{{ product?.enabled ? 'Sí' : 'No' }}</td>
+              <td>
+                <button @click="editProduct(product?.id)" class="action-button" v-if="product?.id">Editar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button @click="showAddProductForm = true" class="add-store-button">Agregar Producto</button>
+      
+      <!-- Modal para agregar producto -->
+      <div v-if="showAddProductForm" class="modal">
+        <div class="modal-content">
+          <span class="close" @click="showAddProductForm = false">&times;</span>
+          <h3>Agregar Nuevo Producto</h3>
+          <form @submit.prevent="addProduct">
+            <input v-model="newProduct.unique_code" placeholder="Código Único del Producto" required />
+            <input v-model="newProduct.name" placeholder="Nombre del Producto" required />
+            <input v-model="newProduct.size" placeholder="Tamaño" required />
+            <input v-model="newProduct.color" placeholder="Color" required />
+            <label>
+              Habilitado?
+              <input type="checkbox" v-model="newProduct.enabled" />
+            </label>
+            <button type="submit" class="submit-button">Crear Producto</button>
+            <button type="button" @click="showAddProductForm = false" class="cancel-button">Cancelar</button>
+          </form>
         </div>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Código Único</th>
-                        <th>Tamaño</th>
-                        <th>Color</th>
-                        <th>Habilitado</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="product in filteredProducts" :key="product.id">
-                        <td>{{ product.id }}</td>
-                        <td>{{ product.name }}</td>
-                        <td>{{ product.unique_code }}</td>
-                        <td>{{ product.size }}</td>
-                        <td>{{ product.color }}</td>
-                        <td>{{ product.enabled ? 'Sí' : 'No' }}</td>
-                        <td>
-                            <button @click="editProduct(product.id)" class="action-button">Editar</button>
-                            <button @click="deleteProduct(product.id)" class="action-button delete">Eliminar</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <button @click="showAddProductForm = true" class="add-product-button">Agregar Producto</button>
-        <!-- Modal para agregar producto -->
-        <div v-if="showAddProductForm" class="modal">
-            <div class="modal-content">
-                <span class="close" @click="showAddProductForm = false">&times;</span>
-                <h3>Agregar Nuevo Producto</h3>
-                <form @submit.prevent="addProduct">
-                    <input v-model="newProduct.name" placeholder="Nombre del Producto" required />
-                    <input v-model="newProduct.unique_code" placeholder="Código Único" required />
-                    <input v-model="newProduct.size" placeholder="Tamaño" required />
-                    <input v-model="newProduct.color" placeholder="Color" required />
-                    <label>
-                        Habilitado
-                        <input type="checkbox" v-model="newProduct.enabled" />
-                    </label>
-                    <button type="submit" class="submit-button">Crear Producto</button>
-                    <button type="button" @click="showAddProductForm = false" class="cancel-button">Cancelar</button>
-                </form>
-            </div>
-        </div>
+      </div>
     </div>
 </template>
 
@@ -61,76 +66,75 @@
 import apiClient from '@/api/apiClient.ts';
 
 export default {
-    name: "ProductManagement",
-    data() {
-        return {
-            products: [],
-            showAddProductForm: false,
-            newProduct: {
-                name: '',
-                unique_code: '',
-                size: '',
-                color: '',
-                enabled: true, // Valor por defecto
-            },
-            filter: '',
-        };
+  data() {
+    return {
+      products: [],
+      showAddProductForm: false,
+      newProduct: {
+        unique_code: '',
+        name: '',
+        size: '',
+        color: '',
+        enabled: true,
+      },
+      productCode: '',
+      enabled: false,
+    };
+  },
+  methods: {
+    async fetchProducts() {
+      try {
+        const responseDisabled = await apiClient.searchProduct({ enabled: false });
+        const disabledProducts = responseDisabled?.products || [];
+        const responseEnabled = await apiClient.searchProduct({ enabled: true });
+        const enabledProducts = responseEnabled?.products || [];
+        this.products = [...disabledProducts, ...enabledProducts];
+      } catch (error) {
+        console.error('Error al obtener los productos:', error);
+      }
     },
-    computed: {
-        filteredProducts() {
-            return this.products.filter(product =>
-                product.name.toLowerCase().includes(this.filter.toLowerCase()) ||
-                product.unique_code.toLowerCase().includes(this.filter.toLowerCase())
-            );
-        },
+    async addProduct() {
+      try {
+        const response = await apiClient.createProduct(this.newProduct);
+        this.products.push(response.product);
+        this.showAddProductForm = false;
+      } catch (error) {
+        console.error('Error al agregar el producto:', error);
+      }
     },
-    methods: {
-        async fetchProducts() {
-            try {
-                const response = await apiClient.listProducts(); // Llama a la API para obtener productos
-                this.products = response.products; // Ajusta esto según la estructura de la respuesta
-                console.log("Productos cargados:", response);
-            } catch (error) {
-                console.error("Error al obtener los productos:", error);
-            }
-        },
-        async addProduct() {
-            try {
-                const response = await apiClient.createProduct(this.newProduct);
-                console.log("Producto creado:", response);
-                this.showAddProductForm = false;
-
-                await this.fetchProducts();
-            } catch (error) {
-                console.error("Error al agregar el producto:", error);
-            }
-        },
-        editProduct(id) {
-            console.log(`Editar producto con ID: ${id}`);
-        },
-        deleteProduct(id) {
-            console.log(`Eliminar producto con ID: ${id}`);
-        },
-        searchProducts() {
-            // Ya se filtra automáticamente con el input, no se requiere lógica adicional aquí
-            console.log("Filtrando productos por:", this.filter);
-        }
+    async toggleProductStatus(productId) {
+      try {
+        const product = this.products.find(p => p.id === productId);
+        const response = await apiClient.toggleProductStatus(productId, !product.enabled);
+        product.enabled = response.enabled;
+      } catch (error) {
+        console.error('Error al cambiar el estado del producto:', error);
+      }
     },
-    mounted() {
-        this.fetchProducts(); // Carga los productos al montar el componente
+    async searchProducts() {
+      try {
+        const response = await apiClient.searchProducts(this.productCode, this.enabled);
+        this.products = response.products;
+      } catch (error) {
+        console.error('Error al filtrar los productos:', error);
+      }
     },
+  },
+  mounted() {
+    this.fetchProducts();
+  }
 };
 </script>
 
 <style scoped>
-.product-management {
+  .store-management {
     padding: 40px 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-.back-button {
+  }
+  
+  .back-button {
     background-color: #444;
     border: none;
     border-radius: 5px;
@@ -139,90 +143,52 @@ export default {
     margin-bottom: 20px;
     text-decoration: none;
     transition: background-color 0.3s;
-}
-
-.back-button:hover {
+  }
+  
+  .back-button:hover {
     background-color: #9b1c30;
-}
-
-.filter-container {
-    display: flex;
-    margin-bottom: 20px;
-}
-
-.filter-input {
-    padding: 10px;
-    border: 1px solid #333;
-    border-radius: 5px;
-    margin-right: 10px;
-    background-color: #333;
-    color: white;
-}
-
-.search-button {
-    padding: 10px 20px;
-    background-color: #9b1c30;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.search-button:hover {
-    background-color: #7a1522;
-}
-
-.table-container {
+  }
+  
+  .table-container {
     max-width: 800px;
     width: 100%;
+    margin-bottom: 20px;
     overflow-x: auto;
-}
-
-table {
+  }
+  
+  table {
     width: 100%;
     border-collapse: collapse;
     background-color: #222;
     border-radius: 10px;
-    overflow: hidden;
-}
-
-th,
-td {
+  }
+  
+  th, td {
     border: 1px solid #333;
     padding: 12px;
     text-align: left;
-}
-
-th {
+  }
+  
+  th {
     background-color: #9b1c30;
     color: white;
-}
-
-.action-button {
+  }
+  
+  .action-button {
     background-color: #444;
     border: none;
     border-radius: 5px;
     padding: 5px 10px;
     color: white;
-    margin-right: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
-}
-
-.action-button:hover {
+  }
+  
+  .action-button:hover {
     background-color: #9b1c30;
-}
-
-.action-button.delete {
-    background-color: #d9534f;
-}
-
-.action-button.delete:hover {
-    background-color: #c9302c;
-}
-
-.add-product-button {
+  }
+  
+  .add-store-button {
     background-color: #444;
     font-size: large;
     border: none;
@@ -231,14 +197,13 @@ th {
     padding: 10px 20px;
     cursor: pointer;
     transition: background-color 0.3s;
-}
-
-.add-product-button:hover {
+  }
+  
+  .add-store-button:hover {
     background-color: #9b1c30;
-}
-
-/* Modal Styles */
-.modal {
+  }
+  
+  .modal {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -249,9 +214,9 @@ th {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7);
     z-index: 1000;
-}
-
-.modal-content {
+  }
+  
+  .modal-content {
     background-color: #000;
     color: #fff;
     padding: 30px;
@@ -259,53 +224,80 @@ th {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
     width: 400px;
     position: relative;
-}
-
-.close {
+  }
+  
+  .close {
     position: absolute;
     top: 10px;
     right: 15px;
     color: #fff;
     font-size: 24px;
     cursor: pointer;
-}
-
-h3 {
-    margin-bottom: 20px;
-    font-size: 22px;
-}
-
-input[type="text"],
-input[type="checkbox"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: none;
-    border-radius: 5px;
-    background-color: #333;
-    color: #fff;
-    font-size: 16px;
-}
-
-input[type="checkbox"] {
-    width: auto;
-    margin-right: 5px;
-}
-
-.submit-button,
-.cancel-button {
+  }
+  
+  .submit-button, .cancel-button {
     background-color: #9b1b30;
     color: #fff;
     border: none;
     border-radius: 5px;
     padding: 10px 15px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s;
     margin-right: 10px;
+  }
+  
+  .submit-button:hover, .cancel-button:hover {
+    background-color: #7a1522;
+  }
+
+
+
+.filter-button:hover {
+    background-color: #7a1522; /* Color más oscuro al pasar el mouse */
+}
+  
+
+
+.filter-input::placeholder {
+    color: #fff; /* Color del texto placeholder */
 }
 
-.submit-button:hover,
-.cancel-button:hover {
-    background-color: #7a1522;
+.filter-input:focus {
+    outline: none; /* Eliminar borde azul al hacer foco */
+    background-color: #7a1522; /* Color más oscuro al hacer foco */
 }
+
+.filter-container {
+    display: flex; /* Usa flexbox */
+    align-items: center; /* Centra verticalmente los elementos */
+    gap: 10px; /* Espacio entre el input y el botón */
+}
+
+.filter-button {
+    margin-left: 0; /* Asegúrate de que no haya margen izquierdo */
+}
+
+.filter-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-input {
+    border-radius: 5px; /* Bordes redondeados */
+    background-color: #333; /* Fondo oscuro */
+    color: #fff; /* Texto blanco */
+    padding: 10px; /* Espaciado interno */
+}
+
+.filter-button {
+    background-color: #9b1b30; /* Color granate */
+    color: #fff; /* Texto blanco */
+    border: none; /* Sin borde */
+    border-radius: 5px; /* Bordes redondeados */
+    padding: 10px 15px; /* Espaciado interno */
+    cursor: pointer; /* Cambia el cursor al pasar el ratón */
+}
+
+
 </style>
