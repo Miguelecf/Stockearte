@@ -40,10 +40,17 @@ export default {
     return response.data;
   },
 
+
+// --------------------- CREATE_ORDER----------
+async createOrder(data) {
+  const response = await apiClient.post('/create-order', data); // Endpoint para crear order
+  return response.data;
+},
+
   //------------------PRODUCT------------------
   async allProduct(){
     const response = await apiClient.get('/search-product'); // Endpoint para listar usuarios
     return response.data; // Ajusta esto según la estructura de tu respuesta
   }
 
-};  
+}; 
