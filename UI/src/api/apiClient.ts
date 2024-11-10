@@ -39,4 +39,11 @@ export default {
     const response = await apiClient.post('/create-store', data); // Endpoint para crear usuario
     return response.data;
   },
+
+
+// --------------------- CREATE_ORDER----------
+async createOrder(data) {
+  const response = await apiClient.post('/create-order', data); // Endpoint para crear order
+  return response.data;
+}
 };  // <--- Aquí faltaba cerrar el objeto exportado

@@ -12,6 +12,7 @@
         <router-link to="/user-management" class="option-card">Gestión de Usuarios</router-link>
         <router-link to="/store-management" class="option-card">Gestión de Tiendas</router-link>
         <router-link to="/product-management" class="option-card">Gestión de Productos</router-link>
+        <router-link to="/order-management" class = "option-card">Crear Orden de Compra</router-link>
       </div>
       <!-- Botón de Logout -->
       <button @click="logout" class="logout-button">Logout</button>
