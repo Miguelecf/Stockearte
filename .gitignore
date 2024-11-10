@@ -11,8 +11,9 @@ yarn-error.log*
 logs/
 *.log
 
+# ignorala xfavor
+server/entities/base.py
 entities/base.py
-# 
 .entities/base.py
 .base.py
 
