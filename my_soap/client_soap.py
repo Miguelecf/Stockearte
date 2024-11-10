@@ -25,7 +25,7 @@ def index():
             except Exception as e:
                 response = f"Error al conectar con el servicio: {e}"
 
-    return render_template("index.html", response=response)
+    return render_template("csv_mass_import.html", response=response)
 
 if __name__ == "__main__":
     app.run(debug=True, port=5051)  # Ejecuta el cliente en el puerto 5051

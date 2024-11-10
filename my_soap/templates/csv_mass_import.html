@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SOAP Client</title>
+    <style scoped>
+      .main-page {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Centrar horizontalmente */
+        justify-content: center; /* Centrar verticalmente */
+        padding: 20px;
+        background-color: #282c34;
+        min-height: 100vh; /* Ocupa toda la altura */
+        color: white;
+        font-family: 'Arial', sans-serif;
+      }
+
+      .logo {
+        width: 150px; /* Ajusta el tamaño del logo */
+        margin-bottom: 20px; /* Espacio entre el logo y el título */
+      }
+
+      header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        text-align: center; /* Centrar texto */
+      }
+
+      .highlight {
+        color: #9b1c30; /* Color granate */
+        font-weight: bold;
+      }
+
+      .options-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .option-card {
+        background-color: #444; /* Color de fondo de las tarjetas */
+        border: 2px solid #9b1c30; /* Color del borde */
+        border-radius: 10px;
+        padding: 15px 30px;
+        margin: 10px;
+        color: white;
+        text-decoration: none;
+        font-size: 1.2rem;
+        transition: background-color 0.3s, transform 0.3s; /* Animación suave */
+      }
+
+      .option-card:hover {
+        background-color: #9b1c30; /* Cambia a granate al pasar el ratón */
+        transform: translateY(-3px); /* Efecto de elevación */
+      }
+
+      /* Estilos para el formulario */
+      form {
+        background-color: #444;
+        border: 2px solid #9b1c30;
+        border-radius: 10px;
+        padding: 20px;
+        width: 300px;
+        margin-top: 30px;
+        text-align: center;
+      }
+
+      label {
+        font-size: 1.1rem;
+        color: white;
+        margin-bottom: 10px;
+        display: block;
+      }
+
+      input[type="file"] {
+        background-color: #222;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #9b1c30;
+        margin-bottom: 20px;
+      }
+
+      button[type="submit"] {
+        background-color: #9b1c30;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      button[type="submit"]:hover {
+        background-color: #7a1522;
+      }
+
+      /* Estilos para mostrar la respuesta */
+      .response {
+        margin-top: 20px;
+        background-color: #333;
+        padding: 15px;
+        border-radius: 5px;
+        color: white;
+        width: 300px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body class="main-page">
+    <header>
+      <h1>SOAP Client</h1>
+    </header>
+
+    <form method="POST" enctype="multipart/form-data">
+      <label for="csv_file">Selecciona el archivo CSV:</label>
+      <input type="file" name="csv_file" accept=".csv" required />
+      <button type="submit">Subir y Procesar CSV</button>
+    </form>
+
+    {% if response %}
+      <div class="response">
+        <h2>Respuesta del servidor:</h2>
+        <p>{{ response }}</p>
+      </div>
+    {% endif %}
+  </body>
+</html>
