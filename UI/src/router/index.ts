@@ -4,6 +4,7 @@ import UserManagement from '../components/UserManagement.vue';
 import StoreManagement from '../components/StoreManagement.vue';
 import UserLogin from '../components/UserLogin.vue';
 import OrderManagement from '@/components/OrderManagement.vue';
+import ProductManagement from '@/components/ProductManagement.vue';
 
 const routes = [
   {
@@ -53,6 +54,19 @@ const routes = [
     path: '/order-management',
     name: 'OrderManagement',
     component: OrderManagement,
+    beforeEnter: (to, from, next) => {
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        next('/'); // Redirige al login si no hay token
+      } else {
+        next();
+      }
+    }
+  },
+  {
+    path: '/product-management',
+    name: 'ProductManagement',
+    component: ProductManagement,
     beforeEnter: (to, from, next) => {
       const token = localStorage.getItem('auth_token');
       if (!token) {

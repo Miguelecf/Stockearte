@@ -1,6 +1,10 @@
 <template>
     <div class="login-container">
+        <!-- Imagen arriba del texto -->
+        <img src="@/assets/logounla.png" alt="Logo de la Universidad" class="logo" />
+
         <h2>Bienvenido a Stockearte</h2>
+        
         <div class="login-form">
             <input v-model="username" class="input-field" placeholder="Usuario" />
             <input v-model="password" type="password" class="input-field" placeholder="Contraseña" />
@@ -18,7 +22,7 @@
 </template>
 
 <script>
-import apiClient from '@/api/apiClient.ts';  // Asegúrate de que la ruta esté correcta
+import apiClient from '@/api/apiClient.ts';
 
 export default {
     data() {
@@ -37,19 +41,17 @@ export default {
             };
 
             try {
-                const response = await apiClient.login(credentials);  // Llamada a tu API
-                console.log('Login successful:', response);
+                const response = await apiClient.login(credentials);
 
                 // Guarda el token en localStorage
-                localStorage.setItem('auth_token', response.token);  // Guarda el token
+                localStorage.setItem('auth_token', response.token);
 
-                this.successMessage = 'Login successful! Redirecting...';
+                this.successMessage = 'Redireccionando...';
                 setTimeout(() => {
                     this.$router.push('/main');  // Redirige al main
-                }, 1500); // Espera un segundo antes de redirigir
+                }, 1500);
             } catch (error) {
-                console.error('Login failed', error);
-                this.error = 'Login failed. Please check your credentials and try again.';
+                this.error = 'Fallo el inicio de sesion, revise los datos ingresados.';
             }
         }
     }
@@ -65,6 +67,11 @@ export default {
     height: 100vh;
     background-color: #222;
     color: white;
+}
+
+.logo {
+    width: 100px; /* Ajusta el tamaño de la imagen */
+    margin-bottom: 20px; /* Espacio debajo de la imagen */
 }
 
 h2 {

@@ -1,9 +1,9 @@
 <template>
     <div class="store-management">
       <router-link to="/main" class="back-button">Volver al Dashboard</router-link>
-      <h2>Gestión de Tiendas</h2>
+      <h2>Gestión de productos</h2>
       <div class="filter-container">
-    <input type="text" class="filter-input" v-model="storeCode" placeholder="Buscar por código de tienda" />
+    <input type="text" class="filter-input" v-model="storeCode" placeholder="Buscar por código de producto" />
     <label>
         <input type="checkbox" v-model="enabled" /> Habilitado?
     </label>
@@ -16,121 +16,117 @@
             <tr>
               <th>#</th>
               <th>Código</th>
-              <th>Dirección</th>
-              <th>Ciudad</th>
-              <th>Estado</th>
+              <th>Nombre</th>
+              <th>Tamaño</th>
+              <th>Color</th>
               <th>Habilitado</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="store in stores" :key="store?.id">
-                <td>{{ store?.id || 'N/A' }}</td>
-                <td>{{ store?.code || 'N/A' }}</td>
-                <td>{{ store?.address || 'N/A' }}</td>
-                <td>{{ store?.city || 'N/A' }}</td>
-                <td>{{ store?.state || 'N/A' }}</td>
-                <td>{{ store?.enabled ? 'Sí' : 'No' }}</td>
-                <td>
-                <button @click="editStore(store?.id)" class="action-button" v-if="store?.id">Editar</button>
-        </td>
-        </tr>
-
+            <tr v-for="product in products" :key="product?.id">
+              <td>{{ product?.id || 'N/A' }}</td>
+              <td>{{ product?.unique_code || 'N/A' }}</td>
+              <td>{{ product?.name || 'N/A' }}</td>
+              <td>{{ product?.size || 'N/A' }}</td>
+              <td>{{ product?.color || 'N/A' }}</td>
+              <td>{{ product?.enabled ? 'Sí' : 'No' }}</td>
+              <td>
+                <button @click="editProduct(product?.id)" class="action-button" v-if="product?.id">Editar</button>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
-      <button @click="showAddStoreForm = true" class="add-store-button">Agregar Tienda</button>
+      <button @click="showAddProductForm = true" class="add-store-button">Agregar Producto</button>
       
-      <!-- Modal para agregar tienda -->
-      <div v-if="showAddStoreForm" class="modal">
+      <!-- Modal para agregar producto -->
+      <div v-if="showAddProductForm" class="modal">
         <div class="modal-content">
-          <span class="close" @click="showAddStoreForm = false">&times;</span>
-          <h3>Agregar Nueva Tienda</h3>
-          <form @submit.prevent="addStore">
-            <input v-model="newStore.code" placeholder="Código de Tienda" required />
-            <input v-model="newStore.address" placeholder="Dirección" required />
-            <input v-model="newStore.city" placeholder="Ciudad" required />
-            <input v-model="newStore.state" placeholder="Estado" required />
+          <span class="close" @click="showAddProductForm = false">&times;</span>
+          <h3>Agregar Nuevo Producto</h3>
+          <form @submit.prevent="addProduct">
+            <input v-model="newProduct.unique_code" placeholder="Código Único del Producto" required />
+            <input v-model="newProduct.name" placeholder="Nombre del Producto" required />
+            <input v-model="newProduct.size" placeholder="Tamaño" required />
+            <input v-model="newProduct.color" placeholder="Color" required />
             <label>
               Habilitado?
-              <input type="checkbox" v-model="newStore.enabled" />
+              <input type="checkbox" v-model="newProduct.enabled" />
             </label>
-            <button type="submit" class="submit-button">Crear Tienda</button>
-            <button type="button" @click="showAddStoreForm = false" class="cancel-button">Cancelar</button>
+            <button type="submit" class="submit-button">Crear Producto</button>
+            <button type="button" @click="showAddProductForm = false" class="cancel-button">Cancelar</button>
           </form>
         </div>
       </div>
     </div>
-  </template>
-  
-  <script>
-  import apiClient from '@/api/apiClient.ts';
-  
-  export default {
-    data() {
-      return {
-        stores: [],
-        showAddStoreForm: false,
-        newStore: {
-          code: '',
-          address: '',
-          city: '',
-          state: '',
-          enabled: true,
-        },
-        filterCode: '',
-        filterState: ''
-      };
-    },
-    methods: {
-      async fetchStores() {
-        try {
-        const responseDisabled = await apiClient.searchStore({ enabled: false });
-        const disabledStores = responseDisabled?.stores || [];
-        const responseEnabled = await apiClient.searchStore({ enabled: true });
-        const enabledStores = responseEnabled?.stores || [];
+</template>
 
-        const allStores = [...disabledStores, ...enabledStores];
-        
-        this.stores = allStores;
-    } catch (error) {
-        console.error('Error al obtener las tiendas:', error);
-    }
+<script>
+import apiClient from '@/api/apiClient.ts';
+
+export default {
+  data() {
+    return {
+      products: [],
+      showAddProductForm: false,
+      newProduct: {
+        unique_code: '',
+        name: '',
+        size: '',
+        color: '',
+        enabled: true,
       },
-      async addStore() {
-        try {
-          const response = await apiClient.createStore(this.newStore);
-          this.stores.push(response.store);
-          this.showAddStoreForm = false;
-        } catch (error) {
-          console.error('Error al agregar la tienda:', error);
-        }
-      },
-      async toggleStoreState(storeId) {
-        try {
-          const store = this.stores.find(s => s.id === storeId);
-          const response = await apiClient.toggleStoreState(storeId, !store.enabled);
-          store.enabled = response.enabled;
-        } catch (error) {
-          console.error('Error al cambiar el estado de la tienda:', error);
-        }
-      },
-      async filterStores() {
-        try {
-          const response = await apiClient.searchStores(this.filterCode, this.filterState);
-          this.stores = response.stores;
-        } catch (error) {
-          console.error('Error al filtrar las tiendas:', error);
-        }
+      productCode: '',
+      enabled: false,
+    };
+  },
+  methods: {
+    async fetchProducts() {
+      try {
+        const responseDisabled = await apiClient.searchProduct({ enabled: false });
+        const disabledProducts = responseDisabled?.products || [];
+        const responseEnabled = await apiClient.searchProduct({ enabled: true });
+        const enabledProducts = responseEnabled?.products || [];
+        this.products = [...disabledProducts, ...enabledProducts];
+      } catch (error) {
+        console.error('Error al obtener los productos:', error);
       }
     },
-    mounted() {
-      this.fetchStores();
-    }
-  };
-  </script>
-  
-  <style scoped>
+    async addProduct() {
+      try {
+        const response = await apiClient.createProduct(this.newProduct);
+        this.products.push(response.product);
+        this.showAddProductForm = false;
+      } catch (error) {
+        console.error('Error al agregar el producto:', error);
+      }
+    },
+    async toggleProductStatus(productId) {
+      try {
+        const product = this.products.find(p => p.id === productId);
+        const response = await apiClient.toggleProductStatus(productId, !product.enabled);
+        product.enabled = response.enabled;
+      } catch (error) {
+        console.error('Error al cambiar el estado del producto:', error);
+      }
+    },
+    async searchProducts() {
+      try {
+        const response = await apiClient.searchProducts(this.productCode, this.enabled);
+        this.products = response.products;
+      } catch (error) {
+        console.error('Error al filtrar los productos:', error);
+      }
+    },
+  },
+  mounted() {
+    this.fetchProducts();
+  }
+};
+</script>
+
+<style scoped>
   .store-management {
     padding: 40px 20px;
     display: flex;
@@ -304,5 +300,4 @@
 }
 
 
-  </style>
-  
+</style>

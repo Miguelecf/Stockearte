@@ -1,5 +1,8 @@
 <template>
   <div class="main-page">
+    <!-- Botón de Logout -->
+    <button @click="logout" class="logout-button">Cerrar sesión</button>
+
     <header>
       <img src="@/assets/logounla.png" alt="Logo de la Universidad" class="logo" />
       <h1>
@@ -14,8 +17,6 @@
         <router-link to="/product-management" class="option-card">Gestión de Productos</router-link>
         <router-link to="/order-management" class = "option-card">Crear Orden de Compra</router-link>
       </div>
-      <!-- Botón de Logout -->
-      <button @click="logout" class="logout-button">Logout</button>
     </main>
   </div>
 </template>
@@ -39,28 +40,29 @@ export default {
 .main-page {
   display: flex;
   flex-direction: column;
-  align-items: center; /* Centrar horizontalmente */
-  justify-content: center; /* Centrar verticalmente */
+  align-items: center;
+  justify-content: center;
   padding: 20px;
   background-color: #282c34;
-  min-height: 100vh; /* Ocupa toda la altura */
+  min-height: 100vh;
   color: white;
   font-family: 'Arial', sans-serif;
+  position: relative;
 }
 
 .logo {
-  width: 150px; /* Ajusta el tamaño del logo */
-  margin-bottom: 20px; /* Espacio entre el logo y el título */
+  width: 150px;
+  margin-bottom: 20px;
 }
 
 header h1 {
   font-size: 2.5rem;
   margin-bottom: 20px;
-  text-align: center; /* Centrar texto */
+  text-align: center;
 }
 
 .highlight {
-  color: #9b1c30; /* Color granate */
+  color: #9b1c30;
   font-weight: bold;
 }
 
@@ -71,20 +73,20 @@ header h1 {
 }
 
 .option-card {
-  background-color: #444; /* Color de fondo de las tarjetas */
-  border: 2px solid #9b1c30; /* Color del borde */
+  background-color: #444;
+  border: 2px solid #9b1c30;
   border-radius: 10px;
   padding: 15px 30px;
   margin: 10px;
   color: white;
   text-decoration: none;
   font-size: 1.2rem;
-  transition: background-color 0.3s, transform 0.3s; /* Animación suave */
+  transition: background-color 0.3s, transform 0.3s;
 }
 
 .option-card:hover {
-  background-color: #9b1c30; /* Cambia a granate al pasar el ratón */
-  transform: translateY(-3px); /* Efecto de elevación */
+  background-color: #9b1c30;
+  transform: translateY(-3px);
 }
 
 /* Estilos para el botón de Logout */
@@ -95,7 +97,9 @@ header h1 {
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
-  margin-top: 20px;
+  position: absolute;
+  top: 20px;
+  left: 20px;
   transition: background-color 0.3s;
 }
 
