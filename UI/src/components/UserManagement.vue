@@ -33,6 +33,7 @@
             </table>
         </div>
         <button @click="showAddUserForm = true" class="add-user-button">Agregar Usuario</button>
+        <button @click.prevent="goToCsvPage" class="csv-upload-button"> Cargar CSV de Usuarios </button>
         <!-- Modal -->
         <div v-if="showAddUserForm" class="modal">
             <div class="modal-content">
@@ -198,15 +199,33 @@ export default {
         deleteUser(id) {
             console.log(`Eliminar usuario con ID: ${id}`);
         },
+        goToCsvPage() {
+            console.log("Redirigiendo a la página de CSV...");
+            window.open('http://127.0.0.1:9091/soap/upload-csv', '_blank'); // Open CSV upload page in new tab
+        },
+
+        handleError(error, defaultMessage) {
+            if (error.response) {
+                // Handle error responses from the server
+                if (error.response.status === 409) {
+                    this.errorMessage = error.response.data.message || defaultMessage;
+                } else {
+                    this.errorMessage = error.response.data.message || defaultMessage;
+                }
+            } else if (error.request) {
+                this.errorMessage = "No se recibió respuesta del servidor.";
+            } else {
+                this.errorMessage = error.message || defaultMessage;
+            }
+            console.error("Error:", error);
+        },
     },
     mounted() {
         this.fetchUsers(); // Llama a la función cuando se monta el componente para cargar los usuarios
     },
+
 };
 </script>
-
-
-
 
 <!--ESTILOS DE LA TABLA MEPA-->
 <style scoped>
@@ -227,6 +246,23 @@ export default {
     text-decoration: none;
     transition: background-color 0.3s;
 }
+
+.csv-upload-button {
+    background-color: #28a745;
+    /* Verde */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: large;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 20px;
+}
+
+.csv-upload-button:hover {
+    background-color: #218838;
+}
+
 
 .back-button:hover {
     background-color: #9b1c30;
