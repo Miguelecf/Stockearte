@@ -36,12 +36,12 @@ class CSVService(ServiceBase):
                 
                 # Verificación de campos vacíos
                 if any(not value.strip() for value in row.values()):
-                    errors.append(f"Línea {line_num}: Campos vacíos detectados.")
+                    errors.append(f"\nLínea {line_num}: Campos vacíos detectados.\n")
                     continue
                 
                 # Duplicidad en el CSV
                 if username in seen_usernames:
-                    errors.append(f"Línea {line_num}: Usuario duplicado en el CSV - '{username}'.")
+                    errors.append(f"\nLínea {line_num}: Usuario duplicado en el CSV - '{username}'.\n")
                     continue
                 
                 seen_usernames.add(username)
@@ -55,7 +55,7 @@ class CSVService(ServiceBase):
                 }
                 data.append(user_data)
             else:
-                errors.append(f"Línea {line_num}: Número incorrecto de campos en la fila.")
+                errors.append(f"\nLínea {line_num}: Número incorrecto de campos en la fila.\n")
         
         try:
             for row in data:
@@ -63,11 +63,11 @@ class CSVService(ServiceBase):
                 store = session.query(Store).filter(Store.code == store_code).first()
 
                 if not store:
-                    errors.append(f"Línea {line_num}: Tienda con código '{store_code}' no encontrada.")
+                    errors.append(f"\nLínea {line_num}: Tienda con código '{store_code}' no encontrada.\n")
                     continue
                 
                 if not store.enabled:
-                    errors.append(f"Línea {line_num}: La tienda con código '{store_code}' está deshabilitada.")
+                    errors.append(f"\nLínea {line_num}: La tienda con código '{store_code}' está deshabilitada.\n")
                     continue
 
                 user = User(
@@ -83,9 +83,9 @@ class CSVService(ServiceBase):
             session.commit()
             
             # Formatear el mensaje final
-            success_message = f"Usuarios procesados exitosamente: {len(data) - len(errors)}."
-            error_message = f"Errores encontrados: {len(errors)}"
-            formatted_errors = "\n".join(f" - {error}" for error in errors)
+            success_message = f"\nUsuarios procesados exitosamente: {len(data) - len(errors)}.\n"
+            error_message = f"Errores encontrados:\n {len(errors)}"
+            formatted_errors = "\n".join(f"\n - {error}" for error in errors)
             
             return f"{success_message}\n{error_message}\n{formatted_errors}"
         
