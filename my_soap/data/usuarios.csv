@@ -1,8 +1,8 @@
 ﻿usuario;contraseña;nombre;apellido;codigo de tienda
 user1;123;Pedro;Caraballo;T001
 user2;123;Alfredo;Cuspide;T002
-user3;123;Marianny;Gomez;T003
+user3;123;Marianny;;T003
 user4;123;Carmen;Fuentes;T004
 user5;123;Tamara;Fuentes;T005
-user6;123;Lucho;Mellera;T006
+user1;123;Lucho;Mellera;T006
 user7;123;Victor;Medina;T007

@@ -15,25 +15,39 @@ DATABASE_URL = "mysql+pymysql://root:1612@localhost/store_system"
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+
 class CSVService(ServiceBase):
     @rpc(Unicode, _returns=Unicode)
     def upload_csv(ctx, csv_content):
-        # Crear la sesión dentro del contexto del servicio SOAP
         session = SessionLocal()
-
         data = []
         csv_content = csv_content.lstrip('\ufeff')
-
         csv_reader = csv.DictReader(StringIO(csv_content), delimiter=';')
-
-        # Procesar las filas del CSV
-        for row in csv_reader:
+        
+        seen_usernames = set()
+        errors = []
+        
+        for line_num, row in enumerate(csv_reader, start=1):
             print(f"Claves del diccionario: {list(row.keys())}")
             print("Fila leída:", row)
 
             if len(row) == 5:
+                username = row["usuario"]
+                
+                # Verificación de campos vacíos
+                if any(not value.strip() for value in row.values()):
+                    errors.append(f"Línea {line_num}: Campos vacíos detectados.")
+                    continue
+                
+                # Duplicidad en el CSV
+                if username in seen_usernames:
+                    errors.append(f"Línea {line_num}: Usuario duplicado en el CSV - '{username}'.")
+                    continue
+                
+                seen_usernames.add(username)
+                
                 user_data = {
-                    "usuario": row["usuario"],
+                    "usuario": username,
                     "contraseña": row["contraseña"],
                     "nombre": row["nombre"],
                     "apellido": row["apellido"],
@@ -41,30 +55,39 @@ class CSVService(ServiceBase):
                 }
                 data.append(user_data)
             else:
-                return "Error en la carga del archivo CSV: Fila incorrecta"
+                errors.append(f"Línea {line_num}: Número incorrecto de campos en la fila.")
         
         try:
             for row in data:
-                print(f"Buscando tienda con código: {row['codigo de tienda']}")
+                store_code = row["codigo de tienda"]
+                store = session.query(Store).filter(Store.code == store_code).first()
 
-                store = session.query(Store).filter(Store.code == row['codigo de tienda']).first()
+                if not store:
+                    errors.append(f"Línea {line_num}: Tienda con código '{store_code}' no encontrada.")
+                    continue
+                
+                if not store.enabled:
+                    errors.append(f"Línea {line_num}: La tienda con código '{store_code}' está deshabilitada.")
+                    continue
 
-                if store:
-                    print(f"Tienda encontrada: {store.code} - {store.id}")
-                    user = User(
-                        username=row["usuario"],
-                        password=row["contraseña"],
-                        first_name=row["nombre"],
-                        last_name=row["apellido"],
-                        store_id=store.id
-                    )
-                    session.add(user)
-                else:
-                    print(f"Error: Tienda con código {row['codigo de tienda']} no encontrada.")
-                    return f"Error: Tienda con código {row['codigo de tienda']} no encontrada."
+                user = User(
+                    username=row["usuario"],
+                    password=row["contraseña"],
+                    first_name=row["nombre"],
+                    last_name=row["apellido"],
+                    store_id=store.id,
+                    enabled=True
+                )
+                session.add(user)
 
             session.commit()
-            return f"Usuarios procesados: {len(data)}"
+            
+            # Formatear el mensaje final
+            success_message = f"Usuarios procesados exitosamente: {len(data) - len(errors)}."
+            error_message = f"Errores encontrados: {len(errors)}"
+            formatted_errors = "\n".join(f" - {error}" for error in errors)
+            
+            return f"{success_message}\n{error_message}\n{formatted_errors}"
         
         except Exception as e:
             session.rollback()
@@ -73,3 +96,4 @@ class CSVService(ServiceBase):
         
         finally:
             session.close()
+
