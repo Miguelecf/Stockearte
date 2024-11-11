@@ -137,6 +137,11 @@ This will start the TypeScript client, which will connect to the gRPC server run
    
    npm install @vitejs/plugin-react-swc
 
+   npm install jspdf
+   npm install jspdf jspdf-autotable
+   pip install spyne
+   pip install soap
+
 
 3. **Start the client:**
 

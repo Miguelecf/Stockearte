@@ -6,6 +6,7 @@ const apiClient = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
 // -----------USER-------------
 export default {
   async listUsers() {
@@ -39,6 +40,27 @@ export default {
     const response = await apiClient.post('/create-store', data); // Endpoint para crear usuario
     return response.data;
   },
+
+
+
+// --------------------- CREATE_ORDER----------
+async createOrder(data) {
+  const response = await apiClient.post('/create-order', data); // Endpoint para crear order
+  return response.data;
+},
+
+  // ------------------PRODUCT------------------
+  async searchProducts(filters) {
+    // Llamar al endpoint de búsqueda de productos con los filtros como parámetros de consulta
+    const response = await apiClient.get('/search-product', { params: filters });
+    return response.data;
+  },
+  async createProduct(data) {
+    const response = await apiClient.post('/create-product', data); // Endpoint para crear usuario
+    return response.data;
+  },
+
+}; 
 
 
 // --------------------- CREATE_ORDER----------

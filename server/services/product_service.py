@@ -92,7 +92,6 @@ class ProductService(product_pb2_grpc.ProductService):
         unique_code = request.unique_code if request.unique_code else None
         size = request.size if request.size else None
         color = request.color if request.color else None
-        enabled = request.enabled  # Tomamos directamente el valor de enabled, que será True o False
 
         # Llamar al repositorio para buscar productos
         found_products = self.product_repository.search_product(
@@ -100,7 +99,6 @@ class ProductService(product_pb2_grpc.ProductService):
             unique_code=unique_code,
             size=size,
             color=color,
-            enabled=enabled  # Pasamos el valor de enabled, que será True o False
         )
 
         # Mapear los productos encontrados a la respuesta gRPC

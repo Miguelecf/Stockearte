@@ -1,0 +1,67 @@
+<definitions name="CatalogService" targetNamespace="http://example.com/catalog"
+    xmlns:tns="http://example.com/catalog"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+
+    <!-- Tipo de datos para el producto -->
+    <types>
+        <xsd:schema targetNamespace="http://example.com/catalog">
+            <xsd:complexType name="Product">
+                <xsd:sequence>
+                    <xsd:element name="name" type="xsd:string"/>
+                    <xsd:element name="unique_code" type="xsd:string"/>
+                    <xsd:element name="size" type="xsd:string"/>
+                    <xsd:element name="color" type="xsd:string"/>
+                    <xsd:element name="image_url" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <!-- Tipo de datos para la tienda -->
+            <xsd:complexType name="Store">
+                <xsd:sequence>
+                    <xsd:element name="store_code" type="xsd:string"/>
+                    <xsd:element name="address" type="xsd:string"/>
+                    <xsd:element name="city" type="xsd:string"/>
+                    <xsd:element name="state" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:schema>
+    </types>
+
+    <!-- Mensaje de solicitud para generar el PDF del catálogo -->
+    <message name="generateCatalogPDFRequest">
+        <part name="store_id" type="xsd:int"/>
+    </message>
+    <message name="generateCatalogPDFResponse">
+        <part name="pdf_url" type="xsd:string"/>
+    </message>
+
+    <!-- Definición de los métodos del servicio -->
+    <portType name="CatalogServicePortType">
+        <operation name="generateCatalogPDF">
+            <input message="tns:generateCatalogPDFRequest"/>
+            <output message="tns:generateCatalogPDFResponse"/>
+        </operation>
+    </portType>
+
+    <!-- Enlace y dirección del servicio -->
+    <binding name="CatalogServiceBinding" type="tns:CatalogServicePortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="generateCatalogPDF">
+            <soap:operation soapAction="http://example.com/catalog/generateCatalogPDF"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+    </binding>
+
+    <service name="CatalogService">
+        <port name="CatalogServicePort" binding="tns:CatalogServiceBinding">
+            <soap:address location="http://example.com/catalogService"/>
+        </port>
+    </service>
+</definitions>

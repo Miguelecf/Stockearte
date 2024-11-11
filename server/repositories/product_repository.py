@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session, Query
 from server.entities.product import Product
+from typing import Optional,List
 
 
 class ProductRepository:
@@ -31,8 +32,15 @@ class ProductRepository:
         try:
             # Confirmar los cambios en la base de datos
             self.session.commit()
-            # Refrescar la instancia para que refleje los datos guardados
+
+            # send_news_to_kafka(unique_code=unique_code,
+            #                size=size,
+            #                color=color,
+            #                image_url=image_url
+            # )
+            # Refrescar la instancia para que refleje los datos guardado
             self.session.refresh(product)
+
         except Exception as e:
             # Si ocurre un error, hacer rollback y relanzar la excepción
             self.session.rollback()
@@ -73,10 +81,12 @@ class ProductRepository:
         if not unique_code:
             raise ValueError("Unique code is required to update a product.")
 
-        product = self.session.query(Product).filter(Product.unique_code == unique_code).first()
+        product = self.session.query(Product).filter(
+            Product.unique_code == unique_code).first()
         # product = self.get_product_by_code(unique_code)
         if not product:
-            raise ValueError(f"Product with unique_code {unique_code} not found.")
+            raise ValueError(f"Product with unique_code {
+                             unique_code} not found.")
 
         # Actualizar solo si se proporciona un nuevo valor y no es None ni vacío
         if name not in [None, ""]:
@@ -87,7 +97,7 @@ class ProductRepository:
             product.color = color
         if image_url not in [None, ""]:
             product.image_url = image_url
-        
+
         if enabled is not None:  # Esto permite True y False
             product.enabled = enabled
 
@@ -96,19 +106,23 @@ class ProductRepository:
             self.session.refresh(product)
         except Exception as e:
             self.session.rollback()
-            raise RuntimeError(f"An error occurred while updating the product with unique_code {unique_code}: {str(e)}")
+            raise RuntimeError(f"An error occurred while updating the product with unique_code {
+                               unique_code}: {str(e)}")
 
         return product
 
-
     def search_product(
         self,
-        name: str = None,
-        unique_code: str = None,
-        size: str = None,
-        color: str = None,
-        enabled: bool = None  # Aceptamos enabled como booleano
-        ):
+        name: Optional[str] = None,
+        unique_code: Optional[str] = None,
+        size: Optional[str] = None,
+        color: Optional[str] = None,
+    ) -> List['Product']:  # Devolverá una lista de productos
+
+        # Si no se pasan parámetros, devolver todos los productos
+        if not any([name, unique_code, size, color]):
+            return self.session.query(Product).all()
+
         # Crear una consulta base
         query = self.session.query(Product)
 
@@ -122,29 +136,27 @@ class ProductRepository:
         if color:
             query = query.filter(Product.color.ilike(f"%{color}%"))
 
-        # Filtro por enabled si se proporciona un valor, incluyendo False
-        if enabled is not None:
-            query = query.filter(Product.enabled == enabled)
+        try:
+            # Ejecutar la consulta y devolver los productos
+            products = query.all()
+        except Exception as e:
+            # Si hay un error al ejecutar la consulta, lo manejamos aquí
+            raise ValueError(f"Error executing search query: {e}")
 
-        # Ejecutar la consulta
-        products = query.all()
-
-        # Si no se encuentran productos, puedes manejarlo de la siguiente manera
+        # Si no se encuentran productos, devolver una lista vacía o manejarlo de otra forma
         if not products:
             raise ValueError("No products found matching the search criteria.")
 
-        # Devolver los productos encontrados
         return products
-
 
     def disable_product(self, unique_code: str, enabled: bool) -> Product:
         # Obtener el producto por su código único
         product = self.get_product_by_code(unique_code)
-        
+
         if product:
             # Cambiar el estado de habilitación del producto
             product.enabled = enabled
-            
+
             try:
                 # Confirmar los cambios en la base de datos
                 self.session.commit()

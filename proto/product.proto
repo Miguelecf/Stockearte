@@ -9,7 +9,6 @@ service  ProductService {
     rpc DisableProduct(DisableProductRequest) returns (ProductResponse);
     rpc UpdateProduct(UpdateProductRequest) returns (ProductResponse);
     rpc SearchProduct(SearchProductRequest) returns (ProductListResponse);
-
 }
 
 
