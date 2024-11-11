@@ -33,11 +33,11 @@ class PDFService:
             width, height = letter
             
             # Título del PDF
-            p.setFont("Helvetica-Bold", 18)
+            p.setFont("Times-Roman", 18)
             p.drawString(100, height - 100, title)
             
             # Contenido principal
-            p.setFont("Helvetica", 12)
+            p.setFont("Times-Roman", 12)
             text_object = p.beginText(100, height - 130)
             text_object.setTextOrigin(100, height - 130)
             

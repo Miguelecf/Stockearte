@@ -53,7 +53,10 @@ async createOrder(data) {
     // Llamar al endpoint de búsqueda de productos con los filtros como parámetros de consulta
     const response = await apiClient.get('/search-product', { params: filters });
     return response.data;
-  }
-
+  },
+  async createProduct(data) {
+    const response = await apiClient.post('/create-product', data); // Endpoint para crear usuario
+    return response.data;
+  },
 
 }; 

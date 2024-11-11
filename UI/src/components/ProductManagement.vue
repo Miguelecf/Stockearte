@@ -93,10 +93,18 @@ export default {
         size: '',
         color: ''
       },
-      products: []
+      products: [],
+      showAddProductForm: false,
+      newProduct: {
+        unique_code: '',
+        name: '',
+        size: '',
+        color: '',
+        enabled: false
+      }
     };
   },
-  methods: {
+  methods: {       
     async searchProducts() {
       try {
         // Llamamos a la API de búsqueda de productos
@@ -106,21 +114,42 @@ export default {
         console.error('Error buscando productos:', error);
       }
     },
-  exportToPDF() {
-    const doc = new jsPDF();
-    autoTable(doc, {
-        head: [['Código', 'Nombre', 'Tamaño', 'Color', 'Habilitado']],
-        body: this.products.map(product => [
-          product?.unique_code || 'N/A',
-          product?.name || 'N/A',
-          product?.size || 'N/A',
-          product?.color || 'N/A',
-          product?.enabled ? 'Sí' : 'No',
-        ]),
-    });
-    doc.save('products.pdf');
-},
-exportToPDF1() {
+    async addProduct() {
+      try {
+                const response = await apiClient.createProduct(this.newProduct);
+                console.log("Producto creado:", response);
+                this.showAddProductForm = false;
+
+                //await this.fetchUsers();
+
+            } catch (error) {
+                console.error("Error al agregar el usuario:", error);
+                if (error.response) {
+                    console.error("Response data:", error.response.data);
+                    console.error("Response status:", error.response.status);
+                    console.error("Response headers:", error.response.headers);
+                } else if (error.request) {
+                    console.error("Request data:", error.request);
+                } else {
+                    console.error("Error", error.message);
+                }
+            }
+    },
+    exportToPDF() {
+      const doc = new jsPDF();
+      autoTable(doc, {
+          head: [['Código', 'Nombre', 'Tamaño', 'Color', 'Habilitado']],
+          body: this.products.map(product => [
+            product?.unique_code || 'N/A',
+            product?.name || 'N/A',
+            product?.size || 'N/A',
+            product?.color || 'N/A',
+            product?.enabled ? 'Sí' : 'No',
+          ]),
+      });
+      doc.save('products.pdf');
+    },
+    exportToPDF1() {
       console.log("Redirigiendo...");
       
       // Configuración del popup
@@ -144,9 +173,8 @@ exportToPDF1() {
 };
 </script>
 
-
-
 <style scoped>
+/* Estilos existentes */
 .product-management {
   padding: 40px 20px;
   display: flex;
@@ -168,6 +196,8 @@ exportToPDF1() {
 .back-button:hover {
   background-color: #9b1c30;
 }
+
+/* Aquí mantengo los estilos originales para la tabla y botones */
 
 .table-container {
   max-width: 1000px;
@@ -265,67 +295,40 @@ th {
 .close {
   position: absolute;
   top: 10px;
-  right: 15px;
-  color: #fff;
+  right: 10px;
   font-size: 24px;
   cursor: pointer;
 }
 
 .submit-button,
 .cancel-button {
-  background-color: #9b1b30;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  padding: 10px 15px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  margin-right: 10px;
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
 }
 
-.submit-button:hover,
+.submit-button {
+  background-color: #444;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+}
+
+.submit-button:hover {
+  background-color: #9b1c30;
+}
+
+.cancel-button {
+  background-color: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 .cancel-button:hover {
-  background-color: #7a1522;
-}
-
-.filter-button:hover {
-  background-color: #7a1522;
-}
-
-.submit-button:hover, .cancel-button:hover {
-    background-color: #7a1522;
-  }
-
-
-.filter-input::placeholder {
-  color: #fff;
-}
-
-.filter-input:focus {
-  outline: none;
-  background-color: #7a1522;
-}
-
-.filter-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.filter-button {
-  background-color: #9b1b30;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 10px 15px;
-  cursor: pointer;
-}
-
-.filter-input {
-  border-radius: 5px;
-  background-color: #333;
-  color: white;
-  padding: 10px;
+  color: #9b1c30;
 }
 
 .export-button {
@@ -344,39 +347,33 @@ th {
   background-color: #9b1c30;
 }
 
-.button-container {
+.filter-container {
   display: flex;
-  justify-content: space-between;
-  width: 100%;
-  max-width: 800px;
-  margin-top: 20px;
+  flex-direction: column;
+  margin-right: 10px;
 }
 
-.add-product-button,
-.export-button {
-  font-size: large;
-  border: none;
+.filter-input {
   border-radius: 5px;
+  background-color: #333;
   color: white;
-  padding: 10px 20px;
+  padding: 10px;
+}
+
+.filter-button {
+  padding: 8px;
+  font-size: 16px;
+}
+
+.filter-button {
+  background-color: #444;
+  color: white;
+  border: none;
   cursor: pointer;
-  transition: background-color 0.3s;
+  border-radius: 5px;
 }
 
-.add-product-button {
-  background-color: #444;
-}
-
-.add-product-button:hover {
-  background-color: #9b1c30;
-}
-
-.export-button {
-  background-color: #444;
-}
-
-.export-button:hover {
+.filter-button:hover {
   background-color: #9b1c30;
 }
 </style>
-
