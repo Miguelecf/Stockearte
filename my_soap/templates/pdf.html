@@ -34,20 +34,22 @@
 </head>
 <body class="main-page">
 <header>
-    <h1>Generar PDF desde el Servicio SOAP</h1>
+    <h1>Generar PDF de productos</h1>
 </header>
 
-<form method="POST">
-    {% csrf_token %}
+<form method="POST" action="/soap/export-pdf">
     <label for="title">Título del PDF:</label>
-    <input type="text" name="title" value="Reporte de Productos" required />
+    <input type="text" name="title" value="ProductosListado" required />
     <button type="submit">Generar PDF</button>
 </form>
 
 {% if response %}
     <script type="text/javascript">
     // Este script abre el PDF en una nueva ventana o popup
-    window.open("{{ response.url }}", "_blank", "width=800, height=600");
+    const pdfData = "{{ response | tojson }}";
+    const pdfBlob = new Blob([new Uint8Array(atob(pdfData).split('').map(function(c) { return c.charCodeAt(0); }))], { type: 'application/pdf' });
+    const url = window.URL.createObjectURL(pdfBlob);
+    window.open(url, '_blank');
     </script>
 {% endif %}
 </body>

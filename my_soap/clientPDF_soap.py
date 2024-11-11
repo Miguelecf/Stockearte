@@ -36,7 +36,7 @@ def index():
             except Exception as e:
                 response = f"Error al conectar con el servicio: {e}"
 
-    return render_template("pdf_form.html", response=response)
+    return render_template("pdf.html", response=response)
 
 if __name__ == "__main__":
     app.run(debug=True, port=9099)  # Ejecuta el cliente en el puerto 9099

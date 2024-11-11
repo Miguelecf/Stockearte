@@ -1,51 +1,62 @@
 <template>
-  <div class="store-management">
-      <router-link to="/main" class="back-button">Volver al Dashboard</router-link>
-      <h2>Gestión de productos</h2>
-      <div class="filter-container">
-          <input type="text" class="filter-input" v-model="storeCode" placeholder="Buscar por código de producto" />
-          <label>
-              <input type="checkbox" v-model="enabled" /> Habilitado?
-          </label>
-          <button @click="searchStores" class="filter-button">Buscar</button>
-      </div>
+  <div class="product-management">
+    <router-link to="/main" class="back-button">Volver al Dashboard</router-link>
+    <h1>Gestión de Productos</h1>
 
-      <div class="table-container">
-          <table>
-              <thead>
-                  <tr>
-                      <th>#</th>
-                      <th>Código</th>
-                      <th>Nombre</th>
-                      <th>Tamaño</th>
-                      <th>Color</th>
-                      <th>Habilitado</th>
-                      <th>Acciones</th>
-                  </tr>
-              </thead>
-              <tbody>
-                  <tr v-for="product in products" :key="product?.id">
-                      <td>{{ product?.id || 'N/A' }}</td>
-                      <td>{{ product?.unique_code || 'N/A' }}</td>
-                      <td>{{ product?.name || 'N/A' }}</td>
-                      <td>{{ product?.size || 'N/A' }}</td>
-                      <td>{{ product?.color || 'N/A' }}</td>
-                      <td>{{ product?.enabled ? 'Sí' : 'No' }}</td>
-                      <td>
-                          <button @click="editProduct(product?.id)" class="action-button" v-if="product?.id">Editar</button>
-                      </td>
-                  </tr>
-              </tbody>
-          </table>
+    <!-- Formulario de búsqueda -->
+    <form @submit.prevent="searchProducts" class="search-form">
+      <div class="filter-container">
+        <label for="name" class="filter-label">Nombre</label>
+        <input type="text" v-model="filters.name" id="name" class="filter-input" />
       </div>
-      <div class="button-container">
+      <div class="filter-container">
+        <label for="uniqueCode" class="filter-label">Código Único</label>
+        <input type="text" v-model="filters.uniqueCode" id="uniqueCode" class="filter-input" />
+      </div>
+      <div class="filter-container">
+        <label for="size" class="filter-label">Tamaño</label>
+        <input type="text" v-model="filters.size" id="size" class="filter-input" />
+      </div>
+      <div class="filter-container">
+        <label for="color" class="filter-label">Color</label>
+        <input type="text" v-model="filters.color" id="color" class="filter-input" />
+      </div>
+      <button type="submit" class="filter-button">Buscar</button>
+    </form>
+
+    <!-- Mostrar los productos -->
+    <div v-if="products.length" class="table-container">
+      <h2>Resultados de la Búsqueda:</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Código Único</th>
+            <th>Tamaño</th>
+            <th>Color</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="product in products" :key="product.id">
+            <td>{{ product.name }}</td>
+            <td>{{ product.uniqueCode }}</td>
+            <td>{{ product.size }}</td>
+            <td>{{ product.color }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div v-else>
+      <p>No se encontraron productos.</p>
+    </div>
+    <div class="button-container">
         <button @click="showAddProductForm = true" class="export-button">Agregar Producto</button>
         <button @click.prevent="exportToPDF1" class="export-button">Exportar a PDF</button>
       </div>
+  </div>
 
-
-      <!-- Modal para agregar producto -->
-      <div v-if="showAddProductForm" class="modal">
+    <!-- Modal para agregar producto -->
+    <div v-if="showAddProductForm" class="modal">
           <div class="modal-content">
               <span class="close" @click="showAddProductForm = false">&times;</span>
               <h3>Agregar Nuevo Producto</h3>
@@ -63,11 +74,10 @@
               </form>
           </div>
       </div>
-  </div>
 </template>
 
 <script>
-import apiClient from '@/api/apiClient.ts';
+import apiClient from '@/api/apiClient.ts'; // Asegúrate de que la ruta es correcta
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -75,63 +85,27 @@ import autoTable from 'jspdf-autotable';
 jsPDF.autoTable = autoTable;
 
 export default {
-name: "ProductManagement",
-data() {
-  return {
-    products: [],
-    showAddProductForm: false,
-    newProduct: {
-      unique_code: '',
-      name: '',
-      size: '',
-      color: '',
-      enabled: true,
+  data() {
+    return {
+      filters: {
+        name: '',
+        uniqueCode: '',
+        size: '',
+        color: ''
+      },
+      products: []
+    };
+  },
+  methods: {
+    async searchProducts() {
+      try {
+        // Llamamos a la API de búsqueda de productos
+        const response = await apiClient.searchProducts(this.filters);
+        this.products = response; // Asumimos que la respuesta es un array de productos
+      } catch (error) {
+        console.error('Error buscando productos:', error);
+      }
     },
-    productCode: '',
-    enabled: false,
-  };
-},
-methods: {
-  async fetchProducts() {
-    try {
-      const responseDisabled = await apiClient.searchProduct({ enabled: false });
-      const disabledProducts = responseDisabled?.products || [];
-      const responseEnabled = await apiClient.searchProduct({ enabled: true });
-      const enabledProducts = responseEnabled?.products || [];
-      this.products = [...disabledProducts, ...enabledProducts];
-    } catch (error) {
-      console.error('Error al obtener los productos habilitados:', error);
-    }
-  },
-  async addProduct() {
-    try {
-      const response = await apiClient.createProduct(this.newProduct);
-      this.products.push(response.product);
-      this.showAddProductForm = false;
-    } catch (error) {
-      console.error('Error al agregar el producto:', error);
-    }
-  },
-  async toggleProductStatus(productId) {
-    try {
-      const product = this.products.find(p => p.id === productId);
-      const response = await apiClient.toggleProductStatus(productId, !product.enabled);
-      product.enabled = response.enabled;
-    } catch (error) {
-      console.error('Error al cambiar el estado del producto:', error);
-    }
-  },
-  async searchProducts() {
-    try {
-      const responseDisabled = await apiClient.searchProduct({ enabled: false });
-      const disabledProducts = responseDisabled?.products || [];
-      const responseEnabled = await apiClient.searchProduct({ enabled: true });
-      const enabledProducts = responseEnabled?.products || [];
-      this.products = [...disabledProducts, ...enabledProducts];
-    } catch (error) {
-      console.error('Error al buscar los productos:', error);
-    }
-  },
   exportToPDF() {
     const doc = new jsPDF();
     autoTable(doc, {
@@ -157,81 +131,81 @@ exportToPDF1() {
       
       // Abrir el popup
       window.open(
-        'http://127.0.0.1:9091/soap/export-pdf', 
+        'http://127.0.0.1:9099/soap/export-pdf', 
         '_blank' 
         ,`width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`
       );
     }
-},
-mounted() {
-  this.fetchProducts();
-}
+  },
+  mounted() {
+    // Llamada inicial cuando el componente se monte (si quieres cargar todos los productos al inicio)
+    this.searchProducts();
+  }
 };
 </script>
 
+
+
 <style scoped>
-  .store-management {
-    padding: 40px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .back-button {
-    background-color: #444;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    padding: 10px 20px;
-    margin-bottom: 20px;
-    text-decoration: none;
-    transition: background-color 0.3s;
-  }
-  
-  .back-button:hover {
-    background-color: #9b1c30;
-  }
-  
-  .table-container {
-    max-width: 800px;
-    width: 100%;
-    margin-bottom: 20px;
-    overflow-x: auto;
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: #222;
-    border-radius: 10px;
-  }
-  
-  th, td {
-    border: 1px solid #333;
-    padding: 12px;
-    text-align: left;
-  }
-  
-  th {
-    background-color: #9b1c30;
-    color: white;
-  }
-  
-  .action-button {
-    background-color: #444;
-    border: none;
-    border-radius: 5px;
-    padding: 5px 10px;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .action-button:hover {
-    background-color: #9b1c30;
-  }
-  
-  .add-store-button {
+.product-management {
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.back-button {
+  background-color: #444;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.back-button:hover {
+  background-color: #9b1c30;
+}
+
+.table-container {
+  max-width: 1000px;
+  width: 100%;
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #222;
+  border-radius: 10px;
+}
+
+th,
+td {
+  border: 1px solid #333;
+  padding: 12px;
+  text-align: left;
+}
+
+th {
+  background-color: #9b1c30;
+  color: white;
+}
+
+.action-button {
+  background-color: #444;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.add-store-button {
     background-color: #444;
     font-size: large;
     border: none;
@@ -241,108 +215,119 @@ mounted() {
     cursor: pointer;
     transition: background-color 0.3s;
   }
-  
+
   .add-store-button:hover {
     background-color: #9b1c30;
   }
-  
-  .modal {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    z-index: 1000;
-  }
-  
-  .modal-content {
-    background-color: #000;
-    color: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-    width: 400px;
-    position: relative;
-  }
-  
-  .close {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    color: #fff;
-    font-size: 24px;
-    cursor: pointer;
-  }
-  
-  .submit-button, .cancel-button {
-    background-color: #9b1b30;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 15px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-right: 10px;
-  }
-  
-  .submit-button:hover, .cancel-button:hover {
+
+.action-button:hover {
+  background-color: #9b1c30;
+}
+
+.add-product-button {
+  background-color: #444;
+  font-size: large;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.add-product-button:hover {
+  background-color: #9b1c30;
+}
+
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #000;
+  color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  width: 400px;
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.submit-button,
+.cancel-button {
+  background-color: #9b1b30;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-right: 10px;
+}
+
+.submit-button:hover,
+.cancel-button:hover {
+  background-color: #7a1522;
+}
+
+.filter-button:hover {
+  background-color: #7a1522;
+}
+
+.submit-button:hover, .cancel-button:hover {
     background-color: #7a1522;
   }
 
 
-
-.filter-button:hover {
-    background-color: #7a1522; /* Color más oscuro al pasar el mouse */
-}
-  
-
-
 .filter-input::placeholder {
-    color: #fff; /* Color del texto placeholder */
+  color: #fff;
 }
 
 .filter-input:focus {
-    outline: none; /* Eliminar borde azul al hacer foco */
-    background-color: #7a1522; /* Color más oscuro al hacer foco */
+  outline: none;
+  background-color: #7a1522;
 }
 
 .filter-container {
-    display: flex; /* Usa flexbox */
-    align-items: center; /* Centra verticalmente los elementos */
-    gap: 10px; /* Espacio entre el input y el botón */
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .filter-button {
-    margin-left: 0; /* Asegúrate de que no haya margen izquierdo */
-}
-
-.filter-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  background-color: #9b1b30;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  cursor: pointer;
 }
 
 .filter-input {
-    border-radius: 5px; /* Bordes redondeados */
-    background-color: #333; /* Fondo oscuro */
-    color: #fff; /* Texto blanco */
-    padding: 10px; /* Espaciado interno */
+  border-radius: 5px;
+  background-color: #333;
+  color: white;
+  padding: 10px;
 }
 
-.filter-button {
-    background-color: #9b1b30; /* Color granate */
-    color: #fff; /* Texto blanco */
-    border: none; /* Sin borde */
-    border-radius: 5px; /* Bordes redondeados */
-    padding: 10px 15px; /* Espaciado interno */
-    cursor: pointer; /* Cambia el cursor al pasar el ratón */
-}
-
-/* Estilos adicionales para el botón de exportación */
 .export-button {
   background-color: #444;
   font-size: large;
@@ -363,11 +348,12 @@ mounted() {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  max-width: 800px; /* Ajusta el ancho según lo necesario */
+  max-width: 800px;
   margin-top: 20px;
 }
 
-.add-store-button, .export-button {
+.add-product-button,
+.export-button {
   font-size: large;
   border: none;
   border-radius: 5px;
@@ -377,11 +363,11 @@ mounted() {
   transition: background-color 0.3s;
 }
 
-.add-store-button {
+.add-product-button {
   background-color: #444;
 }
 
-.add-store-button:hover {
+.add-product-button:hover {
   background-color: #9b1c30;
 }
 
@@ -392,7 +378,5 @@ mounted() {
 .export-button:hover {
   background-color: #9b1c30;
 }
-
-
-
 </style>
+
