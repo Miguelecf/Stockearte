@@ -4,7 +4,7 @@ from zeep import Client
 app = Flask(__name__)
 
 # URL del servicio WSDL del servidor SOAP
-wsdl_url = "http://127.0.0.1:9091/soap?wsdl"
+wsdl_url = "http://127.0.0.1:9000/soap?wsdl"
 
 @app.route("/soap/upload-csv", methods=["GET", "POST"])
 def index():

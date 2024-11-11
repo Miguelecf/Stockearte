@@ -1,128 +1,171 @@
 <template>
-    <div class="store-management">
+  <div class="store-management">
       <router-link to="/main" class="back-button">Volver al Dashboard</router-link>
       <h2>Gestión de productos</h2>
       <div class="filter-container">
-    <input type="text" class="filter-input" v-model="storeCode" placeholder="Buscar por código de producto" />
-    <label>
-        <input type="checkbox" v-model="enabled" /> Habilitado?
-    </label>
-    <button @click="searchStores" class="filter-button">Buscar</button>
-</div>
+          <input type="text" class="filter-input" v-model="storeCode" placeholder="Buscar por código de producto" />
+          <label>
+              <input type="checkbox" v-model="enabled" /> Habilitado?
+          </label>
+          <button @click="searchStores" class="filter-button">Buscar</button>
+      </div>
 
       <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Código</th>
-              <th>Nombre</th>
-              <th>Tamaño</th>
-              <th>Color</th>
-              <th>Habilitado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="product in products" :key="product?.id">
-              <td>{{ product?.id || 'N/A' }}</td>
-              <td>{{ product?.unique_code || 'N/A' }}</td>
-              <td>{{ product?.name || 'N/A' }}</td>
-              <td>{{ product?.size || 'N/A' }}</td>
-              <td>{{ product?.color || 'N/A' }}</td>
-              <td>{{ product?.enabled ? 'Sí' : 'No' }}</td>
-              <td>
-                <button @click="editProduct(product?.id)" class="action-button" v-if="product?.id">Editar</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+          <table>
+              <thead>
+                  <tr>
+                      <th>#</th>
+                      <th>Código</th>
+                      <th>Nombre</th>
+                      <th>Tamaño</th>
+                      <th>Color</th>
+                      <th>Habilitado</th>
+                      <th>Acciones</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr v-for="product in products" :key="product?.id">
+                      <td>{{ product?.id || 'N/A' }}</td>
+                      <td>{{ product?.unique_code || 'N/A' }}</td>
+                      <td>{{ product?.name || 'N/A' }}</td>
+                      <td>{{ product?.size || 'N/A' }}</td>
+                      <td>{{ product?.color || 'N/A' }}</td>
+                      <td>{{ product?.enabled ? 'Sí' : 'No' }}</td>
+                      <td>
+                          <button @click="editProduct(product?.id)" class="action-button" v-if="product?.id">Editar</button>
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
       </div>
-      <button @click="showAddProductForm = true" class="add-store-button">Agregar Producto</button>
-      
+      <div class="button-container">
+        <button @click="showAddProductForm = true" class="export-button">Agregar Producto</button>
+        <button @click.prevent="exportToPDF1" class="export-button">Exportar a PDF</button>
+      </div>
+
+
       <!-- Modal para agregar producto -->
       <div v-if="showAddProductForm" class="modal">
-        <div class="modal-content">
-          <span class="close" @click="showAddProductForm = false">&times;</span>
-          <h3>Agregar Nuevo Producto</h3>
-          <form @submit.prevent="addProduct">
-            <input v-model="newProduct.unique_code" placeholder="Código Único del Producto" required />
-            <input v-model="newProduct.name" placeholder="Nombre del Producto" required />
-            <input v-model="newProduct.size" placeholder="Tamaño" required />
-            <input v-model="newProduct.color" placeholder="Color" required />
-            <label>
-              Habilitado?
-              <input type="checkbox" v-model="newProduct.enabled" />
-            </label>
-            <button type="submit" class="submit-button">Crear Producto</button>
-            <button type="button" @click="showAddProductForm = false" class="cancel-button">Cancelar</button>
-          </form>
-        </div>
+          <div class="modal-content">
+              <span class="close" @click="showAddProductForm = false">&times;</span>
+              <h3>Agregar Nuevo Producto</h3>
+              <form @submit.prevent="addProduct">
+                  <input v-model="newProduct.unique_code" placeholder="Código Único del Producto" required />
+                  <input v-model="newProduct.name" placeholder="Nombre del Producto" required />
+                  <input v-model="newProduct.size" placeholder="Tamaño" required />
+                  <input v-model="newProduct.color" placeholder="Color" required />
+                  <label>
+                      Habilitado?
+                      <input type="checkbox" v-model="newProduct.enabled" />
+                  </label>
+                  <button type="submit" class="submit-button">Crear Producto</button>
+                  <button type="button" @click="showAddProductForm = false" class="cancel-button">Cancelar</button>
+              </form>
+          </div>
       </div>
-    </div>
+  </div>
 </template>
 
 <script>
 import apiClient from '@/api/apiClient.ts';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
+// Asignamos autoTable a jsPDF
+jsPDF.autoTable = autoTable;
 
 export default {
-  data() {
-    return {
-      products: [],
-      showAddProductForm: false,
-      newProduct: {
-        unique_code: '',
-        name: '',
-        size: '',
-        color: '',
-        enabled: true,
-      },
-      productCode: '',
-      enabled: false,
-    };
+name: "ProductManagement",
+data() {
+  return {
+    products: [],
+    showAddProductForm: false,
+    newProduct: {
+      unique_code: '',
+      name: '',
+      size: '',
+      color: '',
+      enabled: true,
+    },
+    productCode: '',
+    enabled: false,
+  };
+},
+methods: {
+  async fetchProducts() {
+    try {
+      const responseDisabled = await apiClient.searchProduct({ enabled: false });
+      const disabledProducts = responseDisabled?.products || [];
+      const responseEnabled = await apiClient.searchProduct({ enabled: true });
+      const enabledProducts = responseEnabled?.products || [];
+      this.products = [...disabledProducts, ...enabledProducts];
+    } catch (error) {
+      console.error('Error al obtener los productos habilitados:', error);
+    }
   },
-  methods: {
-    async fetchProducts() {
-      try {
-        const responseDisabled = await apiClient.searchProduct({ enabled: false });
-        const disabledProducts = responseDisabled?.products || [];
-        const responseEnabled = await apiClient.searchProduct({ enabled: true });
-        const enabledProducts = responseEnabled?.products || [];
-        this.products = [...disabledProducts, ...enabledProducts];
-      } catch (error) {
-        console.error('Error al obtener los productos:', error);
-      }
-    },
-    async addProduct() {
-      try {
-        const response = await apiClient.createProduct(this.newProduct);
-        this.products.push(response.product);
-        this.showAddProductForm = false;
-      } catch (error) {
-        console.error('Error al agregar el producto:', error);
-      }
-    },
-    async toggleProductStatus(productId) {
-      try {
-        const product = this.products.find(p => p.id === productId);
-        const response = await apiClient.toggleProductStatus(productId, !product.enabled);
-        product.enabled = response.enabled;
-      } catch (error) {
-        console.error('Error al cambiar el estado del producto:', error);
-      }
-    },
-    async searchProducts() {
-      try {
-        const response = await apiClient.searchProducts(this.productCode, this.enabled);
-        this.products = response.products;
-      } catch (error) {
-        console.error('Error al filtrar los productos:', error);
-      }
-    },
+  async addProduct() {
+    try {
+      const response = await apiClient.createProduct(this.newProduct);
+      this.products.push(response.product);
+      this.showAddProductForm = false;
+    } catch (error) {
+      console.error('Error al agregar el producto:', error);
+    }
   },
-  mounted() {
-    this.fetchProducts();
-  }
+  async toggleProductStatus(productId) {
+    try {
+      const product = this.products.find(p => p.id === productId);
+      const response = await apiClient.toggleProductStatus(productId, !product.enabled);
+      product.enabled = response.enabled;
+    } catch (error) {
+      console.error('Error al cambiar el estado del producto:', error);
+    }
+  },
+  async searchProducts() {
+    try {
+      const responseDisabled = await apiClient.searchProduct({ enabled: false });
+      const disabledProducts = responseDisabled?.products || [];
+      const responseEnabled = await apiClient.searchProduct({ enabled: true });
+      const enabledProducts = responseEnabled?.products || [];
+      this.products = [...disabledProducts, ...enabledProducts];
+    } catch (error) {
+      console.error('Error al buscar los productos:', error);
+    }
+  },
+  exportToPDF() {
+    const doc = new jsPDF();
+    autoTable(doc, {
+        head: [['Código', 'Nombre', 'Tamaño', 'Color', 'Habilitado']],
+        body: this.products.map(product => [
+          product?.unique_code || 'N/A',
+          product?.name || 'N/A',
+          product?.size || 'N/A',
+          product?.color || 'N/A',
+          product?.enabled ? 'Sí' : 'No',
+        ]),
+    });
+    doc.save('products.pdf');
+},
+exportToPDF1() {
+      console.log("Redirigiendo...");
+      
+      // Configuración del popup
+      const width = 800;
+      const height = 600;
+      const left = (window.innerWidth / 2) - (width / 2);
+      const top = (window.innerHeight / 2) - (height / 2);
+      
+      // Abrir el popup
+      window.open(
+        'http://127.0.0.1:9091/soap/export-pdf', 
+        '_blank' 
+        ,`width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`
+      );
+    }
+},
+mounted() {
+  this.fetchProducts();
+}
 };
 </script>
 
@@ -298,6 +341,58 @@ export default {
     padding: 10px 15px; /* Espaciado interno */
     cursor: pointer; /* Cambia el cursor al pasar el ratón */
 }
+
+/* Estilos adicionales para el botón de exportación */
+.export-button {
+  background-color: #444;
+  font-size: large;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 10px;
+}
+
+.export-button:hover {
+  background-color: #9b1c30;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 800px; /* Ajusta el ancho según lo necesario */
+  margin-top: 20px;
+}
+
+.add-store-button, .export-button {
+  font-size: large;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.add-store-button {
+  background-color: #444;
+}
+
+.add-store-button:hover {
+  background-color: #9b1c30;
+}
+
+.export-button {
+  background-color: #444;
+}
+
+.export-button:hover {
+  background-color: #9b1c30;
+}
+
 
 
 </style>

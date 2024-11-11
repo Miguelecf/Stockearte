@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session, Query
 from server.entities.product import Product
 
-
 class ProductRepository:
     def __init__(self, session: Session):
         self.session = session
@@ -27,12 +26,20 @@ class ProductRepository:
 
         # Añadir el producto a la sesión de la base de datos
         self.session.add(product)
-
+        
         try:
             # Confirmar los cambios en la base de datos
             self.session.commit()
-            # Refrescar la instancia para que refleje los datos guardados
+            
+            #send_news_to_kafka(unique_code=unique_code,
+            #                size=size,
+            #                color=color,
+            #                image_url=image_url
+            #) 
+            # Refrescar la instancia para que refleje los datos guardado
             self.session.refresh(product)
+            
+            
         except Exception as e:
             # Si ocurre un error, hacer rollback y relanzar la excepción
             self.session.rollback()
