@@ -42,18 +42,18 @@ app.post("/login", async (req: Request, res: Response) => {
   const { username, password } = req.body;
 
   try {
-      const loginResponse = await client.loginUser(username, password);
-      
-      // Aquí se puede crear un nuevo objeto que contenga el mensaje y la respuesta del login
-      const responseWithMessage = {
-          message: "Login successful",
-          user: loginResponse  // Esto contiene todos los detalles del usuario
-      };
+    const loginResponse = await client.loginUser(username, password);
 
-      res.status(200).json(responseWithMessage); // Enviamos la respuesta completa
+    // Aquí se puede crear un nuevo objeto que contenga el mensaje y la respuesta del login
+    const responseWithMessage = {
+      message: "Login successful",
+      user: loginResponse  // Esto contiene todos los detalles del usuario
+    };
+
+    res.status(200).json(responseWithMessage); // Enviamos la respuesta completa
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Login failed" });
+    console.error(error);
+    res.status(500).json({ message: "Login failed" });
   }
 });
 
@@ -95,32 +95,32 @@ app.get("/list-users", async (req: Request, res: Response) => {
 
 app.post("/update-user", async (req: Request, res: Response) => {
   try {
-      const { id, username, password, firstName, lastName, enabled, isCentral, storeId } = req.body;
+    const { id, username, password, firstName, lastName, enabled, isCentral, storeId } = req.body;
 
-      if (!id) {
-          return res.status(400).json({ message: "id is required for updating a user" });
-      }
+    if (!id) {
+      return res.status(400).json({ message: "id is required for updating a user" });
+    }
 
-      // Llamar al método updateUser del cliente con el id y otros campos
-      const updatedUser = await client.updateUser(
-          id,
-          username,
-          password,
-          firstName,
-          lastName,
-          enabled,
-          isCentral,
-          storeId
-      );
+    // Llamar al método updateUser del cliente con el id y otros campos
+    const updatedUser = await client.updateUser(
+      id,
+      username,
+      password,
+      firstName,
+      lastName,
+      enabled,
+      isCentral,
+      storeId
+    );
 
-      if (!updatedUser) {
-          return res.status(404).json({ message: "User not found" });
-      }
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-      res.status(200).json({ message: "User updated successfully", user: updatedUser });
+    res.status(200).json({ message: "User updated successfully", user: updatedUser });
   } catch (error) {
-      console.error("Error updating user:", error);
-      res.status(500).json({ message: "Error updating user" });
+    console.error("Error updating user:", error);
+    res.status(500).json({ message: "Error updating user" });
   }
 });
 
@@ -159,7 +159,7 @@ app.get("/search-store", async (req: Request, res: Response) => {
 
     const stores = await client.searchStore(
       code as string,
-      isEnabled 
+      isEnabled
     );
 
     if (!stores || stores.length === 0) {
@@ -297,30 +297,29 @@ app.post("/update-product", async (req: Request, res: Response) => {
 });
 
 app.get("/search-product", async (req: Request, res: Response) => {
-    console.log(req.query);
-    try {
-      // Extraemos los posibles parámetros de búsqueda, incluyendo enabled
-      const { name, uniqueCode, size, color, enabled } = req.query;
+  console.log(req.query);
+  try {
+    // Extraemos los posibles parámetros de búsqueda, incluyendo enabled
+    const { name, uniqueCode, size, color} = req.query;
 
-      // Convertimos 'enabled' a booleano si está presente en la query
-      const enabledBoolean = enabled ? (enabled === "true") : undefined;
+    // Convertimos 'enabled' a booleano si está presente en la query
+    // Llamamos a la función searchProduct pasando los valores extraídos de la query
+    const products = await client.searchProduct(
+      name as string,
+      uniqueCode as string,
+      size as string,
+      color as string
+    );
 
-      // Llamamos a la función searchProduct pasando los valores extraídos de la query
-      const products = await client.searchProduct(
-        name as string,
-        uniqueCode as string,
-        size as string,
-        color as string,
-        enabledBoolean // Incluimos el campo enabled en la búsqueda
-      );
-
-      // Devolvemos la lista de productos encontrados
-      res.status(200).json(products);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Error searching for products" });
-    }
+    // Devolvemos la lista de productos encontrados
+    res.status(200).json(products);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error searching for products" });
+  }
 });
+
+
 
 //-----------------------------PRODUCT_STORE--------------------------------------------------
 app.post("/create-product-store", async (req: Request, res: Response) => {

@@ -2,7 +2,7 @@ import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 import { rejects } from "assert";
 import * as path from "path";
-import { Timestamp } from 'google-protobuf/google/protobuf/timestamp_pb'; 
+import { Timestamp } from 'google-protobuf/google/protobuf/timestamp_pb';
 import { convertTimestampToDate } from './utils/extras'
 
 // Paths to both .proto files
@@ -23,23 +23,23 @@ const userProto = grpc.loadPackageDefinition(userPackageDefinition) as any;
 const storeProto = grpc.loadPackageDefinition(storePackageDefinition) as any;
 const productProto = grpc.loadPackageDefinition(productPackageDefinition) as any;
 const productStoreProto = grpc.loadPackageDefinition(productStorePackageDefinition) as any;
-const orderProto = grpc.loadPackageDefinition(orderPackageDefinition) as any; 
+const orderProto = grpc.loadPackageDefinition(orderPackageDefinition) as any;
 class Client {
     private userClient: any;
     private storeClient: any;
     private productClient: any;
     private productStoreClient: any;
-    private orderClient: any; 
+    private orderClient: any;
 
     constructor(host: string) {
         this.userClient = new userProto.user.UserService(host, grpc.credentials.createInsecure());
         this.storeClient = new storeProto.store.StoreService(host, grpc.credentials.createInsecure());
         this.productClient = new productProto.product.ProductService(host, grpc.credentials.createInsecure());
         this.productStoreClient = new productStoreProto.product_store.ProductStoreService(host, grpc.credentials.createInsecure());
-        this.orderClient = new orderProto.order.OrderService (host, grpc.credentials.createInsecure());
+        this.orderClient = new orderProto.order.OrderService(host, grpc.credentials.createInsecure());
     }
 
-//-----------------------------------------------USER-------------------------------------------
+    //-----------------------------------------------USER-------------------------------------------
 
     async createUser(username: string, password: string, firstName: string, lastName: string,
         enabled: boolean, isCentral: boolean, storeId?: number): Promise<string> {
@@ -83,13 +83,13 @@ class Client {
     }
 
     async updateUser(
-        id: number, 
-        username: string, 
-        password: string, 
-        firstName: string, 
-        lastName: string, 
-        enabled: boolean, 
-        isCentral: boolean, 
+        id: number,
+        username: string,
+        password: string,
+        firstName: string,
+        lastName: string,
+        enabled: boolean,
+        isCentral: boolean,
         storeId: number | null
     ): Promise<any> {
         return new Promise((resolve, reject) => {
@@ -185,10 +185,10 @@ class Client {
             );
         });
     }
-    
 
 
-//-----------------------------------------------STORE-------------------------------------------
+
+    //-----------------------------------------------STORE-------------------------------------------
     async createStore(code: string, address: string, city: string, state: string, enabled: boolean): Promise<any> {
         // Validar código de la tienda
         if (!/^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{3,50}$/.test(code)) {
@@ -255,7 +255,7 @@ class Client {
 
 
 
-//-----------------------------------------------PRODUCT-------------------------------------------
+    //-----------------------------------------------PRODUCT-------------------------------------------
 
     async createProduct(name: string, size: string, imageUrl: string, color: string, enabled: boolean): Promise<any> {
         return new Promise((resolve, reject) => {
@@ -322,10 +322,10 @@ class Client {
     }
 
 
-    async searchProduct(name?: string, uniqueCode?: string, size?: string, color?: string, enabled?: boolean): Promise<any> {
+    async searchProduct(name?: string, uniqueCode?: string, size?: string, color?: string): Promise<any> {
         return new Promise((resolve, reject) => {
             this.productClient.SearchProduct(
-                { uniqueCode, name, size, color, enabled }, // Añadimos enabled al objeto
+                { uniqueCode, name, size, color }, // Añadimos enabled al objeto
                 (error: grpc.ServiceError | null, response: any) => {
                     if (error) {
                         console.error("Error in gRPC call:", error);
@@ -339,7 +339,13 @@ class Client {
         });
     }
 
-//-----------------------------PRODUCT_STORE--------------------------------------------------
+
+
+
+
+
+
+    //-----------------------------PRODUCT_STORE--------------------------------------------------
     async createProductStore(storeCode?: string, productCode?: string, stock?: number, enabled?: boolean): Promise<any> {
         console.log("client.ts ---> ", storeCode, productCode, stock, enabled)
         return new Promise((resolve, reject) => {
@@ -359,7 +365,7 @@ class Client {
                 })
         })
     }
-//-----------------------------ORDER--------------------------------------------
+    //-----------------------------ORDER--------------------------------------------
     async createOrder(
         storeId: number,
         observations: string,
@@ -408,6 +414,6 @@ class Client {
                 resolve(cleanOrderResponse);
             });
         });
-    }   
-}  
+    }
+}
 export default Client;
